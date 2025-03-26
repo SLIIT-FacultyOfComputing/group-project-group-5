@@ -1,5 +1,5 @@
 import { BrowserRouter as Router } from "react-router-dom";
-import EquipmentPage from "./components/equipmentPage";
+import EquipmentPage from "./pages/equipmentPage";
 
 function App() {
   return (

@@ -9,14 +9,12 @@ import {
   searchEquipmentByName,
 } from "../../api";
 
-// Utility function to format date for input (YYYY-MM-DD)
 const formatDateForInput = (dateString) => {
   if (!dateString) return "";
   const date = new Date(dateString);
   return date.toISOString().split("T")[0];
 };
 
-// Enhanced status badge component with icons
 const StatusBadge = ({ status }) => {
   const styles = {
     AVAILABLE: {
@@ -80,10 +78,8 @@ const EquipmentList = () => {
   const [itemUpdates, setItemUpdates] = useState({});
   const [searchNotFound, setSearchNotFound] = useState(false);
   
-  // Filter state
   const [activeFilter, setActiveFilter] = useState("ALL");
   
-  // Modal states
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
@@ -108,7 +104,6 @@ const EquipmentList = () => {
     fetchEquipment();
   }, []);
 
-  // Apply filters
   useEffect(() => {
     if (activeFilter === 'ALL') {
       setDisplayEquipment(equipment);
@@ -183,7 +178,7 @@ const EquipmentList = () => {
     setSelectedItemId(id);
     setModalAction("maintenance");
     setModalMessage("Are you sure you want to update this equipment's maintenance date?");
-    setIsDeleteModalOpen(true); // Reusing the confirmation modal
+    setIsDeleteModalOpen(true);
   };
 
   const handleMaintenanceUpdate = async () => {
@@ -260,7 +255,6 @@ const EquipmentList = () => {
     }));
   };
 
-  // Handle the confirmation modal's confirm button based on current action
   const handleConfirmAction = () => {
     if (modalAction === "status") {
       handleStatusUpdate();
@@ -271,7 +265,6 @@ const EquipmentList = () => {
     }
   };
 
-  // Get equipment counts by status
   const getStatusCounts = () => {
     const counts = {
       ALL: equipment.length,
@@ -292,7 +285,6 @@ const EquipmentList = () => {
   
   const statusCounts = getStatusCounts();
 
-  // Skeleton loader for table
   const TableSkeleton = () => (
     <tbody className="animate-pulse">
       {[...Array(5)].map((_, index) => (
@@ -314,7 +306,6 @@ const EquipmentList = () => {
     <div className="bg-gray-50 min-h-screen py-8">
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
-          {/* Header with gradient */}
           <div className="bg-gradient-to-r from-rose-700 to-rose-500 p-6 flex flex-col sm:flex-row justify-between items-center">
             <div className="flex items-center mb-4 sm:mb-0">
             <div className="bg-white bg-opacity-30 p-2 rounded-lg mr-3 shadow-inner">

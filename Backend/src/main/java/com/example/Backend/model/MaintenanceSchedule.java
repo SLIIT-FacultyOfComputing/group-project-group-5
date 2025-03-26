@@ -1,13 +1,9 @@
 package com.example.Backend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.Data;
-
 import java.sql.Date;
 
-@Data
 @Entity
 @Table(name = "maintenance_schedule")
 public class MaintenanceSchedule {
@@ -17,9 +13,12 @@ public class MaintenanceSchedule {
     private Long scheduleId;
 
     @ManyToOne
-    @JoinColumn(name = "equipment_id", nullable = false)
     @JsonIgnore
+    @JoinColumn(name = "equipment_id", nullable = false)
     private Equipment equipmentSchedule;
+
+    @Column(name = "equipment_id", insertable = false, updatable = false)
+    private Long equipmentId;
 
     @Column(name = "maintenance_type", nullable = false)
     private String maintenanceType;
@@ -37,9 +36,78 @@ public class MaintenanceSchedule {
     @Column(name = "technician")
     private String technician;
 
-    @Transient
-    public Long getEquipmentId() {
-        return equipmentSchedule != null ? equipmentSchedule.getId() : null;
+    @Column(name = "maintenance_cost")
+    private Double maintenanceCost;
+
+    public Long getScheduleId() {
+        return scheduleId;
     }
 
+    public void setScheduleId(Long scheduleId) {
+        this.scheduleId = scheduleId;
+    }
+
+    public Equipment getEquipmentSchedule() {
+        return equipmentSchedule;
+    }
+
+    public void setEquipmentSchedule(Equipment equipmentSchedule) {
+        this.equipmentSchedule = equipmentSchedule;
+    }
+
+    public String getMaintenanceType() {
+        return maintenanceType;
+    }
+
+    public void setMaintenanceType(String maintenanceType) {
+        this.maintenanceType = maintenanceType;
+    }
+
+    public Date getMaintenanceDate() {
+        return maintenanceDate;
+    }
+
+    public void setMaintenanceDate(Date maintenanceDate) {
+        this.maintenanceDate = maintenanceDate;
+    }
+
+    public String getMaintenanceDescription() {
+        return maintenanceDescription;
+    }
+
+    public void setMaintenanceDescription(String maintenanceDescription) {
+        this.maintenanceDescription = maintenanceDescription;
+    }
+
+    public MaintenanceStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(MaintenanceStatus status) {
+        this.status = status;
+    }
+
+    public String getTechnician() {
+        return technician;
+    }
+
+    public void setTechnician(String technician) {
+        this.technician = technician;
+    }
+
+    public Double getMaintenanceCost() {
+        return maintenanceCost;
+    }
+
+    public void setMaintenanceCost(Double maintenanceCost) {
+        this.maintenanceCost = maintenanceCost;
+    }
+
+    public Long getEquipmentId() {
+        return equipmentId;
+    }
+
+    public void setEquipmentId(Long equipmentId) {
+        this.equipmentId = equipmentId;
+    }
 }

@@ -42,21 +42,16 @@ public class EquipmentService {
         return equipmentRepository.save(equipment);
     }
 
-    public String updateEquipmentStatus(Long equipmentId, String status) {
+    public Equipment updateEquipmentStatus(Long equipmentId, String status) {
         Optional<Equipment> equipment = equipmentRepository.findById(equipmentId);
         if (equipment.isPresent()) {
             Equipment eq = equipment.get();
-
-            try {
-                EquipmentStatus newStatus = EquipmentStatus.valueOf(status);
-                eq.setStatus(newStatus);
-                equipmentRepository.save(eq);
-                return "Status updated to " + newStatus;
-            } catch (IllegalArgumentException e) {
-                return "Invalid status value: " + status;
-            }
+            EquipmentStatus newStatus = EquipmentStatus.valueOf(status);
+            eq.setStatus(newStatus);
+            equipmentRepository.save(eq);
+            return eq;
         } else {
-            return "Equipment not found with ID: " + equipmentId;
+            return null;
         }
     }
 
@@ -64,20 +59,16 @@ public class EquipmentService {
         return equipmentRepository.findByNameContainingIgnoreCaseOrCategoryContainingIgnoreCase(search, search);
     }
 
-    public String updateEquipmentLastMaintenanceDate(Long equipmentId, Date date) {
-        try {
-            Optional<Equipment> equipment = equipmentRepository.findById(equipmentId);
+    public Equipment updateEquipmentLastMaintenanceDate(Long equipmentId, Date date) {
+        Optional<Equipment> equipment = equipmentRepository.findById(equipmentId);
 
-            if (equipment.isPresent()) {
-                Equipment eq = equipment.get();
-                eq.setLastMaintenanceDate(new java.sql.Date(date.getTime())); // Convert to SQL Date
-                equipmentRepository.save(eq);
-                return "Last maintenance updated to " + date;
-            } else {
-                return "Equipment not found with ID: " + equipmentId;
-            }
-        } catch (Exception e) {
-            return "An error occurred while updating the last maintenance date: " + e.getMessage();
+        if (equipment.isPresent()) {
+            Equipment eq = equipment.get();
+            eq.setLastMaintenanceDate(new java.sql.Date(date.getTime())); // Convert to SQL Date
+            equipmentRepository.save(eq);
+            return eq;
+        } else {
+            return null;
         }
     }
 

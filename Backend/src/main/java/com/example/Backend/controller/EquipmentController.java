@@ -44,14 +44,8 @@ public class EquipmentController {
         return equipmentService.getEquipmentById(id);
     }
 
-    @PutMapping("/{id}")
-    public Equipment updateEquipment(@PathVariable Long id, Equipment equipment) {
-        equipment.setId(id);
-        return equipmentService.updateEquipment(equipment);
-    }
-
     @PutMapping("/{id}/status")
-    public String UpdateEquipmentStatus(@PathVariable Long id, @RequestParam String status) {
+    public Equipment UpdateEquipmentStatus(@PathVariable Long id, @RequestParam String status) {
         return equipmentService.updateEquipmentStatus(id, status);
     }
 
@@ -61,7 +55,7 @@ public class EquipmentController {
     }
 
     @PutMapping("/{id}/Maintenance")
-    public String updateMaintenanceDate(@PathVariable Long id, @RequestParam("maintenanceDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date maintenanceDate) {
+    public Equipment updateMaintenanceDate(@PathVariable Long id, @RequestParam("maintenanceDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date maintenanceDate) {
         return equipmentService.updateEquipmentLastMaintenanceDate(id, maintenanceDate);
     }
 

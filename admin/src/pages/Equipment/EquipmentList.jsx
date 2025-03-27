@@ -1,5 +1,5 @@
 import { useEffect, useState, Fragment } from "react";
-import { Dialog, Transition, Menu } from "@headlessui/react";
+import { Dialog, Transition } from "@headlessui/react";
 import {
   getEquipment,
   deleteEquipment,
@@ -7,7 +7,8 @@ import {
   getEquipmentById,
   updateEquipmentMaintenanceDate,
   searchEquipmentByName,
-} from "../../api";
+  filterEquipmentByStatus
+} from "../../services/api";
 
 const formatDateForInput = (dateString) => {
   if (!dateString) return "";
@@ -77,15 +78,13 @@ const EquipmentList = () => {
   const [error, setError] = useState(null);
   const [itemUpdates, setItemUpdates] = useState({});
   const [searchNotFound, setSearchNotFound] = useState(false);
-  
   const [activeFilter, setActiveFilter] = useState("ALL");
-  
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [selectedItemId, setSelectedItemId] = useState(null);
-  const [modalAction, setModalAction] = useState(""); // "delete", "status", "maintenance"
+  const [modalAction, setModalAction] = useState("");
 
   useEffect(() => {
     const fetchEquipment = async () => {
@@ -105,12 +104,25 @@ const EquipmentList = () => {
   }, []);
 
   useEffect(() => {
-    if (activeFilter === 'ALL') {
-      setDisplayEquipment(equipment);
-    } else {
-      setDisplayEquipment(equipment.filter(item => item.status === activeFilter));
-    }
-  }, [activeFilter, equipment]);
+    const fetchFilteredEquipment = async () => {
+      try {
+        setLoading(true);
+        if (activeFilter === 'ALL') {
+          const response = await getEquipment();
+          setDisplayEquipment(response.data);
+        } else {
+          const response = await filterEquipmentByStatus(activeFilter);
+          setDisplayEquipment(response.data);
+        }
+      } catch (error) {
+        setError(`Failed to fetch equipment with status ${activeFilter}`);
+        console.error("Error fetching filtered equipment:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchFilteredEquipment();
+  }, [activeFilter]);
 
   const openDeleteModal = (id) => {
     setSelectedItemId(id);
@@ -138,7 +150,7 @@ const EquipmentList = () => {
     setSelectedItemId(id);
     setModalAction("status");
     setModalMessage("Are you sure you want to update this equipment's status?");
-    setIsDeleteModalOpen(true); // Reusing the confirmation modal
+    setIsDeleteModalOpen(true);
   };
 
   const handleStatusUpdate = async () => {
@@ -301,6 +313,23 @@ const EquipmentList = () => {
       ))}
     </tbody>
   );
+  
+  const CardSkeleton = () => (
+    <div className="animate-pulse space-y-4">
+      {[...Array(3)].map((_, index) => (
+        <div key={index} className="bg-white rounded-lg shadow-md p-4 border border-gray-200">
+          <div className="flex justify-between mb-4">
+            <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+            <div className="h-6 bg-gray-200 rounded w-1/3"></div>
+          </div>
+          <div className="h-5 bg-gray-200 rounded w-3/4 mb-4"></div>
+          <div className="h-8 bg-gray-200 rounded w-1/2 mb-4"></div>
+          <div className="h-12 bg-gray-200 rounded w-full mb-4"></div>
+          <div className="h-8 bg-gray-200 rounded w-1/2"></div>
+        </div>
+      ))}
+    </div>
+  );
 
   return (
     <div className="bg-gray-50 min-h-screen py-8">
@@ -308,8 +337,8 @@ const EquipmentList = () => {
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
           <div className="bg-gradient-to-r from-rose-700 to-rose-500 p-6 flex flex-col sm:flex-row justify-between items-center">
             <div className="flex items-center mb-4 sm:mb-0">
-            <div className="bg-white bg-opacity-30 p-2 rounded-lg mr-3 shadow-inner">
-            <svg className="w-6 h-6 text-red" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <div className="bg-white bg-opacity-30 p-2 rounded-lg mr-3 shadow-inner">
+                <svg className="w-6 h-6 text-red" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                 </svg>
               </div>
@@ -325,18 +354,17 @@ const EquipmentList = () => {
             </div>
           </div>
 
-          {/* Status filter chips */}
-          <div className="bg-gray-50 p-4 border-b border-gray-200">
+          <div className="bg-gray-50 p-4 border-b border-gray-200 overflow-x-auto">
             <div className="flex flex-wrap gap-2">
               <button 
                 onClick={() => setActiveFilter('ALL')}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center shadow-sm ${
+                className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all flex items-center shadow-sm ${
                   activeFilter === 'ALL' 
                     ? 'bg-rose-600 text-white' 
                     : 'bg-white text-gray-700 hover:bg-gray-100'
                 }`}
               >
-                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4"></path>
                 </svg>
                 All ({statusCounts.ALL})
@@ -344,13 +372,13 @@ const EquipmentList = () => {
               
               <button 
                 onClick={() => setActiveFilter('AVAILABLE')}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center shadow-sm ${
+                className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all flex items-center shadow-sm ${
                   activeFilter === 'AVAILABLE' 
                     ? 'bg-green-600 text-white' 
                     : 'bg-white text-gray-700 hover:bg-gray-100'
                 }`}
               >
-                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
                 </svg>
                 Available ({statusCounts.AVAILABLE})
@@ -358,13 +386,13 @@ const EquipmentList = () => {
               
               <button 
                 onClick={() => setActiveFilter('UNDER_MAINTENANCE')}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center shadow-sm ${
+                className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all flex items-center shadow-sm ${
                   activeFilter === 'UNDER_MAINTENANCE' 
                     ? 'bg-yellow-600 text-white' 
                     : 'bg-white text-gray-700 hover:bg-gray-100'
                 }`}
               >
-                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37.996-.608 2.296-.07 2.572 1.065"></path>
                 </svg>
                 Maintenance ({statusCounts.UNDER_MAINTENANCE})
@@ -372,13 +400,13 @@ const EquipmentList = () => {
               
               <button 
                 onClick={() => setActiveFilter('OUT_OF_ORDER')}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center shadow-sm ${
+                className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all flex items-center shadow-sm ${
                   activeFilter === 'OUT_OF_ORDER' 
                     ? 'bg-red-600 text-white' 
                     : 'bg-white text-gray-700 hover:bg-gray-100'
                 }`}
               >
-                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                 </svg>
                 Out of Order ({statusCounts.OUT_OF_ORDER})
@@ -386,31 +414,30 @@ const EquipmentList = () => {
               
               <button 
                 onClick={() => setActiveFilter('UNAVAILABLE')}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center shadow-sm ${
+                className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all flex items-center shadow-sm ${
                   activeFilter === 'UNAVAILABLE' 
                     ? 'bg-gray-600 text-white' 
                     : 'bg-white text-gray-700 hover:bg-gray-100'
                 }`}
               >
-                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
                 Unavailable ({statusCounts.UNAVAILABLE})
               </button>
             </div>
           </div>
-          
-          {/* Enhanced search section */}
-          <div className="p-6 border-b border-gray-200">
+
+          <div className="p-4 sm:p-6 border-b border-gray-200">
             <div className="flex flex-col md:flex-row gap-4 items-center">
-              <div className="relative flex-grow">
+              <div className="relative flex-grow w-full">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                   </svg>
                 </div>
                 <input
-                  className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-rose-500 focus:border-rose-500 transition-all duration-200"
+                  className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-rose-500 focus:border-rose-500"
                   placeholder="Search by ID, Name or Category"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
@@ -418,7 +445,7 @@ const EquipmentList = () => {
                 />
               </div>
               <button
-                className={`px-6 py-3 text-white font-medium rounded-lg shadow-md transform transition-all duration-200 min-w-[100px] ${
+                className={`w-full md:w-auto px-6 py-3 text-white font-medium rounded-lg shadow-md transform transition-all duration-200 min-w-[100px] ${
                   loading
                     ? "bg-rose-400 cursor-not-allowed"
                     : "bg-rose-600 hover:bg-rose-700 hover:-translate-y-0.5 focus:ring-4 focus:ring-rose-300"
@@ -464,7 +491,7 @@ const EquipmentList = () => {
             )}
           </div>
 
-          <div className="overflow-x-auto rounded-lg mb-0">
+          <div className="hidden md:block overflow-x-auto rounded-lg mb-0">
             <table className="w-full text-sm text-left text-gray-700">
               <thead className="text-xs text-white uppercase bg-gradient-to-r from-rose-700 to-rose-600 shadow-sm">
                 <tr>
@@ -592,10 +619,127 @@ const EquipmentList = () => {
               )}
             </table>
           </div>
+
+          <div className="md:hidden p-4">
+            {loading ? (
+              <CardSkeleton />
+            ) : displayEquipment.length > 0 ? (
+              <div className="space-y-4">
+                {displayEquipment.map((item) => (
+                  <div key={item.id} className="bg-white rounded-lg shadow-md p-4 border border-gray-200">
+                    <div className="flex justify-between items-start mb-3">
+                      <span className="text-xs font-medium text-gray-500">ID: {item.id}</span>
+                      <StatusBadge status={item.status} />
+                    </div>
+                    
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{item.name}</h3>
+                    
+                    <div className="space-y-3 mb-4">
+                      <div className="flex justify-between">
+                        <span className="text-sm font-medium text-gray-700">Category:</span>
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          {item.category}
+                        </span>
+                      </div>
+                      
+                      <div className="flex justify-between">
+                        <span className="text-sm font-medium text-gray-700">Purchase Date:</span>
+                        <span className="text-sm text-gray-600">{item.purchaseDate}</span>
+                      </div>
+                      
+                      <div className="flex justify-between">
+                        <span className="text-sm font-medium text-gray-700">Warranty Expiry:</span>
+                        <span className="text-sm text-gray-600">{item.warrantyExpiry}</span>
+                      </div>
+                      
+                      <div className="flex justify-between">
+                        <span className="text-sm font-medium text-gray-700">Last Maintenance:</span>
+                        <span className="text-sm text-gray-600">{item.lastMaintenanceDate || "Not set"}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      <p className="text-sm font-medium text-gray-700 mb-2">Status:</p>
+                      <select
+                        className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-rose-500 focus:border-rose-500 transition-colors duration-200 shadow-sm w-full mb-2"
+                        value={itemUpdates[item.id]?.status || item.status}
+                        onChange={(e) =>
+                          handleInputChange(item.id, "status", e.target.value)
+                        }
+                      >
+                        <option value="AVAILABLE" className="text-gray-900">Available</option>
+                        <option value="UNAVAILABLE" className="text-gray-900">Unavailable</option>
+                        <option value="UNDER_MAINTENANCE" className="text-gray-900">Under Maintenance</option>
+                        <option value="OUT_OF_ORDER" className="text-gray-900">Out of Order</option>
+                      </select>
+                      <button
+                        className="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 focus:ring-4 focus:ring-green-300 transition-all duration-200 text-xs flex items-center justify-center w-full"
+                        onClick={() => confirmStatusUpdate(item.id)}
+                      >
+                        <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        Update Status
+                      </button>
+                    </div>
+                    
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      <p className="text-sm font-medium text-gray-700 mb-2">Maintenance Date:</p>
+                      <input
+                        type="date"
+                        className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-rose-500 focus:border-rose-500 transition-colors duration-200 shadow-sm w-full mb-2"
+                        value={
+                          itemUpdates[item.id]?.maintenanceDate ||
+                          formatDateForInput(item.lastMaintenanceDate) ||
+                          ""
+                        }
+                        onChange={(e) =>
+                          handleInputChange(item.id, "maintenanceDate", e.target.value)
+                        }
+                      />
+                      <button
+                        className="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 focus:ring-4 focus:ring-green-300 transition-all duration-200 text-xs flex items-center justify-center w-full"
+                        onClick={() => confirmMaintenanceUpdate(item.id)}
+                      >
+                        <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        Update Date
+                      </button>
+                    </div>
+                    
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      <button
+                        className="px-4 py-2 bg-rose-600 text-white rounded-lg shadow hover:bg-rose-700 focus:ring-4 focus:ring-rose-300 transition-all duration-200 text-xs flex items-center justify-center w-full"
+                        onClick={() => {
+                          setModalAction("delete");
+                          openDeleteModal(item.id);
+                        }}
+                      >
+                        <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                        Delete Equipment
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-8">
+                <div className="bg-gray-100 p-5 rounded-full mb-4">
+                  <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                  </svg>
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 mb-1">No equipment found</h3>
+                <p className="text-gray-500 mb-4 text-center">Start by adding new gym equipment to your inventory.</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Enhanced Confirmation Modal */}
       <Transition appear show={isDeleteModalOpen} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={() => setIsDeleteModalOpen(false)}>
           <Transition.Child
@@ -690,7 +834,6 @@ const EquipmentList = () => {
         </Dialog>
       </Transition>
 
-      {/* Enhanced Success Modal */}
       <Transition appear show={isSuccessModalOpen} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={() => setIsSuccessModalOpen(false)}>
           <Transition.Child
@@ -759,7 +902,6 @@ const EquipmentList = () => {
         </Dialog>
       </Transition>
 
-      {/* Enhanced Error Modal */}
       <Transition appear show={isErrorModalOpen} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={() => setIsErrorModalOpen(false)}>
           <Transition.Child

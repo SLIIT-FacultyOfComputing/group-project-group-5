@@ -2,7 +2,6 @@ import axios from "axios";
 
 const BASE_URL = "http://localhost:8090";
 
-
 export const addEquipment = async (equipment) => {
   return axios.post(`${BASE_URL}/api/equipment`,equipment);
 };
@@ -35,6 +34,10 @@ export const searchEquipmentByName = async (search) => {
   return axios.get(`${BASE_URL}/api/equipment/search?Search=${search}`);
 }
 
+export const filterEquipmentByStatus = async (status) => {
+  return axios.get(`${BASE_URL}/api/equipment/filter-by-status?status=${status}`);
+};
+
 export const addMaintenanceSchedule = async (maintenanceSchedule) => {
   return axios.post(`${BASE_URL}/api/maintenance-schedule`, maintenanceSchedule);
 }
@@ -56,7 +59,7 @@ export const searchMaintenanceSchedule = async (search) => {
 };702
 
 export const updateMaintenanceDate = async (id, maintenanceDate) => {
-  return axios.put(`${BASE_URL}/api/maintenance-schedule/${id}/Maintenance?maintenanceDate=${maintenanceDate}`);
+  return axios.put(`${BASE_URL}/api/maintenance-schedule/${id}/MaintenanceDate?date=${maintenanceDate}`);
 }
 
 export const updateMaintenanceStatus = async (id, status) => {
@@ -74,3 +77,23 @@ export const updateMaintenanceTechnician = async (id, technician) => {
 export const updateMaintenanceDescription = async (id, description) => {
   return axios.put(`${BASE_URL}/api/maintenance-schedule/${id}/description?description=${description}`);
 }
+
+export const filterMaintenanceScheduleByStatus = async (status) => {
+  return axios.get(`${BASE_URL}/api/maintenance-schedule/filter-by-status?status=${status}`);
+}
+
+export const monthlyMaintenanceCost = async () => {
+  return axios.get(`${BASE_URL}/api/monthly-costs`);
+};
+
+export const updateMonthlyCost = async () => {
+  return axios.post(`${BASE_URL}/api/update-monthly-costs`);
+};
+
+export const filterByMonth = async (month) => {
+  return axios.get(`${BASE_URL}/api/filter-monthly-cost?month=${month}`);
+};
+
+export const filterByYear = async (year) => {
+  return axios.get(`${BASE_URL}/api/filter-yearly-cost?year=${year}`);
+};

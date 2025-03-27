@@ -32,7 +32,7 @@ public class EquipmentController {
 
     @DeleteMapping("/{id}")
     public void deleteEquipment(@PathVariable Long id) {
-        equipmentService.deleteEquipment(id);
+        equipmentService.deleteEquipmentById(id);
     }
 
 
@@ -59,6 +59,10 @@ public class EquipmentController {
         return equipmentService.updateEquipmentLastMaintenanceDate(id, maintenanceDate);
     }
 
+    @GetMapping("filter-by-status")
+    public List<Equipment> getEquipmentByStatus(@RequestParam String status) {
+        return equipmentService.filterByStatus(status);
+    }
     
 }
 

@@ -30,8 +30,9 @@ public class EquipmentService {
         return equipmentRepository.save(equipment);
     }
 
-    public void deleteEquipment(Long id) {
-        equipmentRepository.deleteById(id);
+    @Transactional
+    public void deleteEquipmentById(Long id) {
+        equipmentRepository.softDeleteById(id);
     }
 
     public Equipment getEquipmentById(Long id) {
@@ -70,6 +71,11 @@ public class EquipmentService {
         } else {
             return null;
         }
+    }
+
+    public List<Equipment> filterByStatus(String status) {
+        EquipmentStatus newStatus = EquipmentStatus.valueOf(status);
+        return equipmentRepository.findByStatus(newStatus);
     }
 
 }

@@ -72,4 +72,9 @@ public class MaintenanceScheduleController {
     public MaintenanceSchedule updateMaintenanceDescription(@PathVariable Long id, @RequestParam String description) {
         return maintenanceScheduleService.updateMaintenanceDescription(id, description);
     }
+
+    @GetMapping("filter-by-status")
+    public List<MaintenanceSchedule> getMaintenanceScheduleByStatus(@RequestParam String status) {
+        return maintenanceScheduleService.filterMaintenanceScheduleByStatus(status);
+    }
 }

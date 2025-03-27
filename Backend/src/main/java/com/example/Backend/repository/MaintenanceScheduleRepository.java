@@ -1,6 +1,7 @@
 package com.example.Backend.repository;
 
 import com.example.Backend.model.MaintenanceSchedule;
+import com.example.Backend.model.MaintenanceStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -13,4 +14,5 @@ public interface MaintenanceScheduleRepository extends JpaRepository<Maintenance
 
     List<MaintenanceSchedule> findByMaintenanceTypeContainingIgnoreCase(String search);
 
+    List<MaintenanceSchedule> findByStatus(MaintenanceStatus maintenanceStatus);
 }

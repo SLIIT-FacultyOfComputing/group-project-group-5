@@ -62,19 +62,4 @@ public class MonthlyMaintenanceCostService {
         return monthlyMaintenanceCostRepository.findByYear(year);
     }
 
-    public MaintenanceScheduleRepository getMaintenanceScheduleRepository() {
-        return maintenanceScheduleRepository;
-    }
-
-    public void setMaintenanceScheduleRepository(MaintenanceScheduleRepository maintenanceScheduleRepository) {
-        this.maintenanceScheduleRepository = maintenanceScheduleRepository;
-    }
-
-    public MonthlyMaintenanceCostRepository getMonthlyMaintenanceCostRepository() {
-        return monthlyMaintenanceCostRepository;
-    }
-
-    public void setMonthlyMaintenanceCostRepository(MonthlyMaintenanceCostRepository monthlyMaintenanceCostRepository) {
-        this.monthlyMaintenanceCostRepository = monthlyMaintenanceCostRepository;
-    }
 }

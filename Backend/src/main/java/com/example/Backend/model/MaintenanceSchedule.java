@@ -14,7 +14,7 @@ public class MaintenanceSchedule {
 
     @ManyToOne
     @JsonIgnore
-    @JoinColumn(name = "equipment_id", nullable = false)
+    @JoinColumn(name = "equipment_id")
     private Equipment equipmentSchedule;
 
     @Column(name = "equipment_id", insertable = false, updatable = false)

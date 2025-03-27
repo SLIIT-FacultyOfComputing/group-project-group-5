@@ -120,4 +120,13 @@ public class MaintenanceScheduleService {
         }
         throw new RuntimeException("Maintenance schedule not found");
     }
+
+    public  List<MaintenanceSchedule> filterMaintenanceScheduleByStatus(String status) {
+        try {
+            MaintenanceStatus maintenanceStatus = MaintenanceStatus.valueOf(status);
+            return maintenanceScheduleRepository.findByStatus(maintenanceStatus);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid status value: " + status);
+        }
+    }
 }

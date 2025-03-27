@@ -37,8 +37,7 @@ public class MonthlyMaintenanceCostController {
     }
 
     @GetMapping("/filter-yearly-cost")
-    public ResponseEntity<List<MonthlyMaintenanceCostDTO>> getMonthlyCostsByYear(
-            @RequestParam String year) {
+    public ResponseEntity<List<MonthlyMaintenanceCostDTO>> getMonthlyCostsByYear( @RequestParam String year) {
         List<MonthlyMaintenanceCostDTO> result = maintenanceService.getMonthlyCostsByYear(year);
         return ResponseEntity.ok(result);
     }

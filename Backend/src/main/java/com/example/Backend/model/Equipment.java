@@ -32,6 +32,9 @@ public class Equipment {
     @JsonBackReference
     private List<MaintenanceSchedule> maintenanceSchedules;
 
+    @Column(name = "deleted", nullable = false)
+    private boolean deleted = false;
+
     public Long getId() {
         return id;
     }
@@ -94,5 +97,13 @@ public class Equipment {
 
     public void setMaintenanceSchedules(List<MaintenanceSchedule> maintenanceSchedules) {
         this.maintenanceSchedules = maintenanceSchedules;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 }

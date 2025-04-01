@@ -26,9 +26,9 @@ public class EquipmentController {
     }
 
     @PostMapping
-    public void AddEquipment(@RequestBody Equipment equipment) {
-        equipmentService.addEquipment(equipment);
-}
+    public Equipment AddEquipment(@RequestBody Equipment equipment) {
+        return equipmentService.addEquipment(equipment);
+    }
 
     @DeleteMapping("/{id}")
     public void deleteEquipment(@PathVariable Long id) {
@@ -63,6 +63,6 @@ public class EquipmentController {
     public List<Equipment> getEquipmentByStatus(@RequestParam String status) {
         return equipmentService.filterByStatus(status);
     }
-    
+
 }
 

@@ -39,10 +39,6 @@ public class EquipmentService {
         return equipmentRepository.findById(id).orElse(null);
     }
 
-    public Equipment updateEquipment(Equipment equipment) {
-        return equipmentRepository.save(equipment);
-    }
-
     public Equipment updateEquipmentStatus(Long equipmentId, String status) {
         Optional<Equipment> equipment = equipmentRepository.findById(equipmentId);
         if (equipment.isPresent()) {

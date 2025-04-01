@@ -1,27 +1,22 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Layout from "./components/Layout";
-import EquipmentList from "./pages/EquipmentList";
-import AddEquipmentForm from "./pages/AddEquipmentForm";
+import { Navigate } from "react-router-dom";
 import EquipmentPage from "./pages/equipmentPage";
-import MemberRegistration from "./pages/Membership/MemberRegistration";
+import MembersPage from "./pages/Membership/MemberPage";
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Layout />}>
 
         {/*Equipment Routes*/}
-        <Route path="equipment" element={<EquipmentList />} />
-        <Route path="equipment/add" element={<AddEquipmentForm />} />
+        <Route path="/equipment/*" element={<EquipmentPage />} />
 
-        {/*Equipment Routes*/}
-        <Route path="member/register" element={<MemberRegistration />} />
+        {/*Member Routes*/}
+        <Route path="/members/*" element={<MembersPage />} />
 
         {/*Default Redirect*/}
-        <Route index element={<EquipmentList />} />
+        <Route path="*" element={<Navigate to="/equipment" replace />} />
 
-        </Route>
       </Routes>     
     </Router>
   );

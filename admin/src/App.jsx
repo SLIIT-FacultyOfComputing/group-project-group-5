@@ -3,7 +3,7 @@ import { Navigate } from "react-router-dom";
 import EquipmentPage from "./pages/equipmentPage";
 import RegisterPage from "./pages/RegisterPage";
 import HomePage from "./pages/HomePage";
-//import MembersPage from "./pages/Membership/MemberPage";
+import MemberPage from "./pages/Membership/MemberPage";
 
 function App() {
   return (
@@ -17,7 +17,7 @@ function App() {
 
         {/*Member Routes*/}
         <Route path="/register" element={<RegisterPage />} />
-        {/* <Route path="/members/*" element={<MembersPage />} /> */}
+        <Route path="/members/*" element={<MemberPage />} />
 
         {/*Default Redirect*/}
         <Route path="*" element={<Navigate to="/" replace />} />

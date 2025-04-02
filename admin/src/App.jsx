@@ -2,12 +2,15 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Navigate } from "react-router-dom";
 import EquipmentPage from "./pages/equipmentPage";
 import RegisterPage from "./pages/RegisterPage";
+import HomePage from "./pages/HomePage";
 //import MembersPage from "./pages/Membership/MemberPage";
 
 function App() {
   return (
     <Router>
       <Routes>
+        {/*Home Route*/}
+        <Route path="/" element={<HomePage />} />
 
         {/*Equipment Routes*/}
         <Route path="/equipment/*" element={<EquipmentPage />} />
@@ -17,8 +20,7 @@ function App() {
         {/* <Route path="/members/*" element={<MembersPage />} /> */}
 
         {/*Default Redirect*/}
-        <Route path="*" element={<Navigate to="/equipment" replace />} />
-
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>     
     </Router>
   );

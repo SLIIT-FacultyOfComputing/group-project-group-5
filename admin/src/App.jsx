@@ -3,6 +3,7 @@ import { Navigate } from "react-router-dom";
 import RegisterPage from "./pages/RegisterPage";
 import HomePage from "./pages/HomePage";
 import MemberPage from "./pages/Membership/MemberPage";
+import LoginPage from "./pages/LoginPage";
 
 function App() {
   return (
@@ -11,8 +12,11 @@ function App() {
         {/*Home Route*/}
         <Route path="/" element={<HomePage />} />
 
-        {/*Member Routes*/}
+        {/*Auth Routes*/}
+        <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+
+        {/*Member Routes*/}
         <Route path="/members/*" element={<MemberPage />} />
 
         {/*Default Redirect*/}

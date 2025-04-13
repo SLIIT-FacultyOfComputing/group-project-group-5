@@ -13,9 +13,15 @@ const RegisterPage = () => {
     confirmPassword: '',
     phoneNumber: '',
     address: '',
-    dateOfBirth: ''
+    dateOfBirth: '',
+    membershipType: 'BASIC', // Default membership type
+    emergencyContact: '',
+    fitnessGoals: '',
+    medicalConditions: '',
+    preferredWorkoutTime: ''
   });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -27,18 +33,36 @@ const RegisterPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setLoading(true);
     
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
+      setLoading(false);
       return;
     }
 
     try {
-      // TODO: Implement API call to register user
-      console.log('Registration data:', formData);
-      navigate('/members'); // Redirect to members page after successful registration
+      const response = await fetch('http://localhost:8090/api/members/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Registration failed');
+      }
+
+      const data = await response.json();
+      console.log('Registration successful:', data);
+      navigate('/login'); // Redirect to login page after successful registration
     } catch (err) {
-      setError('Registration failed. Please try again.');
+      setError(err.message || 'Registration failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -46,183 +70,220 @@ const RegisterPage = () => {
     <div className="min-h-screen bg-gray-50 font-sans">
       <Header />
       
-      <div className="container mx-auto px-4 sm:px-6 max-w-full sm:max-w-3xl mt-4 md:mt-6">
-        <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg sm:shadow-xl overflow-hidden border border-gray-100">
-          <div className="bg-gradient-to-r from-rose-700 to-rose-500 p-5 sm:p-6 md:p-8 relative">
-            <div className="absolute top-0 right-0 -mt-6 -mr-6 w-16 sm:w-20 md:w-24 h-16 sm:h-20 md:h-24 rounded-full bg-rose-300 bg-opacity-20 backdrop-blur-sm"></div>
-            <div className="absolute bottom-0 left-0 -mb-4 -ml-4 w-10 sm:w-12 md:w-16 h-10 sm:h-12 md:h-16 rounded-full bg-white bg-opacity-10"></div>
-            
-            <div className="relative">
-              <div className="flex items-center mb-2 sm:mb-3">
-                <div className="bg-white bg-opacity-25 p-1.5 sm:p-2 rounded-lg mr-2 sm:mr-3 shadow-inner">
-                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-red" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
-                  </svg>
-                </div>
-                <h1 className="text-xl sm:text-2xl font-bold text-white drop-shadow-sm">
-                  Create New Account
-                </h1>
-              </div>
-              <p className="text-rose-100 text-sm sm:text-base max-w-md">
-                Fill out the form below to create a new member account.
-              </p>
+      <div className="container mx-auto px-4 sm:px-6 py-8">
+        <div className="max-w-md mx-auto">
+          <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-rose-700 to-rose-500 p-6">
+              <h1 className="text-2xl font-bold text-white">Member Registration</h1>
+              <p className="text-rose-100">Join our fitness community</p>
             </div>
-          </div>
 
-          <div className="p-4 sm:p-6 md:p-8">
-            {error && (
-              <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-                <div className="flex items-center">
-                  <svg className="w-5 h-5 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                  </svg>
-                  <span className="text-red-700">{error}</span>
+            {/* Form */}
+            <div className="p-6">
+              {error && (
+                <div className="mb-4 p-4 bg-red-50 text-red-700 rounded-lg">
+                  {error}
                 </div>
-              </div>
-            )}
+              )}
 
-            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5 sm:space-y-2">
-                  <label htmlFor="firstName" className="block text-xs sm:text-sm font-medium text-gray-700 flex items-center">
-                    First Name 
-                    <span className="text-rose-500 ml-1">*</span>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      First Name
+                    </label>
+                    <input
+                      type="text"
+                      name="firstName"
+                      value={formData.firstName}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Last Name
+                    </label>
+                    <input
+                      type="text"
+                      name="lastName"
+                      value={formData.lastName}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      name="password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Confirm Password
+                    </label>
+                    <input
+                      type="password"
+                      name="confirmPassword"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Phone Number
+                  </label>
+                  <input
+                    type="tel"
+                    name="phoneNumber"
+                    value={formData.phoneNumber}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Address
                   </label>
                   <input
                     type="text"
-                    id="firstName"
-                    name="firstName"
-                    value={formData.firstName}
+                    name="address"
+                    value={formData.address}
                     onChange={handleChange}
-                    required
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white border border-gray-300 text-gray-900 text-xs sm:text-sm rounded-lg focus:ring-rose-500 focus:border-rose-500 block transition-all duration-200 shadow-sm hover:border-gray-400"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
                   />
                 </div>
 
-                <div className="space-y-1.5 sm:space-y-2">
-                  <label htmlFor="lastName" className="block text-xs sm:text-sm font-medium text-gray-700 flex items-center">
-                    Last Name 
-                    <span className="text-rose-500 ml-1">*</span>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Date of Birth
+                  </label>
+                  <input
+                    type="date"
+                    name="dateOfBirth"
+                    value={formData.dateOfBirth}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Membership Type
+                  </label>
+                  <select
+                    name="membershipType"
+                    value={formData.membershipType}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                  >
+                    <option value="BASIC">Basic</option>
+                    <option value="PREMIUM">Premium</option>
+                    <option value="VIP">VIP</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Emergency Contact
                   </label>
                   <input
                     type="text"
-                    id="lastName"
-                    name="lastName"
-                    value={formData.lastName}
+                    name="emergencyContact"
+                    value={formData.emergencyContact}
                     onChange={handleChange}
-                    required
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white border border-gray-300 text-gray-900 text-xs sm:text-sm rounded-lg focus:ring-rose-500 focus:border-rose-500 block transition-all duration-200 shadow-sm hover:border-gray-400"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
                   />
                 </div>
-              </div>
 
-              <div className="space-y-1.5 sm:space-y-2">
-                <label htmlFor="email" className="block text-xs sm:text-sm font-medium text-gray-700 flex items-center">
-                  Email 
-                  <span className="text-rose-500 ml-1">*</span>
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white border border-gray-300 text-gray-900 text-xs sm:text-sm rounded-lg focus:ring-rose-500 focus:border-rose-500 block transition-all duration-200 shadow-sm hover:border-gray-400"
-                />
-              </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Fitness Goals
+                  </label>
+                  <textarea
+                    name="fitnessGoals"
+                    value={formData.fitnessGoals}
+                    onChange={handleChange}
+                    rows="3"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                  />
+                </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5 sm:space-y-2">
-                  <label htmlFor="password" className="block text-xs sm:text-sm font-medium text-gray-700 flex items-center">
-                    Password 
-                    <span className="text-rose-500 ml-1">*</span>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Medical Conditions
+                  </label>
+                  <textarea
+                    name="medicalConditions"
+                    value={formData.medicalConditions}
+                    onChange={handleChange}
+                    rows="3"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Preferred Workout Time
                   </label>
                   <input
-                    type="password"
-                    id="password"
-                    name="password"
-                    value={formData.password}
+                    type="text"
+                    name="preferredWorkoutTime"
+                    value={formData.preferredWorkoutTime}
                     onChange={handleChange}
-                    required
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white border border-gray-300 text-gray-900 text-xs sm:text-sm rounded-lg focus:ring-rose-500 focus:border-rose-500 block transition-all duration-200 shadow-sm hover:border-gray-400"
+                    placeholder="e.g., Morning, Evening"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
                   />
                 </div>
 
-                <div className="space-y-1.5 sm:space-y-2">
-                  <label htmlFor="confirmPassword" className="block text-xs sm:text-sm font-medium text-gray-700 flex items-center">
-                    Confirm Password 
-                    <span className="text-rose-500 ml-1">*</span>
-                  </label>
-                  <input
-                    type="password"
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white border border-gray-300 text-gray-900 text-xs sm:text-sm rounded-lg focus:ring-rose-500 focus:border-rose-500 block transition-all duration-200 shadow-sm hover:border-gray-400"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1.5 sm:space-y-2">
-                <label htmlFor="phoneNumber" className="block text-xs sm:text-sm font-medium text-gray-700 flex items-center">
-                  Phone Number 
-                  <span className="text-rose-500 ml-1">*</span>
-                </label>
-                <input
-                  type="tel"
-                  id="phoneNumber"
-                  name="phoneNumber"
-                  value={formData.phoneNumber}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white border border-gray-300 text-gray-900 text-xs sm:text-sm rounded-lg focus:ring-rose-500 focus:border-rose-500 block transition-all duration-200 shadow-sm hover:border-gray-400"
-                />
-              </div>
-
-              <div className="space-y-1.5 sm:space-y-2">
-                <label htmlFor="address" className="block text-xs sm:text-sm font-medium text-gray-700 flex items-center">
-                  Address 
-                  <span className="text-rose-500 ml-1">*</span>
-                </label>
-                <textarea
-                  id="address"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleChange}
-                  required
-                  rows="3"
-                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white border border-gray-300 text-gray-900 text-xs sm:text-sm rounded-lg focus:ring-rose-500 focus:border-rose-500 block transition-all duration-200 shadow-sm hover:border-gray-400"
-                />
-              </div>
-
-              <div className="space-y-1.5 sm:space-y-2">
-                <label htmlFor="dateOfBirth" className="block text-xs sm:text-sm font-medium text-gray-700 flex items-center">
-                  Date of Birth 
-                  <span className="text-rose-500 ml-1">*</span>
-                </label>
-                <input
-                  type="date"
-                  id="dateOfBirth"
-                  name="dateOfBirth"
-                  value={formData.dateOfBirth}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white border border-gray-300 text-gray-900 text-xs sm:text-sm rounded-lg focus:ring-rose-500 focus:border-rose-500 block transition-all duration-200 shadow-sm hover:border-gray-400"
-                />
-              </div>
-
-              <div className="pt-4">
                 <button
                   type="submit"
-                  className="w-full px-4 py-3 bg-gradient-to-r from-rose-700 to-rose-500 text-white text-sm font-medium rounded-lg shadow-lg hover:from-rose-600 hover:to-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
+                  disabled={loading}
+                  className={`w-full px-4 py-3 rounded-lg font-medium transition-colors ${
+                    loading
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      : 'bg-rose-500 text-white hover:bg-rose-600'
+                  }`}
                 >
-                  Create Account
+                  {loading ? 'Registering...' : 'Register'}
                 </button>
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
         </div>
       </div>

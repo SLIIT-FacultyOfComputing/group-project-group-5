@@ -1,0 +1,53 @@
+package com.example.Backend.controller;
+
+import com.example.Backend.dto.MemberRegistrationDTO;
+import com.example.Backend.entity.Member;
+import com.example.Backend.service.MemberService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/members")
+@CrossOrigin(origins = "http://localhost:5173") // Allow frontend to access
+public class MemberController {
+
+    @Autowired
+    private MemberService memberService;
+
+    @PostMapping("/register")
+    public ResponseEntity<Member> registerMember(@RequestBody MemberRegistrationDTO registrationDTO) {
+        try {
+            Member member = memberService.registerMember(registrationDTO);
+            return ResponseEntity.ok(member);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Member>> getAllMembers() {
+        return ResponseEntity.ok(memberService.getAllMembers());
+    }
+
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<Member>> getMembersByStatus(@PathVariable String status) {
+        return ResponseEntity.ok(memberService.getMembersByStatus(status));
+    }
+
+    @GetMapping("/type/{membershipType}")
+    public ResponseEntity<List<Member>> getMembersByType(@PathVariable String membershipType) {
+        return ResponseEntity.ok(memberService.getMembersByMembershipType(membershipType));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Member> getMemberById(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(memberService.getMemberById(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+}

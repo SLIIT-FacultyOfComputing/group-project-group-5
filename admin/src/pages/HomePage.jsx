@@ -24,12 +24,13 @@ const HomePage = () => {
 
   // Mock user role - replace with actual authentication logic
   useEffect(() => {
-    // TODO: Replace with actual authentication check
-    const role = localStorage.getItem('userRole') || 'guest';
+    // Check if user is logged in
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    const role = isLoggedIn ? localStorage.getItem('userRole') : 'guest';
     setUserRole(role);
   }, []);
 
-  const renderHeroSection = () => {
+  const renderContent = () => {
     switch (userRole) {
       case 'admin':
         return (
@@ -38,26 +39,20 @@ const HomePage = () => {
               Welcome, <span className="text-rose-500">Admin</span>
             </h1>
             <p className="text-xl sm:text-2xl text-gray-200 mb-8 max-w-3xl mx-auto drop-shadow-md">
-              Manage your gym efficiently with GYMSYNC
+              Manage your gym with ease
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link
-                to="/members/list"
+                to="/equipment/equipment-list"
                 className="px-8 py-4 bg-gradient-to-r from-rose-700 to-rose-500 text-white text-lg font-semibold rounded-lg shadow-lg hover:from-rose-600 hover:to-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105 active:scale-95"
               >
-                Manage Members
+                Manage Equipment
               </Link>
               <Link
-                to="/members/invoices"
+                to="/register"
                 className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white text-lg font-semibold rounded-lg border border-white/20 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105 active:scale-95"
               >
-                Generate Invoices
-              </Link>
-              <Link
-                to="/members/attendance"
-                className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white text-lg font-semibold rounded-lg border border-white/20 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105 active:scale-95"
-              >
-                View Attendance
+                Register Member
               </Link>
             </div>
           </div>
@@ -67,29 +62,23 @@ const HomePage = () => {
         return (
           <div className="max-w-7xl mx-auto text-center">
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 drop-shadow-lg">
-              Welcome to <span className="text-rose-500">GYMSYNC</span>
+              Welcome back, <span className="text-rose-500">Member</span>
             </h1>
             <p className="text-xl sm:text-2xl text-gray-200 mb-8 max-w-3xl mx-auto drop-shadow-md">
-              Your fitness journey starts here
+              Track your fitness journey
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link
-                to="/members/profile"
+                to="/members"
                 className="px-8 py-4 bg-gradient-to-r from-rose-700 to-rose-500 text-white text-lg font-semibold rounded-lg shadow-lg hover:from-rose-600 hover:to-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105 active:scale-95"
               >
-                View Profile
+                View Dashboard
               </Link>
               <Link
-                to="/members/workouts"
+                to="/members/profile"
                 className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white text-lg font-semibold rounded-lg border border-white/20 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105 active:scale-95"
               >
-                My Workout Plan
-              </Link>
-              <Link
-                to="/members/qr"
-                className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white text-lg font-semibold rounded-lg border border-white/20 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105 active:scale-95"
-              >
-                My QR Code
+                My Profile
               </Link>
             </div>
           </div>
@@ -238,7 +227,7 @@ const HomePage = () => {
       <main className="relative z-10">
         {/* Hero Section */}
         <section className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 sm:px-6">
-          {renderHeroSection()}
+          {renderContent()}
         </section>
 
         {/* Stats Section */}

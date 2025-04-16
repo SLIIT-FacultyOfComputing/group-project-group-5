@@ -18,6 +18,8 @@ public class MemberController {
     @Autowired
     private MemberService memberService;
 
+    // Handles new member registration and returns the created member or bad request
+    // if registration fails
     @PostMapping("/register")
     public ResponseEntity<Member> registerMember(@RequestBody MemberRegistrationDTO registrationDTO) {
         try {

@@ -1,18 +1,46 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
+import { Routes, Route, Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import Header from "../../components/header";
 import Footer from "../../components/Footer";
 import MemberList from './MemberList';
 import MemberProfile from './MemberProfile';
+import MemberDashboard from '../../components/MemberDashboard';
 import AttendanceTracker from './AttendanceTracker';
 import WorkoutPlans from './WorkoutPlans';
 import Invoices from './Invoices';
+import axios from 'axios';
 
 const MemberPage = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const currentPath = location.pathname;
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [memberId, setMemberId] = useState(null);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+
+      try {
+        const response = await axios.get('http://localhost:8090/api/members/profile', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setMemberId(response.data.id);
+      } catch (error) {
+        console.error('Error fetching member profile:', error);
+        navigate('/login');
+      }
+    };
+
+    checkAuth();
+  }, [navigate]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -27,6 +55,10 @@ const MemberPage = () => {
       document.removeEventListener('scroll', handleScroll);
     };
   }, [scrolled]);
+
+  if (!memberId) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
@@ -61,6 +93,20 @@ const MemberPage = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
               </svg>
               <span className="whitespace-nowrap">Member List</span>
+            </Link>
+            <Link 
+              to={`/members/dashboard/${memberId}`} 
+              className={`px-4 sm:px-5 md:px-7 py-3 md:py-4 text-sm font-medium flex items-center transition-all duration-300 group ${
+                currentPath === `/members/dashboard/${memberId}` 
+                  ? 'bg-gradient-to-r from-rose-700 to-rose-500 text-white shadow-md'
+                  : 'text-gray-700 hover:bg-rose-50 hover:text-rose-700'
+              }`}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <svg className="w-5 h-5 mr-2 transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+              </svg>
+              <span className="whitespace-nowrap">Dashboard</span>
             </Link>
             <Link 
               to="/members/attendance" 
@@ -110,10 +156,11 @@ const MemberPage = () => {
             <Routes>
               <Route path="/list" element={<MemberList />} />
               <Route path="/profile/:id" element={<MemberProfile />} />
+              <Route path="/dashboard/:id" element={<MemberDashboard />} />
               <Route path="/attendance" element={<AttendanceTracker />} />
               <Route path="/workouts" element={<WorkoutPlans />} />
               <Route path="/invoices" element={<Invoices />} />
-              <Route path="/" element={<Navigate to="/members/list" replace />} />
+              <Route path="/" element={<Navigate to={`/members/dashboard/${memberId}`} replace />} />
             </Routes>
           </div>
         </div>

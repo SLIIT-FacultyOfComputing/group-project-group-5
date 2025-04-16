@@ -1,33 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import axios from 'axios';
 
 const MemberProfile = () => {
   const { id } = useParams();
   const [isEditing, setIsEditing] = useState(false);
-  const [member, setMember] = useState({
-    id: 1,
-    name: 'John Doe',
-    email: 'john@example.com',
-    phone: '123-456-7890',
-    membershipType: 'Premium',
-    status: 'Active',
-    joinDate: '2024-01-15',
-    lastVisit: '2024-03-20',
-    address: '123 Main St, City, State 12345',
-    emergencyContact: 'Jane Doe (Spouse) - 098-765-4321',
-    fitnessGoals: 'Weight loss and muscle gain',
-    medicalConditions: 'None',
-    preferredWorkoutTime: 'Morning',
-    membershipHistory: [
-      { type: 'Basic', startDate: '2023-01-15', endDate: '2023-06-15' },
-      { type: 'Premium', startDate: '2023-06-16', endDate: 'Present' }
-    ],
-    attendance: {
-      totalVisits: 45,
-      lastMonth: 12,
-      streak: 5
-    }
-  });
+  const [member, setMember] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchMemberProfile = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`http://localhost:8090/api/members/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setMember(response.data);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching member profile:', error);
+        setError('Failed to load member profile');
+        setLoading(false);
+      }
+    };
+
+    fetchMemberProfile();
+  }, [id]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -37,11 +38,33 @@ const MemberProfile = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Implement API call to update member
-    setIsEditing(false);
+    try {
+      const token = localStorage.getItem('token');
+      await axios.put(`http://localhost:8090/api/members/${id}`, member, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error updating member profile:', error);
+      setError('Failed to update member profile');
+    }
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-red-500">{error}</div>;
+  }
+
+  if (!member) {
+    return <div>Member not found</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -83,12 +106,12 @@ const MemberProfile = () => {
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="flex flex-col items-center">
               <div className="h-24 w-24 rounded-full bg-gradient-to-r from-rose-500 to-rose-600 flex items-center justify-center text-white text-3xl font-bold mb-4">
-                {member.name.charAt(0)}
+                {member.firstName.charAt(0)}
               </div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">{member.name}</h2>
+              <h2 className="text-xl font-semibold text-gray-900 mb-2">{member.firstName} {member.lastName}</h2>
               <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                member.status === 'Active' ? 'bg-green-100 text-green-800' :
-                member.status === 'Inactive' ? 'bg-red-100 text-red-800' :
+                member.status === 'ACTIVE' ? 'bg-green-100 text-green-800' :
+                member.status === 'INACTIVE' ? 'bg-red-100 text-red-800' :
                 'bg-yellow-100 text-yellow-800'
               }`}>
                 {member.status}
@@ -105,7 +128,7 @@ const MemberProfile = () => {
               </div>
               <div>
                 <h3 className="text-sm font-medium text-gray-500">Last Visit</h3>
-                <p className="mt-1 text-sm text-gray-900">{member.lastVisit}</p>
+                <p className="mt-1 text-sm text-gray-900">{member.lastVisit || 'Never'}</p>
               </div>
             </div>
           </div>
@@ -132,8 +155,8 @@ const MemberProfile = () => {
                   <label className="block text-sm font-medium text-gray-700">Phone</label>
                   <input
                     type="tel"
-                    name="phone"
-                    value={member.phone}
+                    name="phoneNumber"
+                    value={member.phoneNumber}
                     onChange={handleInputChange}
                     disabled={!isEditing}
                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-rose-500 focus:border-rose-500 sm:text-sm disabled:bg-gray-100"
@@ -199,45 +222,6 @@ const MemberProfile = () => {
                 </div>
               </div>
             </form>
-          </div>
-
-          {/* Attendance Stats */}
-          <div className="mt-6 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Attendance Statistics</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="bg-gray-50 rounded-lg p-4">
-                <div className="text-2xl font-bold text-rose-600">{member.attendance.totalVisits}</div>
-                <div className="text-sm text-gray-500">Total Visits</div>
-              </div>
-              <div className="bg-gray-50 rounded-lg p-4">
-                <div className="text-2xl font-bold text-rose-600">{member.attendance.lastMonth}</div>
-                <div className="text-sm text-gray-500">Last Month</div>
-              </div>
-              <div className="bg-gray-50 rounded-lg p-4">
-                <div className="text-2xl font-bold text-rose-600">{member.attendance.streak}</div>
-                <div className="text-sm text-gray-500">Current Streak</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Membership History */}
-          <div className="mt-6 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Membership History</h3>
-            <div className="space-y-4">
-              {member.membershipHistory.map((history, index) => (
-                <div key={index} className="flex items-center justify-between py-2 border-b border-gray-200 last:border-0">
-                  <div>
-                    <div className="font-medium text-gray-900">{history.type}</div>
-                    <div className="text-sm text-gray-500">
-                      {history.startDate} - {history.endDate}
-                    </div>
-                  </div>
-                  <span className="px-2 py-1 text-xs font-medium rounded-full bg-rose-100 text-rose-800">
-                    {history.endDate === 'Present' ? 'Current' : 'Past'}
-                  </span>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </div>

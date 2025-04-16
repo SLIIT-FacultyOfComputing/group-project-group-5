@@ -63,4 +63,19 @@ public class MemberController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/profile")
+    public ResponseEntity<Member> getMemberProfile() {
+        try {
+            // For now, we'll return the first member as a placeholder
+            // In a real application, you would get the authenticated user's ID
+            List<Member> members = memberService.getAllMembers();
+            if (members.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(members.get(0));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

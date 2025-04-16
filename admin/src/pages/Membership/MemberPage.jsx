@@ -29,7 +29,12 @@ const MemberPage = () => {
             Authorization: `Bearer ${token}`
           }
         });
-        setMemberId(response.data.id);
+        const memberId = response.data.id;
+        setMemberId(memberId);
+        
+        if (location.pathname === '/members') {
+          navigate(`/members/dashboard/${memberId}`);
+        }
       } catch (error) {
         console.error('Error fetching member profile:', error);
         navigate('/login');
@@ -37,7 +42,7 @@ const MemberPage = () => {
     };
 
     checkAuth();
-  }, [navigate]);
+  }, [navigate, location.pathname]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -80,7 +85,7 @@ const MemberPage = () => {
             <Link 
               to={`/members/dashboard/${memberId}`} 
               className={`px-4 sm:px-5 md:px-7 py-3 md:py-4 text-sm font-medium flex items-center transition-all duration-300 group ${
-                currentPath === `/members/dashboard/${memberId}` 
+                currentPath.startsWith(`/members/dashboard/`) 
                   ? 'bg-gradient-to-r from-rose-700 to-rose-500 text-white shadow-md'
                   : 'text-gray-700 hover:bg-rose-50 hover:text-rose-700'
               }`}
@@ -92,9 +97,9 @@ const MemberPage = () => {
               <span className="whitespace-nowrap">Dashboard</span>
             </Link>
             <Link 
-              to="/members/workouts" 
+              to={`/members/workouts/${memberId}`} 
               className={`px-4 sm:px-5 md:px-7 py-3 md:py-4 text-sm font-medium flex items-center transition-all duration-300 group ${
-                currentPath === '/members/workouts' 
+                currentPath.startsWith('/members/workouts') 
                   ? 'bg-gradient-to-r from-rose-700 to-rose-500 text-white shadow-md'
                   : 'text-gray-700 hover:bg-rose-50 hover:text-rose-700'
               }`}
@@ -106,9 +111,9 @@ const MemberPage = () => {
               <span className="whitespace-nowrap">Workout Plans</span>
             </Link>
             <Link 
-              to="/members/qrcode" 
+              to={`/members/qrcode/${memberId}`} 
               className={`px-4 sm:px-5 md:px-7 py-3 md:py-4 text-sm font-medium flex items-center transition-all duration-300 group ${
-                currentPath === '/members/qrcode' 
+                currentPath.startsWith('/members/qrcode') 
                   ? 'bg-gradient-to-r from-rose-700 to-rose-500 text-white shadow-md'
                   : 'text-gray-700 hover:bg-rose-50 hover:text-rose-700'
               }`}
@@ -124,8 +129,8 @@ const MemberPage = () => {
           <div className="p-4 sm:p-6">
             <Routes>
               <Route path="/dashboard/:id" element={<MemberDashboard />} />
-              <Route path="/workouts" element={<WorkoutPlans />} />
-              <Route path="/qrcode" element={<QRCodePage />} />
+              <Route path="/workouts/:id" element={<WorkoutPlans />} />
+              <Route path="/qrcode/:id" element={<QRCodePage />} />
               <Route path="/" element={<Navigate to={`/members/dashboard/${memberId}`} replace />} />
             </Routes>
           </div>

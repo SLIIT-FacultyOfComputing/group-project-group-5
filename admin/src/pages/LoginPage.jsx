@@ -44,7 +44,8 @@ const LoginPage = () => {
       localStorage.setItem('userId', data.member.id);
       localStorage.setItem('userName', `${data.member.firstName} ${data.member.lastName}`);
       
-      navigate('/members');
+      // Navigate to the member's dashboard with their specific ID
+      navigate(`/members/dashboard/${data.member.id}`);
     } catch (err) {
       setError('Invalid email or password');
     }

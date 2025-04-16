@@ -61,7 +61,7 @@ const MemberList = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
-      <Header />
+      {/* <Header /> */}
       
       <div className="container mx-auto px-4 sm:px-6 py-8">
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
@@ -222,7 +222,7 @@ const MemberList = () => {
         </div>
       </div>
 
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

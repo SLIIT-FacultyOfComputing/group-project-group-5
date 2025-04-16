@@ -54,7 +54,10 @@ public class MemberService {
     }
 
     public List<Member> getAllMembers() {
-        return memberRepository.findAll();
+        System.out.println("Fetching all members...");
+        List<Member> members = memberRepository.findAll();
+        System.out.println("Found " + members.size() + " members");
+        return members;
     }
 
     public List<Member> getMembersByStatus(String status) {

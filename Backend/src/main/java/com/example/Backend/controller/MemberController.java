@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/members")
-@CrossOrigin(origins = "http://localhost:5173") // Allow frontend to access
+@CrossOrigin(origins = "*") // Allow all origins for testing
 public class MemberController {
 
     @Autowired

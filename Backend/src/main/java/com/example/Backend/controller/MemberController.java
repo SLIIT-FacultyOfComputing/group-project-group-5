@@ -1,9 +1,11 @@
 package com.example.Backend.controller;
 
 import com.example.Backend.dto.LoginRequest;
+import com.example.Backend.dto.LoginResponse;
 import com.example.Backend.dto.MemberRegistrationDTO;
 import com.example.Backend.entity.Member;
 import com.example.Backend.service.MemberService;
+import com.example.Backend.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +19,9 @@ public class MemberController {
 
     @Autowired
     private MemberService memberService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     // Handles new member registration and returns the created member or bad request
     // if registration fails
@@ -34,7 +39,9 @@ public class MemberController {
     public ResponseEntity<?> loginMember(@RequestBody LoginRequest loginRequest) {
         try {
             Member member = memberService.authenticateMember(loginRequest.getEmail(), loginRequest.getPassword());
-            return ResponseEntity.ok(member);
+            String token = jwtUtil.generateToken(member.getEmail());
+            LoginResponse response = new LoginResponse(member, token);
+            return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             return ResponseEntity.status(401).body(e.getMessage());
         }

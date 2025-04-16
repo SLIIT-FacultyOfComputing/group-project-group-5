@@ -1,6 +1,8 @@
 package com.example.Backend.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
 @Entity
 public class Staff {
@@ -10,6 +12,12 @@ public class Staff {
     private Long id;
 
     private String name;
+
+    @NotNull(message = "NIC cannot be null")
+    @Pattern(regexp = "^[A-Z0-9]{10,12}$", message = "Invalid NIC format")
+    @Column(unique = true) // Enforces uniqueness at the database level
+    private String NIC; // National Identity Card number
+
     private String role; // like "trainer", "receptionist", etc.
     private String phone;
     private String email;
@@ -30,6 +38,13 @@ public class Staff {
     }
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getNIC() {
+        return NIC;
+    }
+    public void setNIC(String NIC) {
+        this.NIC = NIC;
     }
 
     public String getRole() {

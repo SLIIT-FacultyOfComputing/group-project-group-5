@@ -37,6 +37,7 @@ public class StaffService {
     public Staff updateStaff(Long id, Staff updatedStaff) {
         return staffRepository.findById(id).map(staff -> {
             staff.setName(updatedStaff.getName());
+            staff.setNIC(updatedStaff.getNIC());
             staff.setRole(updatedStaff.getRole());
             staff.setPhone(updatedStaff.getPhone());
             staff.setEmail(updatedStaff.getEmail());

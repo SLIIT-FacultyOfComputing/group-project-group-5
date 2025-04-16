@@ -2,6 +2,7 @@ package com.example.Backend.controller;
 
 import com.example.Backend.model.Staff;
 import com.example.Backend.service.StaffService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +18,7 @@ public class StaffController {
     private StaffService staffService;
 
     @PostMapping
-    public Staff addStaff(@RequestBody Staff staff) {
+    public Staff addStaff(@Valid @RequestBody Staff staff) {
         return staffService.addStaff(staff);
     }
 
@@ -42,7 +43,7 @@ public class StaffController {
     }
 
     @PutMapping("/{id}")
-    public Staff updateStaff(@PathVariable Long id, @RequestBody Staff updatedStaff) {
+    public Staff updateStaff(@PathVariable Long id, @Valid @RequestBody Staff updatedStaff) {
         return staffService.updateStaff(id, updatedStaff);
     }
 }

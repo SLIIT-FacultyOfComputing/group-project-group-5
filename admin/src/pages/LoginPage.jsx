@@ -24,7 +24,7 @@ const LoginPage = () => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:8080/api/members/login', {
+      const response = await fetch('http://localhost:8090/api/members/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

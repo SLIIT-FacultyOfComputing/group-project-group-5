@@ -1,5 +1,6 @@
 package com.example.Backend.controller;
 
+import com.example.Backend.dto.LoginRequest;
 import com.example.Backend.dto.MemberRegistrationDTO;
 import com.example.Backend.entity.Member;
 import com.example.Backend.service.MemberService;
@@ -24,6 +25,16 @@ public class MemberController {
             return ResponseEntity.ok(member);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> loginMember(@RequestBody LoginRequest loginRequest) {
+        try {
+            Member member = memberService.authenticateMember(loginRequest.getEmail(), loginRequest.getPassword());
+            return ResponseEntity.ok(member);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(401).body(e.getMessage());
         }
     }
 

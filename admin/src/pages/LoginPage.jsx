@@ -24,11 +24,25 @@ const LoginPage = () => {
     setError('');
 
     try {
-      // TODO: Implement actual login logic
-      console.log('Login attempt:', formData);
+      const response = await fetch('http://localhost:8080/api/members/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Invalid email or password');
+      }
+
+      const data = await response.json();
       
-      // Mock successful login
-      localStorage.setItem('userRole', 'member'); // or 'admin' based on user type
+      // Store user data in localStorage
+      localStorage.setItem('userRole', data.role || 'member');
+      localStorage.setItem('userId', data.id);
+      localStorage.setItem('userName', data.name);
+      
       navigate('/');
     } catch (err) {
       setError('Invalid email or password');

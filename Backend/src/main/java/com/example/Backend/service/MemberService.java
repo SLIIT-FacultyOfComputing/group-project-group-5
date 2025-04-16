@@ -44,6 +44,15 @@ public class MemberService {
         return memberRepository.save(member);
     }
 
+    public Member authenticateMember(String email, String password) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
+        if (!passwordEncoder.matches(password, member.getPassword())) {
+            throw new RuntimeException("Invalid email or password");
+        }
+        return member;
+    }
+
     public List<Member> getAllMembers() {
         return memberRepository.findAll();
     }

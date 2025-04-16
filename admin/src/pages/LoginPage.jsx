@@ -39,11 +39,12 @@ const LoginPage = () => {
       const data = await response.json();
       
       // Store user data in localStorage
-      localStorage.setItem('userRole', data.role || 'member');
-      localStorage.setItem('userId', data.id);
-      localStorage.setItem('userName', data.name);
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('userRole', 'member');
+      localStorage.setItem('userId', data.member.id);
+      localStorage.setItem('userName', `${data.member.firstName} ${data.member.lastName}`);
       
-      navigate('/');
+      navigate('/members');
     } catch (err) {
       setError('Invalid email or password');
     }

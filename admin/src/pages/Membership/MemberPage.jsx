@@ -18,13 +18,14 @@ const MemberPage = () => {
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem('token');
-      if (!token) {
+      const storedMemberId = localStorage.getItem('userId');
+      if (!token || !storedMemberId) {
         navigate('/login');
         return;
       }
 
       try {
-        const response = await axios.get('http://localhost:8090/api/members/profile', {
+        const response = await axios.get(`http://localhost:8090/api/members/${storedMemberId}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -63,10 +64,10 @@ const MemberPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans">
+    <div className="flex flex-col min-h-screen bg-gray-50 font-sans">
       <Header scrolled={scrolled} />
       
-      <div className="container mx-auto px-3 sm:px-4 md:px-6 mt-4 md:mt-6">
+      <div className="flex-grow container mx-auto px-3 sm:px-4 md:px-6 mt-4 md:mt-6">
         <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
           <div className="md:hidden p-4 border-b border-gray-100">
             <button 

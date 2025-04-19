@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 const WorkoutPlans = () => {
+  const { id: memberId } = useParams();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [showAddPlan, setShowAddPlan] = useState(false);
@@ -49,7 +51,7 @@ const WorkoutPlans = () => {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 className="text-2xl font-bold text-gray-900">Workout Plans</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Workout Plans for Member ID: {memberId}</h1>
         <button
           onClick={() => setShowAddPlan(true)}
           className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-700 hover:to-rose-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500 transition-all duration-300"

@@ -2,9 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import axios from 'axios';
 import html2canvas from 'html2canvas';
+import { useParams } from 'react-router-dom';
 
 const QRCodePage = () => {
-  const [memberId, setMemberId] = useState(null);
+  const { id: memberId } = useParams();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const qrCodeRef = useRef(null);
@@ -19,22 +20,21 @@ const QRCodePage = () => {
       }
 
       try {
-        const response = await axios.get('http://localhost:8090/api/members/profile', {
+        const response = await axios.get(`http://localhost:8090/api/members/${memberId}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
         });
-        setMemberId(response.data.id);
+        setLoading(false);
       } catch (err) {
         setError('Failed to fetch member profile');
         console.error('Error fetching member profile:', err);
-      } finally {
         setLoading(false);
       }
     };
 
     fetchMemberId();
-  }, []);
+  }, [memberId]);
 
   const handleDownload = async () => {
     if (!qrCodeRef.current) return;
@@ -67,14 +67,6 @@ const QRCodePage = () => {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-red-500">{error}</div>
-      </div>
-    );
-  }
-
-  if (!memberId) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-gray-500">No member ID found</div>
       </div>
     );
   }

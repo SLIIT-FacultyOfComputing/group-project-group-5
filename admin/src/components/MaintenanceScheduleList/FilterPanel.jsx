@@ -135,7 +135,7 @@ const FilterPanel = ({
             <div className="flex space-x-2">
               <div className="relative rounded-md shadow-sm flex-1">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <span className="text-gray-500 sm:text-sm">$</span>
+                  <span className="text-gray-500 sm:text-sm">Rs:</span>
                 </div>
                 <input
                   type="number"
@@ -147,7 +147,7 @@ const FilterPanel = ({
               </div>
               <div className="relative rounded-md shadow-sm flex-1">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <span className="text-gray-500 sm:text-sm">$</span>
+                  <span className="text-gray-500 sm:text-sm">Rs:</span>
                 </div>
                 <input
                   type="number"

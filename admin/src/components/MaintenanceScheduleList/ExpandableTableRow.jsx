@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import StatusTimeline from './StatusTimeline';
 
-const ExpandableTableRow = ({ schedule, onDelete, onView, onEdit, children }) => {
+const ExpandableTableRow = ({ schedule, onDelete, onEdit, children }) => {
   const [expanded, setExpanded] = useState(false);
-  
+
   return (
     <>
       <tr 
@@ -20,16 +20,6 @@ const ExpandableTableRow = ({ schedule, onDelete, onView, onEdit, children }) =>
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-            </button>
-            <button
-              onClick={() => onView(schedule.scheduleId)}
-              className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition-colors duration-300 flex items-center justify-center focus:ring-2 focus:ring-blue-300 shadow-sm hover:shadow transform hover:scale-105"
-              title="View Details"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
               </svg>
             </button>
             <button
@@ -75,7 +65,7 @@ const ExpandableTableRow = ({ schedule, onDelete, onView, onEdit, children }) =>
                     <div>
                       <span className="text-gray-500">Cost:</span>
                       <span className="font-medium ml-2 text-gray-800">
-                        ${parseFloat(schedule.maintenanceCost).toFixed(2)}
+                        Rs:{parseFloat(schedule.maintenanceCost).toFixed(2)}
                       </span>
                     </div>
                   </div>
@@ -124,15 +114,6 @@ const ExpandableTableRow = ({ schedule, onDelete, onView, onEdit, children }) =>
                 </div>
               </div>
             </div>
-            
-            <div className="mt-4 flex justify-end">
-              <button
-                onClick={() => onView(schedule.scheduleId)}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              >
-                View Full Details
-              </button>
-            </div>
           </td>
         </tr>
       )}
@@ -143,7 +124,6 @@ const ExpandableTableRow = ({ schedule, onDelete, onView, onEdit, children }) =>
 ExpandableTableRow.propTypes = {
   schedule: PropTypes.object.isRequired,
   onDelete: PropTypes.func.isRequired,
-  onView: PropTypes.func.isRequired,
   onEdit: PropTypes.func.isRequired,
   children: PropTypes.node.isRequired
 };

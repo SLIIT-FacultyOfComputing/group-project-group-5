@@ -260,11 +260,7 @@ const SearchBar = ({
             </button>
             
             <button
-              onClick={() => {
-                if (onAdvancedSearch) {
-                  onAdvancedSearch(!isAdvancedMode);
-                }
-              }}
+              onClick={() => onAdvancedSearch && onAdvancedSearch()}
               className={`flex-shrink-0 px-4 py-2.5 rounded-md text-sm font-medium flex items-center ${
                 isAdvancedMode 
                   ? 'bg-indigo-100 text-indigo-700 border border-indigo-300' 

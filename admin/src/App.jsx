@@ -1,5 +1,5 @@
 import { BrowserRouter as Router } from "react-router-dom";
-import Page from "./pages/index";
+import Page from "./components/index";
 
 function App() {
   return (

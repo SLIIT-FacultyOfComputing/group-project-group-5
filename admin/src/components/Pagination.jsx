@@ -1,116 +1,89 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 const Pagination = ({ 
   currentPage, 
   totalPages, 
-  onPageChange, 
-  totalItems, 
-  itemsPerPage 
+  indexOfFirstItem, 
+  indexOfLastItem, 
+  totalItems,
+  onPageChange 
 }) => {
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-
-  const getPageNumbers = () => {
-    const pageNumbers = [];
-    const maxVisiblePages = 5;
-    
-    if (totalPages <= maxVisiblePages) {
-      for (let i = 1; i <= totalPages; i++) {
-        pageNumbers.push(i);
-      }
-    } else {
-      let startPage = Math.max(currentPage - 2, 1);
-      let endPage = Math.min(startPage + maxVisiblePages - 1, totalPages);
-      
-      if (endPage === totalPages) {
-        startPage = Math.max(endPage - maxVisiblePages + 1, 1);
-      }
-      
-      if (startPage > 1) {
-        pageNumbers.push(1);
-        if (startPage > 2) pageNumbers.push('...');
-      }
-      
-      for (let i = startPage; i <= endPage; i++) {
-        pageNumbers.push(i);
-      }
-      
-      if (endPage < totalPages) {
-        if (endPage < totalPages - 1) pageNumbers.push('...');
-        pageNumbers.push(totalPages);
-      }
-    }
-    
-    return pageNumbers;
-  };
-
   return (
     <div className="mt-6 flex flex-col md:flex-row justify-between items-center">
       <div className="text-sm text-gray-600 mb-4 md:mb-0">
-        Showing <span className="font-medium">{indexOfFirstItem + 1}</span> to{' '}
-        <span className="font-medium">{Math.min(indexOfLastItem, totalItems)}</span> of{' '}
-        <span className="font-medium">{totalItems}</span> items
+        Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, totalItems)} of {totalItems} items
       </div>
-      <div className="flex items-center space-x-2">
+      <div className="flex space-x-2">
+        {/* Previous Button */}
         <button 
           onClick={() => onPageChange(Math.max(currentPage - 1, 1))}
           disabled={currentPage === 1}
-          className={`px-4 py-2 rounded-md ${
+          className={`px-4 py-2 rounded ${
             currentPage === 1 
-            ? 'bg-gray-200 text-gray-500 cursor-not-allowed' 
-            : 'bg-blue-500 text-white hover:bg-blue-600 shadow-sm hover:shadow transition-all duration-200'
+              ? 'bg-gray-200 text-gray-500 cursor-not-allowed' 
+              : 'bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-300 shadow-sm hover:shadow transform hover:-translate-y-0.5'
           }`}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
-          </svg>
+          <span className="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Previous
+          </span>
         </button>
         
+        {/* Page Number Buttons */}
         <div className="hidden md:flex space-x-2">
-          {getPageNumbers().map((page, idx) => (
-            page === '...' ? (
-              <span key={`ellipsis-${idx}`} className="px-3 py-2">...</span>
-            ) : (
+          {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+            let pageNum;
+            if (totalPages <= 5) {
+              pageNum = i + 1;
+            } else if (currentPage <= 3) {
+              pageNum = i + 1;
+            } else if (currentPage >= totalPages - 2) {
+              pageNum = totalPages - 4 + i;
+            } else {
+              pageNum = currentPage - 2 + i;
+            }
+            
+            return (
               <button
-                key={`page-${page}`}
-                onClick={() => onPageChange(page)}
-                className={`px-4 py-2 rounded-md transition-all duration-200 ${
-                  currentPage === page 
-                  ? 'bg-blue-600 text-white shadow' 
-                  : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                key={i}
+                onClick={() => onPageChange(pageNum)}
+                className={`w-10 h-10 rounded-full ${
+                  currentPage === pageNum 
+                    ? 'bg-blue-600 text-white shadow-md' 
+                    : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                } transition-all duration-300 transform ${
+                  currentPage === pageNum ? 'scale-110' : 'hover:scale-105'
                 }`}
               >
-                {page}
+                {pageNum}
               </button>
-            )
-          ))}
+            );
+          })}
         </div>
         
+        {/* Next Button */}
         <button 
           onClick={() => onPageChange(Math.min(currentPage + 1, totalPages))}
           disabled={currentPage === totalPages}
-          className={`px-4 py-2 rounded-md ${
+          className={`px-4 py-2 rounded ${
             currentPage === totalPages 
-            ? 'bg-gray-200 text-gray-500 cursor-not-allowed' 
-            : 'bg-blue-500 text-white hover:bg-blue-600 shadow-sm hover:shadow transition-all duration-200'
+              ? 'bg-gray-200 text-gray-500 cursor-not-allowed' 
+              : 'bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-300 shadow-sm hover:shadow transform hover:-translate-y-0.5'
           }`}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-          </svg>
+          <span className="flex items-center">
+            Next
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </span>
         </button>
       </div>
     </div>
   );
-};
-
-Pagination.propTypes = {
-  currentPage: PropTypes.number.isRequired,
-  totalPages: PropTypes.number.isRequired,
-  onPageChange: PropTypes.func.isRequired,
-  totalItems: PropTypes.number.isRequired,
-  itemsPerPage: PropTypes.number.isRequired
 };
 
 export default Pagination;

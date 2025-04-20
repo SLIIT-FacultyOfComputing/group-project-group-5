@@ -14,16 +14,17 @@ import {
 import { Link } from 'react-router-dom';
 import Toast from '../../components/Toast';
 import Modal from '../../components/Modal';
-import SearchBar from '../../components/SearchBar';
-import ActionButton from '../../components/ActionButton';
-import EditableCell from '../../components/EditableCell';
-import StatusTimeline from '../../components/StatusTimeline';
-import CostSummaryCard from '../../components/CostSummaryCard';
-import FilterPanel from '../../components/FilterPanel';
-import ExpandableTableRow from '../../components/ExpandableTableRow';
-import StatsCard from '../../components/StatsCard';
-import DateRangePicker from '../../components/DateRangePicker';
-import TechnicianBadge from '../../components/TechnicianBadge';
+import SearchBar from '../../components/MaintenanceScheduleList/SearchBar';
+import ActionButton from '../../components/MaintenanceScheduleList/ActionButton';
+import EditableCell from '../../components/MaintenanceScheduleList/EditableCell';
+import StatusTimeline from '../../components/MaintenanceScheduleList/StatusTimeline';
+import CostSummaryCard from '../../components/MaintenanceScheduleList/CostSummaryCard';
+import FilterPanel from '../../components/MaintenanceScheduleList/FilterPanel';
+import ExpandableTableRow from '../../components/MaintenanceScheduleList/ExpandableTableRow';
+import StatsCard from '../../components/MaintenanceScheduleList/StatsCard';
+import DateRangePicker from '../../components/MaintenanceScheduleList/DateRangePicker';
+import Pagination from '../../components/Pagination';
+import TechnicianBadge from '../../components/MaintenanceScheduleList/TechnicianBadge';
 
 const MaintenanceScheduleList = () => {
   const [schedules, setSchedules] = useState([]);
@@ -49,6 +50,8 @@ const MaintenanceScheduleList = () => {
     technician: 'ALL',
     dateRange: { start: null, end: null }
   });
+  const [isAdvancedSearchMode, setIsAdvancedSearchMode] = useState(false);
+  const [advancedFilters, setAdvancedFilters] = useState({});
   
   const [modal, setModal] = useState({ 
     isOpen: false, 
@@ -162,10 +165,31 @@ const fetchSchedules = async () => {
   };
 
   const handleUpdateDate = async (id) => {
+    const schedule = schedules.find(s => s.scheduleId === id);
+    const oldDate = new Date(schedule.maintenanceDate).toLocaleDateString();
+    const newDate = new Date(editDate.date).toLocaleDateString();
+    
     setModal({
       isOpen: true,
       title: 'Confirm Date Change',
-      message: 'Are you sure you want to update the maintenance date?',
+      message: (
+        <div className="space-y-3">
+          <p>Are you sure you want to update the maintenance date?</p>
+          <div className="bg-gray-50 p-3 rounded-lg">
+            <p className="text-sm text-gray-500 mb-2">Date change preview:</p>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <span className="text-xs text-gray-500">Current date:</span>
+                <div className="font-medium text-red-600 line-through">{oldDate}</div>
+              </div>
+              <div>
+                <span className="text-xs text-gray-500">New date:</span>
+                <div className="font-medium text-green-600">{newDate}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ),
       type: 'warning',
       onConfirm: async () => {
         try {
@@ -291,6 +315,14 @@ const handleUpdateStatus = async (id) => {
     setModal({ ...modal, isOpen: false });
   };
 
+  const handleAdvancedSearchToggle = () => {
+    setIsAdvancedSearchMode(!isAdvancedSearchMode);
+  };
+
+  const handleAdvancedFilterChange = (filters) => {
+    setAdvancedFilters(filters);
+  };
+
   useEffect(() => {
     fetchSchedules();
   }, [statusFilter]);
@@ -363,60 +395,91 @@ const handleUpdateStatus = async (id) => {
     </div>
   );
 
-const applyAllFilters = (activeFilters) => {
+const applyAllFilters = async (activeFilters) => {
   setLoading(true);
   
-  fetchSchedules().then(() => {
-    const filtered = schedules.filter(schedule => {
-      if (activeFilters.type && activeFilters.type !== 'ALL' && 
-          schedule.maintenanceType !== activeFilters.type) {
-        return false;
-      }
-      
-      if (activeFilters.costRange) {
-        const cost = parseFloat(schedule.maintenanceCost);
-        if (activeFilters.costRange.min && cost < parseFloat(activeFilters.costRange.min)) {
-          return false;
-        }
-        if (activeFilters.costRange.max && cost > parseFloat(activeFilters.costRange.max)) {
-          return false;
-        }
-      }
-      
-      if (activeFilters.equipmentId && activeFilters.equipmentId !== 'ALL' && 
-          schedule.equipmentId !== activeFilters.equipmentId) {
-        return false;
-      }
-      
-      if (activeFilters.technician && activeFilters.technician !== 'ALL' && 
-          schedule.technician !== activeFilters.technician) {
-        return false;
-      }
-      
-      if (activeFilters.dateRange && 
-          (activeFilters.dateRange.start || activeFilters.dateRange.end)) {
-        const scheduleDate = new Date(schedule.maintenanceDate);
-        
-        if (activeFilters.dateRange.start) {
-          const startDate = new Date(activeFilters.dateRange.start);
-          if (scheduleDate < startDate) return false;
-        }
-        
-        if (activeFilters.dateRange.end) {
-          const endDate = new Date(activeFilters.dateRange.end);
-          if (scheduleDate > endDate) return false;
-        }
-      }
-      
-      return true;
-    });
+  try {
+    // First fetch all schedules (or filtered by status if needed)
+    let response;
     
-    setSchedules(filtered);
+    if (activeFilters.status === 'ALL') {
+      response = await getMaintenanceSchedule();
+    } else {
+      response = await filterMaintenanceScheduleByStatus(activeFilters.status);
+    }
+    
+    // Get the base data to apply further filtering
+    let filteredData = response.data;
+    
+    // Apply each filter
+    if (activeFilters.type && activeFilters.type !== 'ALL') {
+      // Case-insensitive match for maintenance type
+      filteredData = filteredData.filter(schedule => 
+        schedule.maintenanceType.toUpperCase() === activeFilters.type.toUpperCase()
+      );
+    }
+    
+    if (activeFilters.costRange) {
+      const costMin = activeFilters.costRange.min ? parseFloat(activeFilters.costRange.min) : null;
+      const costMax = activeFilters.costRange.max ? parseFloat(activeFilters.costRange.max) : null;
+      
+      if (costMin !== null) {
+        filteredData = filteredData.filter(schedule => 
+          parseFloat(schedule.maintenanceCost) >= costMin
+        );
+      }
+      
+      if (costMax !== null) {
+        filteredData = filteredData.filter(schedule => 
+          parseFloat(schedule.maintenanceCost) <= costMax
+        );
+      }
+    }
+    
+    if (activeFilters.equipmentId && activeFilters.equipmentId !== 'ALL') {
+      filteredData = filteredData.filter(schedule => 
+        schedule.equipmentId.toString() === activeFilters.equipmentId.toString()
+      );
+    }
+    
+    if (activeFilters.technician && activeFilters.technician !== 'ALL') {
+      filteredData = filteredData.filter(schedule => 
+        schedule.technician === activeFilters.technician
+      );
+    }
+    
+    if (activeFilters.dateRange && 
+        (activeFilters.dateRange.start || activeFilters.dateRange.end)) {
+      
+      if (activeFilters.dateRange.start) {
+        const startDate = new Date(activeFilters.dateRange.start);
+        filteredData = filteredData.filter(schedule => 
+          new Date(schedule.maintenanceDate) >= startDate
+        );
+      }
+      
+      if (activeFilters.dateRange.end) {
+        const endDate = new Date(activeFilters.dateRange.end);
+        filteredData = filteredData.filter(schedule => 
+          new Date(schedule.maintenanceDate) <= endDate
+        );
+      }
+    }
+    
+    setSchedules(filteredData);
+    if (filteredData.length === 0) {
+      showToast('No maintenance schedules match your filters', 'info');
+    }
+  } catch (error) {
+    console.error('Error applying filters:', error);
+    showToast('An error occurred while filtering schedules', 'error');
+  } finally {
     setLoading(false);
-  });
+  }
 };
 
 const resetAllFilters = () => {
+  // Reset all filter states
   setFilters({
     status: 'ALL',
     type: 'ALL',
@@ -425,54 +488,98 @@ const resetAllFilters = () => {
     technician: 'ALL',
     dateRange: { start: null, end: null }
   });
+  
+  // Reset other filter-related states
   setStatusFilter('ALL');
   setSearchTerm('');
+  
+  // Fetch all schedules without filters
   fetchSchedules();
 };
 
   return (
     <div className={`container mx-auto p-4 ${isFullscreen ? 'bg-white' : 'bg-gray-50'} min-h-screen transition-colors duration-300`}>
       {/* Header & Add Button */}
-      <div className="bg-white p-6 rounded-lg shadow-md mb-6 flex justify-between items-center animate-fadeIn">
-        <div className="flex items-center">
-          <h2 className="text-2xl font-bold text-gray-800">Maintenance Schedules</h2>
+      <div className="bg-gradient-to-r from-rose-700 to-rose-600 text-white p-4 rounded-lg shadow-xl mb-4 flex justify-between items-center relative overflow-hidden">
+        {/* Background pattern overlay */}
+        <div className="absolute inset-0 opacity-15">
+          <div className="absolute inset-0 gym-pattern"></div>
+        </div>
+        
+        <div className="flex items-center relative z-10">
+          <div className="bg-white bg-opacity-40 p-1.5 sm:p-2.5 rounded-lg shadow-lg mr-2 sm:mr-4">
+            <svg className="w-6 h-6 sm:w-7 sm:h-7 text-black drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+          </div>
+          <div className="flex flex-col">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white drop-shadow-md tracking-tight">
+              Maintenance Schedules
+            </h2>
+          </div>
           <div className="ml-4 flex space-x-2">
             <button 
               onClick={toggleFullscreen}
-              className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200"
+              className="p-2 rounded-full bg-rose-800 bg-opacity-40 hover:bg-opacity-60 text-rose-100 hover:text-white transition-colors duration-200"
               title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
             >
               {isFullscreen ? (
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M5 4a1 1 0 00-1 1v4a1 1 0 01-1 1H2a1 1 0 010-2h.93a.5.5 0 00.5-.5V5a3 3 0 013-3h4a1 1 0 010 2H7a.5.5 0 00-.5.5v.93a1 1 0 01-2 0V4zm1 16a1 1 0 001-1v-4a1 1 0 011-1h1a1 1 0 110 2h-.93a.5.5 0 00-.5.5V19a3 3 0 01-3 3H2a1 1 0 110-2h3a.5.5 0 00.5-.5v-.93a1 1 0 012 0V20zm13-16a1 1 0 00-1 1v.93a1 1 0 01-2 0V4a1 1 0 00-1-1h-4a1 1 0 110-2h4a3 3 0 013 3v4a1 1 0 01-1 1h-1a1 1 0 110-2h.93a.5.5 0 00.5-.5V5a1 1 0 011-1zm0 16a1 1 0 001-1v-.93a.5.5 0 00-.5-.5H19a1 1 0 110-2h1a1 1 0 011 1v4a3 3 0 01-3 3h-4a1 1 0 110-2h4a.5.5 0 00.5-.5z" clipRule="evenodd" />
                 </svg>
               ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 11-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 010-2h4a1 1 0 011 1v4a1 1 0 01-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L13.586 5H12zm-9 7a1 1 0 012 0v1.586l2.293-2.293a1 1 0 111.414 1.414L6.414 15H8a1 1 0 010 2H4a1 1 0 01-1-1v-4zm13-1a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 010-2h1.586l-2.293-2.293a1 1 0 111.414-1.414L15 13.586V12a1 1 0 011-1z" clipRule="evenodd" />
                 </svg>
               )}
             </button>
             <button 
               onClick={fetchSchedules}
-              className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200"
+              className="p-2 rounded-full bg-rose-800 bg-opacity-40 hover:bg-opacity-60 text-rose-100 hover:text-white transition-colors duration-200"
               title="Refresh"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
               </svg>
             </button>
           </div>
         </div>
-        <Link to="/maintenance-list">
-          <ActionButton
-            onClick={() => {}}
-            icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-            </svg>}
-            label="Add Schedule"
-            color="green"
-          />
-        </Link>
+        
+        <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-3 relative z-10">
+          <div className="flex items-center bg-white bg-opacity-10 backdrop-blur-sm px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg border border-white border-opacity-20 w-full sm:w-auto justify-center sm:justify-start">
+            <svg
+              className="w-4 h-4 sm:w-5 sm:h-5 text-black opacity-80 mr-1 sm:mr-2 flex-shrink-0"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"
+              ></path>
+            </svg>
+            <span className="text-black font-medium text-xs sm:text-sm whitespace-nowrap">
+              Total: {schedules.length} schedules
+            </span>
+          </div>
+          
+          <Link to="/maintenance-add" className="w-full sm:w-auto">
+            <ActionButton
+              onClick={() => {}}
+              icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+              </svg>}
+              label="Add Schedule"
+              color="green"
+              fullWidth={true}
+              className="w-full sm:w-auto"
+            />
+          </Link>
+        </div>
       </div>
       
       {/* Search & Filters */}
@@ -484,6 +591,10 @@ const resetAllFilters = () => {
         statusFilter={statusFilter}
         onStatusFilterChange={setStatusFilter}
         statusOptions={statusOptions}
+        onAdvancedSearch={handleAdvancedSearchToggle}
+        isAdvancedMode={isAdvancedSearchMode}
+        advancedFilters={advancedFilters}
+        onAdvancedFilterChange={handleAdvancedFilterChange}
       />
 
       {/* Enhanced Filters */}
@@ -548,7 +659,7 @@ const resetAllFilters = () => {
           value={schedules.length}
           previousValue={schedules.length - 3} // For demonstration - you should track previous value
           icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>}
           colorClass="text-blue-600"
         />
@@ -643,9 +754,6 @@ const resetAllFilters = () => {
                     key={schedule.scheduleId}
                     schedule={schedule}
                     onDelete={handleDelete}
-                    onView={(id) => {
-                      window.location.href = `/maintenance-details/${id}`;
-                    }}
                     onEdit={(field, id) => {
                       if (field === 'description') {
                         setEditDescription({ id: id, description: schedule.maintenanceDescription });
@@ -679,22 +787,41 @@ const resetAllFilters = () => {
                     <td className="p-3 border">
                       {editDate.id === schedule.scheduleId ? (
                         <div className="flex gap-2 animate-scaleIn">
-                          <input
-                            type="date"
-                            value={editDate.date}
-                            onChange={(e) => setEditDate({ ...editDate, date: e.target.value })}
-                            className="p-2 border rounded focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition-all duration-200"
-                          />
+                          <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              </svg>
+                            </div>
+                            <input
+                              type="date"
+                              value={editDate.date}
+                              onChange={(e) => setEditDate({ ...editDate, date: e.target.value })}
+                              className="p-2 pl-10 border rounded focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition-all duration-200"
+                            />
+                          </div>
                           <button
                             onClick={() => handleUpdateDate(schedule.scheduleId)}
-                            className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition-colors duration-300 shadow-sm"
+                            disabled={!editDate.date}
+                            className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 disabled:bg-gray-300 transition-colors duration-300 shadow-sm"
                           >
                             Save
+                          </button>
+                          <button
+                            onClick={() => setEditDate({ id: null, date: '' })}
+                            className="bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-600 transition-colors duration-300 shadow-sm"
+                          >
+                            Cancel
                           </button>
                         </div>
                       ) : (
                         <div className="flex justify-between items-center group">
-                          <span>{new Date(schedule.maintenanceDate).toLocaleDateString()}</span>
+                          <div className="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span>{new Date(schedule.maintenanceDate).toLocaleDateString()}</span>
+                          </div>
                           <button
                             onClick={() => setEditDate({ id: schedule.scheduleId, date: schedule.maintenanceDate.split('T')[0] })}
                             className="opacity-0 group-hover:opacity-100 bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 transition-all duration-300 shadow-sm"
@@ -778,64 +905,14 @@ const resetAllFilters = () => {
 
         {/* Pagination */}
         {!loading && schedules.length > 0 && (
-          <div className="mt-6 flex flex-col md:flex-row justify-between items-center">
-            <div className="text-sm text-gray-600 mb-4 md:mb-0">
-              Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, schedules.length)} of {schedules.length} items
-            </div>
-            <div className="flex space-x-2">
-              <button 
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className={`px-4 py-2 rounded ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-300 shadow-sm hover:shadow transform hover:-translate-y-0.5'}`}
-              >
-                <span className="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                  Previous
-                </span>
-              </button>
-              <div className="hidden md:flex space-x-2">
-                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  let pageNum;
-                  if (totalPages <= 5) {
-                    pageNum = i + 1;
-                  } else if (currentPage <= 3) {
-                    pageNum = i + 1;
-                  } else if (currentPage >= totalPages - 2) {
-                    pageNum = totalPages - 4 + i;
-                  } else {
-                    pageNum = currentPage - 2 + i;
-                  }
-                  
-                  return (
-                    <button
-                      key={i}
-                      onClick={() => setCurrentPage(pageNum)}
-                      className={`w-10 h-10 rounded-full ${currentPage === pageNum 
-                        ? 'bg-blue-600 text-white shadow-md' 
-                        : 'bg-gray-200 hover:bg-gray-300 text-gray-700'} 
-                        transition-all duration-300 transform ${currentPage === pageNum ? 'scale-110' : 'hover:scale-105'}`}
-                    >
-                      {pageNum}
-                    </button>
-                  );
-                })}
-              </div>
-              <button 
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages}
-                className={`px-4 py-2 rounded ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-300 shadow-sm hover:shadow transform hover:-translate-y-0.5'}`}
-              >
-                <span className="flex items-center">
-                  Next
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </span>
-              </button>
-            </div>
-          </div>
+          <Pagination 
+            currentPage={currentPage}
+            totalPages={totalPages}
+            indexOfFirstItem={indexOfFirstItem}
+            indexOfLastItem={indexOfLastItem}
+            totalItems={schedules.length}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
         )}
       </div>
 

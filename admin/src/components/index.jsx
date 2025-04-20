@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Routes, Route, Link, Navigate, useLocation } from "react-router-dom";
-import EquipmentList from "./Equipment/EquipmentList";
-import AddEquipmentForm from "./Equipment/AddEquipmentForm";
-import Header from "../components/header";
-import Footer from "../components/Footer";
-import MaintenanceScheduleList from "./Maintenance/MaintenanceScheduleList";
-import MaintenanceScheduleAdd from "./Maintenance/MaintenanceScheduleAdd";
-import MonthlyCostViewer from "./MonthlyCost/MonthlyCostViewer";
+import EquipmentList from "../pages/Equipment/EquipmentList";
+import AddEquipmentForm from "../pages/Equipment/AddEquipmentForm";
+import Header from "./header";
+import Footer from "./Footer";
+import MaintenanceScheduleList from "../pages/Maintenance/MaintenanceScheduleList";
+import MaintenanceScheduleAdd from "../pages/Maintenance/MaintenanceScheduleAdd";
+import MonthlyCostViewer from "../pages/MonthlyCost/MonthlyCostViewer";
 
 const EquipmentPage = () => {
   const location = useLocation();
@@ -243,3 +243,4 @@ const EquipmentPage = () => {
 };
 
 export default EquipmentPage;
+

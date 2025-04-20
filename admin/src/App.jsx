@@ -1,10 +1,10 @@
 import { BrowserRouter as Router } from "react-router-dom";
-import EquipmentPage from "./pages/equipmentPage";
+import Page from "./pages/index";
 
 function App() {
   return (
     <Router>
-      <EquipmentPage />
+      <Page />
     </Router>
   );
 }

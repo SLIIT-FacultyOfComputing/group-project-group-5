@@ -4,9 +4,9 @@ import EquipmentList from "./Equipment/EquipmentList";
 import AddEquipmentForm from "./Equipment/AddEquipmentForm";
 import Header from "../components/header";
 import Footer from "../components/Footer";
-import MaintenanceScheduleList from "./Equipment/MaintenanceScheduleList";
-import MaintenanceScheduleAdd from "./Equipment/MaintenanceScheduleAdd";
-import MonthlyCostViewer from "./Equipment/MonthlyCostViewer";
+import MaintenanceScheduleList from "./Maintenance/MaintenanceScheduleList";
+import MaintenanceScheduleAdd from "./Maintenance/MaintenanceScheduleAdd";
+import MonthlyCostViewer from "./MonthlyCost/MonthlyCostViewer";
 
 const EquipmentPage = () => {
   const location = useLocation();
@@ -35,6 +35,7 @@ const EquipmentPage = () => {
       
       <div className="container mx-auto px-3 sm:px-4 md:px-6 mt-4 md:mt-6">
         <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200 neu-convex">
+          {/* Mobile Menu Toggle Button */}
           <div className="md:hidden p-4 border-b border-gray-100">
             <button 
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -48,6 +49,7 @@ const EquipmentPage = () => {
             </button>
           </div>
           
+          {/* Navigation - responsive */}
           <nav className={`flex flex-col md:flex-row ${mobileMenuOpen ? 'block' : 'hidden md:flex'}`}>
             <Link 
               to="/equipment-list" 
@@ -63,24 +65,11 @@ const EquipmentPage = () => {
               </svg>
               <span className="whitespace-nowrap">View Gym Equipment</span>
             </Link>
+            
             <Link 
-              to="/add-equipment" 
+              to="/maintenance-list" 
               className={`px-4 sm:px-5 md:px-7 py-3 md:py-4 text-sm font-medium flex items-center transition-all duration-300 group ${
-                currentPath === '/add-equipment' 
-                  ? 'bg-gradient-to-r from-rose-700 to-rose-500 text-white shadow-md'
-                  : 'text-gray-700 hover:bg-rose-50 hover:text-rose-700'
-              }`}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <svg className="w-5 h-5 mr-2 transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-              </svg>
-              <span className="whitespace-nowrap">Add New Equipment</span>
-            </Link>
-            <Link 
-              to="/maintenance" 
-              className={`px-4 sm:px-5 md:px-7 py-3 md:py-4 text-sm font-medium flex items-center transition-all duration-300 group ${
-                currentPath === '/maintenance' 
+                currentPath === '/maintenance-list' 
                   ? 'bg-gradient-to-r from-rose-700 to-rose-500 text-white shadow-md'
                   : 'text-gray-700 hover:bg-rose-50 hover:text-rose-700'
               }`}
@@ -101,12 +90,12 @@ const EquipmentPage = () => {
               }`}
               onClick={() => setMobileMenuOpen(false)}
             >
-              <svg className="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              <svg className="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>
               <span className="whitespace-nowrap">Maintenance Cost</span>
             </Link>
+            
           </nav>
         </div>
       </div>
@@ -117,8 +106,8 @@ const EquipmentPage = () => {
           <Routes>
             <Route path="/equipment-list" element={<EquipmentList />} />
             <Route path="/add-equipment" element={<AddEquipmentForm />} />
-            <Route path="/maintenance" element={<div>{<MaintenanceScheduleList />}</div>} />
-            <Route path="/maintenance-list" element={<div>{<MaintenanceScheduleAdd />}</div>} />
+            <Route path="/maintenance-list" element={<div>{<MaintenanceScheduleList />}</div>} />
+            <Route path="/maintenance-add" element={<div>{<MaintenanceScheduleAdd />}</div>} />
             <Route path="/maintenance-cost" element={<div>{<MonthlyCostViewer />}</div>} />
             <Route path="/" element={<Navigate to="/equipment-list" replace />} />
             
@@ -150,7 +139,8 @@ const EquipmentPage = () => {
       
       <Footer />
       
-      <style jsx>{`
+      <style>
+        {`
         .bg-pattern {
           background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
@@ -164,7 +154,7 @@ const EquipmentPage = () => {
         }
         
         .gym-equipment-pattern {
-          background-image: url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='0.05'%3E%3Cpath d='M25 15h5v90h-5zM90 15h5v90h-5zM15 55h90v10H15zM42 30c0-2.8 2.2-5 5-5s5 2.2 5 5v60c0 2.8-2.2 5-5 5s-5-2.2-5-5V30zM68 30c0-2.8 2.2-5 5-5s5 2.2 5 5v60c0 2.8-2.2 5-5 5s-5-2.2-5-5V30z'/%3E%3Cpath d='M10 10h10v10H10zM100 10h10v10h-10zM10 100h10v10H10zM100 100h10v10h-10z'/%3E%3C/g%3E%3C/svg%3E");
+          background-image: url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='0.05'%3E%3Cpath d='M25 15h5v90h-5zM90 15h5v90h-5zM15 55h90v10H15zM42 30c0-2.8 2.2-5 5-5s5 2.2 5 5v60c0 2.8-2.2 5-5 5s-5-2.2-5-5V30zM68 30c0-2.8 2.2-5 5-5s5 2.2 5 5v60c0 2.8-2.2-5-5-5s-5-2.2-5-5V30z'/%3E%3Cpath d='M10 10h10v10H10zM100 10h10v10h-10zM10 100h10v10H10zM100 100h10v10h-10z'/%3E%3C/g%3E%3C/svg%3E");
           background-size: 80px 80px;
         }
         
@@ -246,7 +236,8 @@ const EquipmentPage = () => {
             box-shadow: 3px 3px 6px #d1d9e6, -3px -3px 6px #ffffff;
           }
         }
-      `}</style>
+      `}
+      </style>
     </div>
   );
 };

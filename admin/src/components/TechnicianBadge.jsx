@@ -44,3 +44,4 @@ TechnicianBadge.propTypes = {
 };
 
 export default TechnicianBadge;
+

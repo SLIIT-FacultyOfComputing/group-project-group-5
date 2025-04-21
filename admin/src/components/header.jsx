@@ -19,21 +19,12 @@ const Header = ({ scrolled }) => {
       </div>
       <div className="container mx-auto px-3 sm:px-4 md:px-6 relative">
         <div className="flex items-center justify-between">
+          {/* Logo and Title */}
           <div className="flex items-center">
             <div className="bg-rose-900 bg-opacity-40 p-1.5 sm:p-2.5 rounded-lg shadow-lg mr-2 sm:mr-4 transform hover:rotate-3 transition-transform duration-300 btn-3d">
               <svg
-                className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-white drop-shadow-md"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5l6.74-6.76zm-1.41-1.41L11.5 18H5v-6.5l6.76-6.76a4 4 0 0 1 5.66 5.66l-2.83 2.83"
-                ></path>
+                className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-white drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5l6.74-6.76zm-1.41-1.41L11.5 18H5v-6.5l6.76-6.76a4 4 0 0 1 5.66 5.66l-2.83 2.83" ></path>
               </svg>
             </div>
             <div className="flex flex-col">
@@ -46,6 +37,7 @@ const Header = ({ scrolled }) => {
             </div>
           </div>
 
+          {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-4">
             <span className="inline-flex items-center px-3.5 py-1.5 bg-gradient-to-r from-rose-900 to-rose-800 rounded-full text-xs font-medium text-white shadow-lg border border-rose-500 border-opacity-40 pulse-border hover:from-rose-800 hover:to-rose-700 transition-all duration-300 transform hover:scale-105 cursor-pointer group">
               <span className="w-2.5 h-2.5 bg-green-400 rounded-full mr-2 shadow-lg animate-pulse ring-2 ring-green-400 ring-opacity-50 group-hover:ring-opacity-70 transition-all duration-300"></span>
@@ -74,6 +66,7 @@ const Header = ({ scrolled }) => {
             </div>
           </div>
 
+          {/* Mobile Menu Button */}
           <div className="flex items-center md:hidden">
             <button 
               onClick={toggleMobileMenu}
@@ -94,6 +87,7 @@ const Header = ({ scrolled }) => {
           </div>
         </div>
 
+        {/* Mobile Menu Dropdown */}
         <div className={`${mobileMenuOpen ? 'max-h-64 opacity-100' : 'max-h-0 opacity-0'} md:hidden overflow-hidden transition-all duration-300 ease-in-out mt-2`}>
           <div className="bg-rose-800 bg-opacity-90 backdrop-blur-sm rounded-lg shadow-lg px-3 py-2 my-1 transition-all">
             <div className="flex items-center py-2 border-b border-rose-700 border-opacity-50">

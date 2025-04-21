@@ -56,7 +56,7 @@ export const deleteMaintenanceSchedule = async (id) => {
 
 export const searchMaintenanceSchedule = async (search) => {
   return axios.get(`${BASE_URL}/api/maintenance-schedule/search?search=${search}`);
-};702
+};
 
 export const updateMaintenanceDate = async (id, maintenanceDate) => {
   return axios.put(`${BASE_URL}/api/maintenance-schedule/${id}/MaintenanceDate?date=${maintenanceDate}`);

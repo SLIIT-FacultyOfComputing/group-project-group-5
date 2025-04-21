@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 
 const Modal = (props) => { 
+  // Use explicit props object to avoid destructuring issues
   const { 
     isOpen, 
     onClose, 
@@ -13,18 +14,21 @@ const Modal = (props) => {
     showCancel = true 
   } = props;
   
+  // Handle default text values separately
   const confirmText = props.confirmText || 'Confirm';
   const cancelText = props.cancelText || 'Cancel';
   
   const modalRef = useRef(null);
   const confirmButtonRef = useRef(null);
   
+  // Focus confirm button when modal opens
   useEffect(() => {
     if (isOpen && confirmButtonRef.current) {
       setTimeout(() => confirmButtonRef.current.focus(), 100);
     }
   }, [isOpen]);
   
+  // Handle ESC key press
   useEffect(() => {
     const handleEscape = (e) => {
       if (e.key === 'Escape' && isOpen) {
@@ -38,12 +42,31 @@ const Modal = (props) => {
     };
   }, [isOpen, onClose]);
 
+  // Prevent body scroll when modal is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      
+      // Position modal in the visible viewport
+      setTimeout(() => {
+        if (modalRef.current) {
+          const viewportHeight = window.innerHeight;
+          const modalHeight = modalRef.current.offsetHeight;
+          const modalRect = modalRef.current.getBoundingClientRect();
+          
+          // Check if modal is partially or completely out of viewport
+          if (modalRect.top < 20 || modalRect.bottom > viewportHeight - 20) {
+            window.scrollTo({
+              top: window.pageYOffset + modalRect.top - (viewportHeight - modalHeight) / 2,
+              behavior: 'auto' // Use 'auto' to avoid animation
+            });
+          }
+        }
+      }, 50);
     } else {
       document.body.style.overflow = 'auto';
     }
+    
     return () => {
       document.body.style.overflow = 'auto';
     };
@@ -51,6 +74,7 @@ const Modal = (props) => {
 
   if (!isOpen) return null;
 
+  // Get appropriate colors based on type
   const getModalStyles = () => {
     switch (type) {
       case 'danger':
@@ -83,7 +107,7 @@ const Modal = (props) => {
             </svg>
           )
         };
-      default: 
+      default: // info
         return {
           header: 'bg-blue-600',
           button: 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-300',
@@ -98,6 +122,7 @@ const Modal = (props) => {
 
   const styles = getModalStyles();
   
+  // Size mapping for modal width
   const sizeClasses = {
     sm: 'max-w-sm',
     md: 'max-w-md',
@@ -109,21 +134,26 @@ const Modal = (props) => {
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-=      <div 
+      {/* Backdrop with blur effect */}
+      <div 
         className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity animate-fadeIn"
         onClick={onClose}
       ></div>
 
-=      <div className="flex min-h-full items-center justify-center py-6 px-4 text-center sm:p-0">
-=        <div 
+      {/* Scrollable container with vertical padding for safety */}
+      <div className="flex min-h-full items-center justify-center py-6 px-4 text-center sm:p-0">
+        {/* Actual modal */}
+        <div 
           ref={modalRef}
           className={`relative bg-white rounded-lg shadow-xl ${sizeClasses[size] || sizeClasses.md} w-full my-8 mx-auto overflow-hidden`}
           onClick={e => e.stopPropagation()}
           style={{
             animation: 'modalEnterAnimation 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+            maxHeight: 'calc(100vh - 40px)'
           }}
         >
-=          <div 
+          {/* Modal header */}
+          <div 
             className={`${styles.header} px-4 py-3 sm:px-6 flex items-center justify-between`}
             style={{animation: 'slideInFromTop 0.3s ease-out 0.1s both'}}
           >
@@ -150,6 +180,7 @@ const Modal = (props) => {
             </button>
           </div>
 
+          {/* Modal body */}
           <div 
             className="px-4 pt-5 pb-4 sm:p-6 sm:pb-4"
             style={{animation: 'fadeIn 0.4s ease-out 0.3s both'}}
@@ -167,6 +198,7 @@ const Modal = (props) => {
             </div>
           </div>
 
+          {/* Modal footer */}
           <div 
             className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-2 border-t border-gray-200"
             style={{animation: 'slideInFromBottom 0.3s ease-out 0.4s both'}}
@@ -196,6 +228,7 @@ const Modal = (props) => {
         </div>
       </div>
 
+      {/* Add inline styles for animations */}
       <style jsx="true">{`
         @keyframes modalEnterAnimation {
           from {

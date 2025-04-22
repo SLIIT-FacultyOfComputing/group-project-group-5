@@ -17,20 +17,16 @@ public class Routine {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @ManyToMany
-    @JoinTable(
-            name = "routine_exercise",
-            joinColumns = @JoinColumn(name = "routine_id"),
-            inverseJoinColumns = @JoinColumn(name = "exercise_id")
-    )
-    private List<Exercise> exercises;
+    @OneToMany(mappedBy = "routine", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RoutineExercise> routineExercises;
 
     public Routine() {}
-    public Routine(String name, Member member, List<Exercise> exercises) {
+    public Routine(String name, Member member, List<RoutineExercise> routineExercises) {
         this.name = name;
         this.member = member;
-        this.exercises = exercises;
+        this.routineExercises = routineExercises;
     }
+
     public Long getId() {
         return id;
     }
@@ -55,11 +51,11 @@ public class Routine {
         this.member = member;
     }
 
-    public List<Exercise> getExercises() {
-        return exercises;
+    public List<RoutineExercise> getRoutineExercises() {
+        return routineExercises;
     }
 
-    public void setExercises(List<Exercise> exercises) {
-        this.exercises = exercises;
+    public void setRoutineExercises(List<RoutineExercise> routineExercises) {
+        this.routineExercises = routineExercises;
     }
 }

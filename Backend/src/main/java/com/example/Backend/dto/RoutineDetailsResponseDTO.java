@@ -9,6 +9,12 @@ public class RoutineDetailsResponseDTO {
 
     public RoutineDetailsResponseDTO() {}
 
+    public RoutineDetailsResponseDTO(Long id, String name, List<ExerciseDetailsDTO> exercises) {
+        this.id = id;
+        this.name = name;
+        this.exercises = exercises;
+    }
+
     public Long getId() {
         return id;
     }

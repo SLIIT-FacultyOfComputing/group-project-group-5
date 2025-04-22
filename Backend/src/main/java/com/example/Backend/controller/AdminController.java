@@ -1,12 +1,8 @@
 package com.example.Backend.controller;
 
 import com.example.Backend.dto.*;
-import com.example.Backend.model.Exercise;
-import com.example.Backend.model.Member;
-import com.example.Backend.model.Routine;
-import com.example.Backend.repository.ExerciseRepository;
-import com.example.Backend.repository.MemberRepository;
-import com.example.Backend.repository.RoutineRepository;
+import com.example.Backend.model.*;
+import com.example.Backend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -29,6 +24,9 @@ public class AdminController {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private RoutineExerciseRepository routineExerciseRepository;
 
     @PostMapping("/members")
     public ResponseEntity<Member> createMember(@RequestBody Member member) {
@@ -48,7 +46,6 @@ public class AdminController {
         return ResponseEntity.ok(savedExercise);
     }
 
-    // for the search bar - exercises
     @GetMapping("/exercises")
     public ResponseEntity<List<Exercise>> getAllExercises(
             @RequestParam(required = false) String name,
@@ -58,30 +55,21 @@ public class AdminController {
         List<Exercise> exercises;
 
         if (name != null && primaryMuscleGroup != null && equipment != null) {
-            // All three filters
             exercises = exerciseRepository.findByNameContainingIgnoreCaseAndPrimaryMuscleGroupIgnoreCaseAndEquipmentIgnoreCase(
                     name, primaryMuscleGroup, equipment);
         } else if (name != null && primaryMuscleGroup != null) {
-            // Name and muscle group
             exercises = exerciseRepository.findByNameContainingIgnoreCaseAndPrimaryMuscleGroupIgnoreCase(name, primaryMuscleGroup);
-
         } else if (name != null && equipment != null) {
-            // Name and equipment
             exercises = exerciseRepository.findByNameContainingIgnoreCaseAndEquipmentIgnoreCase(name, equipment);
         } else if (primaryMuscleGroup != null && equipment != null) {
-            // Muscle group and equipment
             exercises = exerciseRepository.findByPrimaryMuscleGroupIgnoreCaseAndEquipmentIgnoreCase(primaryMuscleGroup, equipment);
         } else if (name != null) {
-            // Only name
             exercises = exerciseRepository.findByNameContainingIgnoreCase(name);
         } else if (primaryMuscleGroup != null) {
-            // Only muscle group
             exercises = exerciseRepository.findByPrimaryMuscleGroupIgnoreCase(primaryMuscleGroup);
         } else if (equipment != null) {
-            // Only equipment
             exercises = exerciseRepository.findByEquipmentIgnoreCase(equipment);
         } else {
-            // No filters
             exercises = exerciseRepository.findAll();
         }
 
@@ -101,7 +89,6 @@ public class AdminController {
         return ResponseEntity.ok(savedExercise);
     }
 
-    // this is a comment
     @DeleteMapping("/exercises/{exerciseId}")
     public ResponseEntity<Void> deleteExercise(@PathVariable Long exerciseId) {
         Optional<Exercise> exerciseOptional = exerciseRepository.findById(exerciseId);
@@ -111,7 +98,12 @@ public class AdminController {
         Exercise exercise = exerciseOptional.get();
         List<Routine> routines = routineRepository.findByExercisesContaining(exercise);
         for (Routine routine : routines) {
-            routine.getExercises().remove(exercise);
+            List<RoutineExercise> routineExercises = routine.getRoutineExercises();
+            for (int i = routineExercises.size() - 1; i >= 0; i--) {
+                if (routineExercises.get(i).getExercise().equals(exercise)) {
+                    routineExercises.remove(i);
+                }
+            }
         }
         routineRepository.saveAll(routines);
         exerciseRepository.delete(exercise);
@@ -119,33 +111,58 @@ public class AdminController {
     }
 
     @PostMapping("/routines")
-    public ResponseEntity<RoutineResponseDTO> createRoutine(@RequestBody RoutineRequestDTO routineRequest) {
-        Member member = memberRepository.findById(routineRequest.getMemberId())
-                .orElseThrow(() -> new RuntimeException("Member not found"));
+    public ResponseEntity<RoutineResponseDTO> createRoutine(@RequestBody RoutineRequestDTO request) {
+        try {
+            // Validate member
+            Optional<Member> memberOptional = memberRepository.findById(request.getMemberId());
+            if (memberOptional.isEmpty()) {
+                return ResponseEntity.badRequest().body(null);
+            }
+            Member member = memberOptional.get();
 
-        List<Routine> memberRoutines = routineRepository.findByMemberId(routineRequest.getMemberId());
-        if (memberRoutines.size() >= 5) {
-            throw new RuntimeException("Maximum 5 routines allowed per member");
+            // Create Routine without exercises
+            Routine routine = new Routine();
+            routine.setName(request.getName());
+            routine.setMember(member);
+            routine.setRoutineExercises(new ArrayList<>());
+            routine = routineRepository.save(routine);
+
+            // Add RoutineExercise entries to the existing collection
+            List<RoutineExercise> routineExercises = routine.getRoutineExercises();
+            for (RoutineRequestDTO.ExerciseAssignment assignment : request.getExerciseAssignments()) {
+                Optional<Exercise> exerciseOptional = exerciseRepository.findById(assignment.getExerciseId());
+                if (exerciseOptional.isEmpty()) {
+                    return ResponseEntity.badRequest().body(null);
+                }
+                if (assignment.getSets() <= 0 || assignment.getReps() <= 0) {
+                    return ResponseEntity.badRequest().body(null);
+                }
+                Exercise exercise = exerciseOptional.get();
+                RoutineExercise routineExercise = new RoutineExercise(routine, exercise, assignment.getSets(), assignment.getReps());
+                routineExercises.add(routineExercise);
+            }
+
+            // Save Routine to persist the updated collection
+            routineRepository.save(routine);
+
+            // Build response
+            List<Long> exerciseIds = new ArrayList<>();
+            for (RoutineExercise re : routineExercises) {
+                exerciseIds.add(re.getExercise().getId());
+            }
+
+            RoutineResponseDTO response = new RoutineResponseDTO(
+                    routine.getId(),
+                    routine.getName(),
+                    member.getId(),
+                    member.getName(),
+                    exerciseIds
+            );
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(null);
         }
-
-        Routine routine = new Routine();
-        routine.setName(routineRequest.getName());
-        routine.setMember(member);
-        List<Exercise> exercises = exerciseRepository.findAllById(routineRequest.getExerciseIds());
-        routine.setExercises(exercises);
-
-        Routine savedRoutine = routineRepository.save(routine);
-
-        List<Long> exerciseIds = exercises.stream().map(Exercise::getId).collect(Collectors.toList());
-        RoutineResponseDTO response = new RoutineResponseDTO(
-                savedRoutine.getId(),
-                savedRoutine.getName(),
-                member.getId(),
-                member.getName(),
-                exerciseIds
-        );
-
-        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/routines/{memberId}")
@@ -164,25 +181,32 @@ public class AdminController {
     @GetMapping("/routines/details/{routineId}")
     public ResponseEntity<RoutineDetailsResponseDTO> getRoutineDetails(@PathVariable Long routineId) {
         Optional<Routine> routineOptional = routineRepository.findById(routineId);
-        if (!routineOptional.isPresent()) {
-            return ResponseEntity.status(404).body(null);
+        if (routineOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
         }
         Routine routine = routineOptional.get();
-        RoutineDetailsResponseDTO response = new RoutineDetailsResponseDTO();
-        response.setName(routine.getName());
 
-        List<ExerciseDetailsDTO> exerciseDetailsList = new ArrayList<>();
-        for (Exercise exercise : routine.getExercises()) {
-            ExerciseDetailsDTO details = new ExerciseDetailsDTO();
-            details.setId(exercise.getId());
-            details.setName(exercise.getName());
-            details.setEquipment(exercise.getEquipment());
-            details.setPrimaryMuscleGroup(exercise.getPrimaryMuscleGroup());
-            details.setSecondaryMuscleGroups(exercise.getSecondaryMuscleGroup());
-            details.setAnimationUrl(exercise.getAnimationUrl());
-            exerciseDetailsList.add(details);
+        List<RoutineExercise> routineExercises = routineExerciseRepository.findByRoutineId(routineId);
+        List<ExerciseDetailsDTO> exerciseDetails = new ArrayList<>();
+        for (RoutineExercise re : routineExercises) {
+            Exercise exercise = re.getExercise();
+            exerciseDetails.add(new ExerciseDetailsDTO(
+                    exercise.getId(),
+                    exercise.getName(),
+                    exercise.getEquipment(),
+                    exercise.getPrimaryMuscleGroup(),
+                    exercise.getSecondaryMuscleGroup(),
+                    exercise.getAnimationUrl(),
+                    re.getSets(),
+                    re.getReps()
+            ));
         }
-        response.setExercises(exerciseDetailsList);
+
+        RoutineDetailsResponseDTO response = new RoutineDetailsResponseDTO(
+                routine.getId(),
+                routine.getName(),
+                exerciseDetails
+        );
         return ResponseEntity.ok(response);
     }
 
@@ -206,30 +230,48 @@ public class AdminController {
     @PostMapping("/routines/{routineId}/exercises")
     public ResponseEntity<RoutineResponseDTO> addExerciseToRoutine(
             @PathVariable Long routineId,
-            @RequestBody Long exerciseId) {
+            @RequestBody ExerciseAssignmentDTO assignment) {
         Optional<Routine> routineOptional = routineRepository.findById(routineId);
         if (!routineOptional.isPresent()) {
             return ResponseEntity.status(404).body(null);
         }
-        Optional<Exercise> exerciseOptional = exerciseRepository.findById(exerciseId);
+        Optional<Exercise> exerciseOptional = exerciseRepository.findById(assignment.getExerciseId());
         if (!exerciseOptional.isPresent()) {
             return ResponseEntity.status(404).body(null);
         }
         Routine routine = routineOptional.get();
         Exercise exercise = exerciseOptional.get();
-        if (routine.getExercises() == null) {
-            routine.setExercises(new ArrayList<>());
+
+        // Check if exercise already exists in routine
+        List<RoutineExercise> routineExercises = routine.getRoutineExercises();
+        for (RoutineExercise re : routineExercises) {
+            if (re.getExercise().getId().equals(assignment.getExerciseId())) {
+                return ResponseEntity.badRequest().body(null);
+            }
         }
-        routine.getExercises().add(exercise);
-        Routine updatedRoutine = routineRepository.save(routine);
+
+        RoutineExercise routineExercise = new RoutineExercise(routine, exercise, assignment.getSets(), assignment.getReps());
+        routineExerciseRepository.save(routineExercise);
+
+        if (routineExercises == null) {
+            routine.setRoutineExercises(new ArrayList<>());
+            routineExercises = routine.getRoutineExercises();
+        }
+        routineExercises.add(routineExercise);
+        routineRepository.save(routine);
+
         List<Long> exerciseIds = new ArrayList<>();
-        for (Exercise ex : updatedRoutine.getExercises()) {
-            exerciseIds.add(ex.getId());
+        for (RoutineExercise re : routineExercises) {
+            exerciseIds.add(re.getExercise().getId());
         }
+
         RoutineResponseDTO response = new RoutineResponseDTO(
-                updatedRoutine.getId(), updatedRoutine.getName(),
-                updatedRoutine.getMember().getId(), updatedRoutine.getMember().getName(),
-                exerciseIds);
+                routine.getId(),
+                routine.getName(),
+                routine.getMember().getId(),
+                routine.getMember().getName(),
+                exerciseIds
+        );
         return ResponseEntity.ok(response);
     }
 
@@ -242,20 +284,36 @@ public class AdminController {
             return ResponseEntity.status(404).body(null);
         }
         Routine routine = routineOptional.get();
-        Optional<Exercise> exerciseOptional = exerciseRepository.findById(exerciseId);
-        if (!exerciseOptional.isPresent() || !routine.getExercises().contains(exerciseOptional.get())) {
+
+        List<RoutineExercise> routineExercises = routine.getRoutineExercises();
+        RoutineExercise toRemove = null;
+        for (RoutineExercise re : routineExercises) {
+            if (re.getExercise().getId().equals(exerciseId)) {
+                toRemove = re;
+                break;
+            }
+        }
+
+        if (toRemove == null) {
             return ResponseEntity.status(404).body(null);
         }
-        routine.getExercises().remove(exerciseOptional.get());
-        Routine updatedRoutine = routineRepository.save(routine);
+
+        routineExercises.remove(toRemove);
+        routineExerciseRepository.delete(toRemove);
+        routineRepository.save(routine);
+
         List<Long> exerciseIds = new ArrayList<>();
-        for (Exercise ex : updatedRoutine.getExercises()) {
-            exerciseIds.add(ex.getId());
+        for (RoutineExercise re : routineExercises) {
+            exerciseIds.add(re.getExercise().getId());
         }
+
         RoutineResponseDTO response = new RoutineResponseDTO(
-                updatedRoutine.getId(), updatedRoutine.getName(),
-                updatedRoutine.getMember().getId(), updatedRoutine.getMember().getName(),
-                exerciseIds);
+                routine.getId(),
+                routine.getName(),
+                routine.getMember().getId(),
+                routine.getMember().getName(),
+                exerciseIds
+        );
         return ResponseEntity.ok(response);
     }
 
@@ -275,5 +333,4 @@ public class AdminController {
                 .orElseThrow(() -> new RuntimeException("Member not found"));
         return ResponseEntity.ok(member);
     }
-
 }

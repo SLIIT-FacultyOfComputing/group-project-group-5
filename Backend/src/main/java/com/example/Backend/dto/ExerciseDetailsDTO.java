@@ -7,8 +7,21 @@ public class ExerciseDetailsDTO {
     private String primaryMuscleGroup;
     private String secondaryMuscleGroups;
     private String animationUrl;
+    private int sets;
+    private int reps;
 
     public ExerciseDetailsDTO() {}
+
+    public ExerciseDetailsDTO(Long id, String name, String equipment, String primaryMuscleGroup, String secondaryMuscleGroups, String animationUrl, int sets, int reps) {
+        this.id = id;
+        this.name = name;
+        this.equipment = equipment;
+        this.primaryMuscleGroup = primaryMuscleGroup;
+        this.secondaryMuscleGroups = secondaryMuscleGroups;
+        this.animationUrl = animationUrl;
+        this.sets = sets;
+        this.reps = reps;
+    }
 
     public Long getId() {
         return id;
@@ -45,5 +58,17 @@ public class ExerciseDetailsDTO {
     }
     public void setAnimationUrl(String animationUrl) {
         this.animationUrl = animationUrl;
+    }
+    public int getSets() {
+        return sets;
+    }
+    public void setSets(int sets) {
+        this.sets = sets;
+    }
+    public int getReps() {
+        return reps;
+    }
+    public void setReps(int reps) {
+        this.reps = reps;
     }
 }

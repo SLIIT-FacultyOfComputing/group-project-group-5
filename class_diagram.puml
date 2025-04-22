@@ -1,0 +1,111 @@
+@startuml GymSync Class Diagram
+
+' Main Entities
+class Member {
+    - Long id
+    - String firstName
+    - String lastName
+    - String email
+    - String password
+    - String phoneNumber
+    - String address
+    - LocalDate dateOfBirth
+    - String membershipType
+    - String status
+    - LocalDateTime joinDate
+    - LocalDateTime lastVisit
+    - String emergencyContact
+    - String fitnessGoals
+    - String medicalConditions
+    - String preferredWorkoutTime
+}
+
+class QRCode {
+    - Long id
+    - String qrCodeBase64
+    - LocalDateTime generatedAt
+}
+
+class Trainer {
+    - Long id
+    - String firstName
+    - String lastName
+    - String email
+    - String phoneNumber
+    - String specialization
+    - String status
+}
+
+class TrainingSession {
+    - Long id
+    - LocalDateTime startTime
+    - LocalDateTime endTime
+    - String status
+    - String notes
+}
+
+class WorkoutPlan {
+    - Long id
+    - String name
+    - String description
+    - String difficultyLevel
+    - LocalDateTime createdDate
+}
+
+class Exercise {
+    - Long id
+    - String name
+    - String description
+    - String muscleGroup
+    - String equipmentNeeded
+    - String videoUrl
+}
+
+class Equipment {
+    - Long id
+    - String name
+    - String model
+    - String status
+    - LocalDate purchaseDate
+    - LocalDate lastMaintenanceDate
+}
+
+class MaintenanceTicket {
+    - Long id
+    - String description
+    - String status
+    - LocalDateTime reportedDate
+    - LocalDateTime resolvedDate
+    - Double cost
+}
+
+class Invoice {
+    - Long id
+    - Double amount
+    - LocalDateTime issueDate
+    - LocalDateTime dueDate
+    - String status
+    - String paymentMethod
+}
+
+class Attendance {
+    - Long id
+    - LocalDateTime checkInTime
+    - LocalDateTime checkOutTime
+}
+
+' Relationships
+Member "1" -- "1" QRCode
+Member "1" -- "*" Attendance
+Member "1" -- "*" Invoice
+Member "1" -- "*" WorkoutPlan
+
+Trainer "1" -- "*" TrainingSession
+Member "*" -- "*" TrainingSession
+
+WorkoutPlan "1" -- "*" Exercise
+
+Equipment "1" -- "*" MaintenanceTicket
+Trainer "*" -- "*" MaintenanceTicket
+
+@enduml 

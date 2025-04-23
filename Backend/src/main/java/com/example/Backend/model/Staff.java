@@ -2,35 +2,43 @@ package com.example.Backend.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
+
+import java.time.LocalDate;
 
 @Entity
 public class Staff {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String name;
-
     @NotNull(message = "NIC cannot be null")
     @Pattern(regexp = "^[A-Z0-9]{10,12}$", message = "Invalid NIC format")
     @Column(unique = true) // Enforces uniqueness at the database level
     private String NIC; // National Identity Card number
 
-    private String role; // like "trainer", "receptionist", etc.
+    private String name;
+
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.TRAINER; // Default role is
+
+
     private String phone;
-    private String email;
+
+    @NotNull(message = "Start date cannot be null")
+    @PastOrPresent(message = "Start date cannot be in the future")
+    private LocalDate startDate;
 
     // For trainers only
     private String shift; // like "morning", "evening", etc.
 
+    private String password;
+
     // Getters and Setters
-    public Long getId() {
-        return id;
+    public String getNIC() {
+        return NIC;
     }
-    public void setId(Long id) {
-        this.id = id;
+    public void setNIC(String NIC) {
+        this.NIC = NIC;
     }
 
     public String getName() {
@@ -40,17 +48,10 @@ public class Staff {
         this.name = name;
     }
 
-    public String getNIC() {
-        return NIC;
-    }
-    public void setNIC(String NIC) {
-        this.NIC = NIC;
-    }
-
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 
@@ -61,13 +62,25 @@ public class Staff {
         this.phone = phone;
     }
 
-    public String getEmail() {
-        return email;
+    public LocalDate getStartDate() {
+        return startDate;
     }
-    public void setEmail(String email) {
-        this.email = email;
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
     }
 
-    public String getShift() { return shift; }
-    public void setShift(String shift) { this.shift = shift; }
+    public String getShift() {
+        return shift;
+    }
+    public void setShift(String shift) {
+        this.shift = shift;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }

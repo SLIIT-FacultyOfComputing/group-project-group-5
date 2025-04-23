@@ -27,9 +27,9 @@ public class StaffController {
         return staffService.getAllStaff();
     }
 
-    @GetMapping("/{id}")
-    public Optional<Staff> getStaffById(@PathVariable Long id) {
-        return staffService.getStaffById(id);
+    @GetMapping("/{NIC}")
+    public Optional<Staff> getStaffByNIC(@PathVariable String NIC) {
+        return staffService.getStaffByNIC(NIC);
     }
 
     @GetMapping("/search")
@@ -37,13 +37,46 @@ public class StaffController {
         return staffService.searchByName(name);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteStaff(@PathVariable Long id) {
-        staffService.deleteStaff(id);
+    @DeleteMapping("/{NIC}")
+    public void deleteStaff(@PathVariable String NIC) {
+        staffService.deleteStaff(NIC);
     }
 
-    @PutMapping("/{id}")
-    public Staff updateStaff(@PathVariable Long id, @Valid @RequestBody Staff updatedStaff) {
-        return staffService.updateStaff(id, updatedStaff);
+    @PutMapping("updateNIC/{NIC}")
+    public Staff updateNIC(@PathVariable String NIC, @RequestParam String newNIC) {
+        return staffService.updateNIC(NIC, newNIC);
     }
+
+    @PutMapping("updatePassword/{NIC}")
+    public Staff updatePassword(@PathVariable String NIC, @RequestParam String newPassword) {
+        return staffService.updatePassword(NIC, newPassword);
+    }
+
+    @PutMapping("updateName/{NIC}")
+    public Staff updateName(@PathVariable String NIC, @RequestParam String newName) {
+        return staffService.updateName(NIC, newName);
+    }
+
+    @PutMapping("updatePhone/{NIC}")
+    public Staff updatePhone(@PathVariable String NIC, @RequestParam String newPhone) {
+        return staffService.updatePhone(NIC, newPhone);
+    }
+
+    @PutMapping("updateRole/{NIC}")
+    public Staff updateRole(@PathVariable String NIC, @RequestParam String newRole) {
+        return staffService.updateRole(NIC, newRole);
+    }
+
+    @PutMapping("updateShift/{NIC}")
+    public Staff updateShift(@PathVariable String NIC, @RequestParam String newShift) {
+        return staffService.updateShift(NIC, newShift);
+    }
+
+    @PutMapping("/{NIC}")
+    public Staff updateStaff(@PathVariable String NIC, @Valid @RequestBody Staff updatedStaff) {
+        System.out.println("Received update request for NIC: " + NIC);
+        System.out.println("Updated staff data: " + updatedStaff);
+        return staffService.updateStaff(NIC, updatedStaff);
+    }
+
 }

@@ -23,6 +23,10 @@ public class EquipmentService {
     }
 
     public List<Equipment> getAllEquipment() {
+        return equipmentRepository.findByDeletedFalse();
+    }
+
+    public List<Equipment> getAllDeletedEquipment() {
         return equipmentRepository.findAll();
     }
 
@@ -39,6 +43,17 @@ public class EquipmentService {
         return equipmentRepository.findById(id).orElse(null);
     }
 
+    public List<Equipment> searchEquipmentIdOrName(String search) {
+
+        try{
+            Long id = Long.parseLong(search);
+            return equipmentRepository.findByIdAndDeletedFalse(id);
+        }
+        catch (NumberFormatException e){
+            return equipmentRepository.findByNameContainingIgnoreCaseOrCategoryContainingIgnoreCaseAndDeletedFalse(search, search);
+        }
+    }
+
     public Equipment updateEquipmentStatus(Long equipmentId, String status) {
         Optional<Equipment> equipment = equipmentRepository.findById(equipmentId);
         if (equipment.isPresent()) {
@@ -52,10 +67,6 @@ public class EquipmentService {
         }
     }
 
-    public List<Equipment> searchEquipment(String search) {
-        return equipmentRepository.findByNameContainingIgnoreCaseOrCategoryContainingIgnoreCase(search, search);
-    }
-
     public Equipment updateEquipmentLastMaintenanceDate(Long equipmentId, Date date) {
         Optional<Equipment> equipment = equipmentRepository.findById(equipmentId);
 
@@ -64,9 +75,8 @@ public class EquipmentService {
             eq.setLastMaintenanceDate(new java.sql.Date(date.getTime())); // Convert to SQL Date
             equipmentRepository.save(eq);
             return eq;
-        } else {
-            return null;
         }
+        return null;
     }
 
     public List<Equipment> filterByStatus(String status) {

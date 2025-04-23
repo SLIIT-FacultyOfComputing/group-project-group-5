@@ -9,8 +9,9 @@ actor "Registered Member" as member
 actor "Admin (Manager)" as admin
 actor "Trainer/Staff" as trainer
 
-' Package for Membership Management
-package "Membership Management" as membership {
+' System boundary
+rectangle "GYMSYNC" {
+    ' Membership Management Use Cases
     usecase "Register new member" as UC1
     usecase "Member login" as UC2
     usecase "Generate & display QR code" as UC3
@@ -20,10 +21,8 @@ package "Membership Management" as membership {
     usecase "View attendance history" as UC7
     usecase "View income analytics" as UC8
     usecase "Track membership status" as UC9
-}
 
-' Package for Trainer/Staff Management
-package "Trainer/Staff Management" as staff {
+    ' Trainer/Staff Management Use Cases
     usecase "Browse trainer list" as UC10
     usecase "Book training session" as UC11
     usecase "Cancel training session" as UC12
@@ -32,20 +31,16 @@ package "Trainer/Staff Management" as staff {
     usecase "Add/edit/delete staff" as UC15
     usecase "Assign roles" as UC16
     usecase "Manage work shifts" as UC17
-}
 
-' Package for Workout Plans
-package "Workout Plans/Schedule" as workout {
+    ' Workout Plans Use Cases
     usecase "Add exercises" as UC18
     usecase "Create workout schedule" as UC19
     usecase "Update workout schedule" as UC20
     usecase "Delete workout schedule" as UC21
     usecase "Assign schedules to members" as UC22
     usecase "View schedule with exercises" as UC23
-}
 
-' Package for Equipment Maintenance
-package "Equipment Maintenance" as equipment {
+    ' Equipment Maintenance Use Cases
     usecase "Schedule routine maintenance" as UC24
     usecase "Raise fault tickets" as UC25
     usecase "Assign repair tasks" as UC26

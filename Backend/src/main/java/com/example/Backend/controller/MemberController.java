@@ -3,7 +3,7 @@ package com.example.Backend.controller;
 import com.example.Backend.dto.LoginRequest;
 import com.example.Backend.dto.LoginResponse;
 import com.example.Backend.dto.MemberRegistrationDTO;
-import com.example.Backend.entity.Member;
+import com.example.Backend.model.Member;
 import com.example.Backend.service.MemberService;
 import com.example.Backend.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;

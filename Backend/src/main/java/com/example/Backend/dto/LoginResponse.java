@@ -1,6 +1,6 @@
 package com.example.Backend.dto;
 
-import com.example.Backend.entity.Member;
+import com.example.Backend.model.Member;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -1,0 +1,43 @@
+@startuml Member Registration Activity Diagram
+
+start
+
+:Guest accesses GYMSYNC homepage;
+
+:Guest clicks "Register" button;
+
+:Display registration form;
+
+:Guest enters personal details;
+note right
+  Required fields:
+  - First Name
+  - Last Name
+  - Email
+  - Password
+  - Confirm Password
+  - Phone Number
+  - Address
+  - Date of Birth
+  - Membership Type (Basic/Premium/VIP)
+  - Emergency Contact
+  - Fitness Goals
+  - Medical Conditions
+  - Preferred Workout Time
+end note
+
+if () then ([Form validation successful])
+  :Submit form data to backend;
+  :Generate unique member ID;
+  :Create member profile;
+  :Store member data in database;
+  :Display success message;
+  :Redirect to login page;
+else ([Form validation failed])
+  :Display error message;
+  :Return to registration form;
+endif
+
+stop
+
+@enduml 

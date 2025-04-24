@@ -1,0 +1,30 @@
+@startuml Equipment Ticket Activity Diagram
+
+start
+
+:Staff/Admin accesses equipment list;
+
+:Staff/Admin selects equipment to update;
+
+if () then ([Update status to MAINTENANCE])
+  :Confirm status update;
+  :Update equipment status in database;
+  :Display success message;
+else ([Update maintenance date])
+  :Select maintenance date;
+  :Confirm maintenance date update;
+  :Update maintenance date in database;
+  :Display success message;
+endif
+
+if () then ([Update successful])
+  :Refresh equipment list;
+  :Show updated status/date;
+else ([Update failed])
+  :Display error message;
+  :Return to equipment list;
+endif
+
+stop
+
+@enduml 

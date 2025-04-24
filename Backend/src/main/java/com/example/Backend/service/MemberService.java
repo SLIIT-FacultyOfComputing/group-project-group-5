@@ -1,7 +1,7 @@
 package com.example.Backend.service;
 
 import com.example.Backend.dto.MemberRegistrationDTO;
-import com.example.Backend.entity.Member;
+import com.example.Backend.model.Member;
 import com.example.Backend.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;

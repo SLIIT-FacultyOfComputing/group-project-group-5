@@ -68,6 +68,6 @@ public class EquipmentController {
     public List<Equipment> getEquipmentByStatus(@RequestParam String status) {
         return equipmentService.filterByStatus(status);
     }
-
+    
 }
 

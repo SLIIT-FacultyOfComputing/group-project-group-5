@@ -73,8 +73,18 @@ public class MaintenanceScheduleController {
         return maintenanceScheduleService.updateMaintenanceDescription(id, description);
     }
 
-    @GetMapping("filter-by-status")
+    @GetMapping("/filter-by-status")
     public List<MaintenanceSchedule> getMaintenanceScheduleByStatus(@RequestParam String status) {
         return maintenanceScheduleService.filterMaintenanceScheduleByStatus(status);
+    }
+
+    @GetMapping("/filter-by-equipmentId")
+    public List<MaintenanceSchedule> getMaintenanceScheduleByEquipmentId(@RequestParam Long equipmentId) {
+        return maintenanceScheduleService.getMaintenanceScheduleByEquipmentId(equipmentId);
+    }
+
+    @GetMapping("/filter-by-type")
+    public List<MaintenanceSchedule> getMaintenanceScheduleByType(@RequestParam String type) {
+        return maintenanceScheduleService.getMaintenanceScheduleByType(type);
     }
 }

@@ -2,6 +2,7 @@ package com.example.Backend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+
 import java.sql.Date;
 
 @Entity
@@ -20,23 +21,22 @@ public class MaintenanceSchedule {
     @Column(name = "equipment_id", insertable = false, updatable = false)
     private Long equipmentId;
 
-    @Column(name = "maintenance_type", nullable = false)
+    @Column(nullable = false)
     private String maintenanceType;
 
-    @Column(name = "maintenance_date", nullable = false)
+    @Column(nullable = false)
     private Date maintenanceDate;
 
-    @Column(name = "maintenance_description", columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String maintenanceDescription;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
     private MaintenanceStatus status = MaintenanceStatus.SCHEDULED;
 
-    @Column(name = "technician")
+    // Getters and Setters
+
     private String technician;
 
-    @Column(name = "maintenance_cost")
     private Double maintenanceCost;
 
     public Long getScheduleId() {
@@ -110,4 +110,5 @@ public class MaintenanceSchedule {
     public void setEquipmentId(Long equipmentId) {
         this.equipmentId = equipmentId;
     }
+
 }

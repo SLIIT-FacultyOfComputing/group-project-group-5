@@ -2,6 +2,7 @@ package com.example.Backend.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+
 import java.sql.Date;
 import java.util.List;
 
@@ -16,24 +17,23 @@ public class Equipment {
     private String name;
     private String category;
 
-    @Column(name = "purchase_date")
     private Date purchaseDate;
 
-    @Column(name = "last_maintenance_date")
     private Date lastMaintenanceDate;
 
     @Enumerated(EnumType.STRING)
     private EquipmentStatus status = EquipmentStatus.AVAILABLE;
 
-    @Column(name = "warranty_expiry")
     private Date warrantyExpiry;
 
     @OneToMany(mappedBy = "equipmentSchedule", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference
     private List<MaintenanceSchedule> maintenanceSchedules;
 
-    @Column(name = "deleted", nullable = false)
+    @Column(nullable = false)
     private boolean deleted = false;
+
+    // Getters and Setters
 
     public Long getId() {
         return id;
@@ -106,4 +106,5 @@ public class Equipment {
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
     }
+
 }

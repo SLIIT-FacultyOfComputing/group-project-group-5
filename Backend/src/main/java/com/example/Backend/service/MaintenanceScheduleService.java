@@ -71,8 +71,9 @@ public class MaintenanceScheduleService {
             MS.setMaintenanceDate(new Date(date.getTime()));
             maintenanceScheduleRepository.save(MS);
             return MS;
+        } else {
+            return null;
         }
-        return null;
     }
 
     public MaintenanceSchedule updateMaintenanceStatus(Long id, String status) {
@@ -89,6 +90,7 @@ public class MaintenanceScheduleService {
             }
         }
         return null;
+
     }
 
     public MaintenanceSchedule updateMaintenanceCost(Long id, Double cost) {
@@ -98,7 +100,7 @@ public class MaintenanceScheduleService {
             schedule.setMaintenanceCost(cost);
             return maintenanceScheduleRepository.save(schedule);
         }
-        throw new RuntimeException("Maintenance schedule not found");
+        return null;
     }
 
     public MaintenanceSchedule updateMaintenanceDescription( Long id, String description) {
@@ -108,7 +110,7 @@ public class MaintenanceScheduleService {
             schedule.setMaintenanceDescription(description);
             return maintenanceScheduleRepository.save(schedule);
         }
-        throw new RuntimeException("Maintenance schedule not found");
+        return null;
     }
 
     public MaintenanceSchedule updateMaintenanceTechnician(Long id, String technician) {
@@ -118,7 +120,7 @@ public class MaintenanceScheduleService {
             schedule.setTechnician(technician);
             return maintenanceScheduleRepository.save(schedule);
         }
-        throw new RuntimeException("Maintenance schedule not found");
+        return null;
     }
 
     public  List<MaintenanceSchedule> filterMaintenanceScheduleByStatus(String status) {
@@ -128,5 +130,13 @@ public class MaintenanceScheduleService {
         } catch (IllegalArgumentException e) {
             throw new RuntimeException("Invalid status value: " + status);
         }
+    }
+
+    public List<MaintenanceSchedule> getMaintenanceScheduleByEquipmentId(Long equipmentId) {
+        return maintenanceScheduleRepository.findByEquipmentId(equipmentId);
+    }
+
+    public List<MaintenanceSchedule> getMaintenanceScheduleByType(String type) {
+        return maintenanceScheduleRepository.findByMaintenanceTypeContainingIgnoreCase(type);
     }
 }

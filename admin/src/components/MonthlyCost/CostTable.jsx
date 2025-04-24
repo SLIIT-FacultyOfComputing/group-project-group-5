@@ -3,12 +3,13 @@ import React from 'react';
 const CostTable = ({ 
   groupCostsByYear, 
   getYearlyTotalForYear, 
-  getMonthName, 
   showYearlyTotal 
 }) => {
   return (
     <div className="animate-fadeIn" style={{ animationDelay: '0.3s' }}>
-      {Object.entries(groupCostsByYear()).map(([year, yearCosts]) => (
+      {Object.entries(groupCostsByYear())
+        .sort((a, b) => b[0] - a[0])
+        .map(([year, yearCosts]) => (
         <div key={year} className="mb-8">
           <h3 className="text-xl font-semibold text-gray-800 mb-3 bg-gray-50 p-3 rounded-t-lg border border-gray-200 border-b-0">
             Year {year} - Rs{getYearlyTotalForYear(yearCosts).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -27,7 +28,6 @@ const CostTable = ({
                   const yearlyTotal = getYearlyTotalForYear(yearCosts);
                   const percentage = yearlyTotal > 0 ? (Number(cost.totalCost) / yearlyTotal) * 100 : 0;
                   
-                  // Format month to display as "MM(MonthName)"
                   const monthNum = cost.month.split('-')[1];
                   const monthIndex = parseInt(monthNum, 10) - 1;
                   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 

@@ -67,6 +67,7 @@ const AddEquipmentForm = () => {
     <div className="bg-gray-50 min-h-screen py-6 sm:py-8 md:py-12">
       <div className="container mx-auto px-4 sm:px-6 max-w-full sm:max-w-3xl">
         <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg sm:shadow-xl overflow-hidden border border-gray-100">
+          
           <FormHeader 
             title="Add New Equipment"
             subtitle="Fill out the form below to add new equipment to the gym inventory system."

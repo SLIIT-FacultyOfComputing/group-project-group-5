@@ -4,14 +4,15 @@ const CostCards = ({
   groupCostsByYear, 
   getYearlyTotalForYear, 
   getMonthlyAverageForYear, 
-  getMonthName 
 }) => {
   return (
     <div className="animate-fadeIn" style={{ animationDelay: '0.3s' }}>
-      {Object.entries(groupCostsByYear()).map(([year, yearCosts]) => (
+      {Object.entries(groupCostsByYear())
+        .sort((a, b) => b[0] - a[0])
+        .map(([year, yearCosts]) => (
         <div key={year} className="mb-8">
           <h3 className="text-xl font-semibold text-gray-800 mb-3 bg-gray-50 p-3 rounded-lg border border-gray-200">
-            Year {year} - ${getYearlyTotalForYear(yearCosts).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            Year {year} - Rs:{getYearlyTotalForYear(yearCosts).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {yearCosts.map((cost, index) => {
@@ -28,8 +29,11 @@ const CostCards = ({
                 >
                   <div className="flex justify-between items-start mb-3">
                     <div>
-                      <h3 className="text-lg font-bold text-gray-800">{getMonthName(cost.month)}</h3>
-                      <p className="text-sm text-gray-500">{cost.month}</p>
+                      <h3 className="text-lg font-bold text-gray-800">{year}-{
+                        typeof cost.month === 'string' && cost.month.includes('-') 
+                          ? cost.month.split('-')[1] 
+                          : String(cost.month).padStart(2, '0')
+                      }</h3>
                     </div>
                     <div className={`px-2 py-1 rounded-full text-xs font-medium ${
                       comparedToAvg > 10 ? 'bg-red-100 text-red-800' :
@@ -41,7 +45,7 @@ const CostCards = ({
                   </div>
                   
                   <div className="mb-3">
-                    <span className="text-2xl font-bold text-gray-900">${costValue.toLocaleString('en-US', {
+                    <span className="text-2xl font-bold text-gray-900">Rs:{costValue.toLocaleString('en-US', {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })}</span>

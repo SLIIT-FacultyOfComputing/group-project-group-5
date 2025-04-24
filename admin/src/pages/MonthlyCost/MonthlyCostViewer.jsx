@@ -6,7 +6,6 @@ import {
   updateMonthlyCost 
 } from "../../services/api";
 
-// Import components
 import ViewControls from '../../components/MonthlyCost/ViewControls';
 import FilterPanel from '../../components/MonthlyCost/FilterPanel';
 import StatsSummary from '../../components/MonthlyCost/StatsSummary';
@@ -24,7 +23,7 @@ const MonthlyCostViewer = () => {
   const [filter, setFilter] = useState('');
   const [yearOptions, setYearOptions] = useState([]);
   const [selectedYear, setSelectedYear] = useState('');
-  const [view, setView] = useState('table'); // 'table', 'chart', or 'cards'
+  const [view, setView] = useState('table');
   const [showYearlyTotal, setShowYearlyTotal] = useState(false);
   const [chartYear, setChartYear] = useState('all');
   const [refreshing, setRefreshing] = useState(false);
@@ -36,11 +35,10 @@ const MonthlyCostViewer = () => {
       const costsData = response.data;
       setCosts(costsData);
       
-      // Extract unique years for filter options
       const years = Array.from(new Set(costsData.map(cost => {
         const yearMonth = cost.month.split('-');
         return yearMonth[0];
-      }))).sort((a, b) => b - a); // Sort descending (newest first)
+      }))).sort((a, b) => b - a);
       
       setYearOptions(years);
       setSelectedYear(years[0] || '');
@@ -114,7 +112,6 @@ const MonthlyCostViewer = () => {
   const showToast = (message, type = 'info') => {
     setError(type === 'error' ? message : null);
     if (type !== 'error') {
-      // Create a temporary element to show success message
       const toast = document.createElement('div');
       toast.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg ${
         type === 'success' ? 'bg-green-500' : 'bg-blue-500'
@@ -122,7 +119,6 @@ const MonthlyCostViewer = () => {
       toast.innerHTML = message;
       document.body.appendChild(toast);
       
-      // Remove after 3 seconds
       setTimeout(() => {
         toast.classList.replace('animate-scaleIn', 'animate-fadeOut');
         setTimeout(() => document.body.removeChild(toast), 300);
@@ -130,7 +126,6 @@ const MonthlyCostViewer = () => {
     }
   };
 
-  // Group costs by year
   const groupCostsByYear = () => {
     const grouped = {};
     costs.forEach(cost => {
@@ -141,7 +136,6 @@ const MonthlyCostViewer = () => {
       grouped[year].push(cost);
     });
     
-    // Sort months within each year
     Object.keys(grouped).forEach(year => {
       grouped[year].sort((a, b) => a.month.localeCompare(b.month));
     });
@@ -149,19 +143,16 @@ const MonthlyCostViewer = () => {
     return grouped;
   };
   
-  // Calculate yearly total for a specific year's costs
   const getYearlyTotalForYear = (yearCosts) => {
     if (!yearCosts || !yearCosts.length) return 0;
     return yearCosts.reduce((total, cost) => total + Number(cost.totalCost), 0);
   };
   
-  // Calculate average monthly cost for a specific year
   const getMonthlyAverageForYear = (yearCosts) => {
     if (!yearCosts || !yearCosts.length) return 0;
     return getYearlyTotalForYear(yearCosts) / yearCosts.length;
   };
 
-  // Generate gradient for chart bars
   const generateGradient = (ctx, x, y, width, height) => {
     const gradient = ctx.createLinearGradient(x, y, x, y + height);
     gradient.addColorStop(0, '#3182CE');
@@ -169,19 +160,16 @@ const MonthlyCostViewer = () => {
     return gradient;
   };
 
-  // Calculate yearly total
   const getYearlyTotal = () => {
     if (!costs.length) return 0;
     return costs.reduce((total, cost) => total + Number(cost.totalCost), 0);
   };
   
-  // Calculate average monthly cost
   const getMonthlyAverage = () => {
     if (!costs.length) return 0;
     return getYearlyTotal() / costs.length;
   };
   
-  // Find highest monthly cost
   const getHighestCost = () => {
     if (!costs.length) return { month: '-', cost: 0 };
     const highest = costs.reduce((max, cost) => 
@@ -189,7 +177,6 @@ const MonthlyCostViewer = () => {
     return { month: highest.month, cost: Number(highest.totalCost) };
   };
   
-  // Find lowest monthly cost
   const getLowestCost = () => {
     if (!costs.length) return { month: '-', cost: 0 };
     const lowest = costs.reduce((min, cost) => 
@@ -197,28 +184,10 @@ const MonthlyCostViewer = () => {
     return { month: lowest.month, cost: Number(lowest.totalCost) };
   };
 
-  // Export current data to CSV
-  const exportToCSV = () => {
-    if (!costs.length) return;
-    
-    const csvHeader = 'Month,Cost\n';
-    const csvRows = costs.map(cost => `${cost.month},${cost.totalCost}`).join('\n');
-    const csvContent = `data:text/csv;charset=utf-8,${csvHeader}${csvRows}`;
-    
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `maintenance_costs_${new Date().toISOString().slice(0,10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   useEffect(() => {
     fetchAllCosts();
   }, []);
 
-  // Get month name from YYYY-MM format
   const getMonthName = (monthStr) => {
     if (!monthStr || monthStr.length !== 7) return monthStr;
     const monthNum = parseInt(monthStr.split('-')[1], 10);
@@ -233,7 +202,6 @@ const MonthlyCostViewer = () => {
           setView={setView}
           refreshing={refreshing}
           handleUpdateMonthlyCost={handleUpdateMonthlyCost}
-          exportToCSV={exportToCSV}
           hasData={costs.length > 0}
         />
         

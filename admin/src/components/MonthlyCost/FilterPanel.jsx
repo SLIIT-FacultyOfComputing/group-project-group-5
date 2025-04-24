@@ -9,45 +9,22 @@ const FilterPanel = ({
   loading, 
   handleFilter, 
   resetFilter,
-  handleKeyPress 
 }) => {
   return (
     <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200 animate-fadeIn" style={{ animationDelay: '0.1s' }}>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="flex-1">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Filter by Year (YYYY) or Month (YYYY-MM)
-          </label>
-          <div className="relative">
-            <input
-              type="text"
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="e.g., 2025 or 2025-03"
-              className="w-full p-2 pl-10 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            </div>
-          </div>
-        </div>
-        
-        <div className="flex-1">
+
+      <div className="flex-1">
+
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Filter by Year
           </label>
           <select
-            value={selectedYear}
+            value={selectedYear || ""}
             onChange={(e) => {
-              setSelectedYear(e.target.value);
-              if (e.target.value) {
-                setFilter(e.target.value);
-              } else {
-                setFilter('');
-              }
+              const newYear = e.target.value;
+              setSelectedYear(newYear);
+              setFilter(newYear);
             }}
             className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
@@ -55,6 +32,38 @@ const FilterPanel = ({
             {yearOptions.map(year => (
               <option key={year} value={year}>{year}</option>
             ))}
+          </select>
+        </div>
+
+        <div className="flex-1">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Filter by Month
+          </label>
+          <select
+            value={filter.length > 4 ? filter.substring(5) : ""}
+            onChange={(e) => {
+              if (e.target.value) {
+                const yearPrefix = selectedYear || new Date().getFullYear();
+                setFilter(`${yearPrefix}-${e.target.value}`);
+              } else {
+                setFilter(selectedYear || '');
+              }
+            }}
+            className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="">All Months</option>
+            <option value="01">01 (January)</option>
+            <option value="02">02 (February)</option>
+            <option value="03">03 (March)</option>
+            <option value="04">04 (April)</option>
+            <option value="05">05 (May)</option>
+            <option value="06">06 (June)</option>
+            <option value="07">07 (July)</option>
+            <option value="08">08 (August)</option>
+            <option value="09">09 (September)</option>
+            <option value="10">10 (October)</option>
+            <option value="11">11 (November)</option>
+            <option value="12">12 (December)</option>
           </select>
         </div>
         

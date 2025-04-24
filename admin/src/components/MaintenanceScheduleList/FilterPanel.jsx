@@ -1,22 +1,19 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
+
 const FilterPanel = ({ 
   onApplyFilters, 
   initialFilters = {}, 
   equipmentIds = [],
-  technicianNames = [] 
+  maintenanceTypes = []
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [filters, setFilters] = useState({
     status: initialFilters.status || 'ALL',
     type: initialFilters.type || 'ALL',
-    costRange: initialFilters.costRange || { min: '', max: '' },
-    equipmentId: initialFilters.equipmentId || 'ALL',
-    technician: initialFilters.technician || 'ALL'
+    equipmentId: initialFilters.equipmentId || 'ALL'
   });
-  
-  const maintenanceTypes = ['ALL', 'PREVENTIVE', 'CORRECTIVE', 'PREDICTIVE', 'CONDITION_BASED'];
   
   const statusOptions = ['ALL', 'SCHEDULED', 'INPROGRESS', 'COMPLETED', 'CANCELED'];
   
@@ -24,16 +21,6 @@ const FilterPanel = ({
     setFilters(prev => ({
       ...prev,
       [field]: value
-    }));
-  };
-  
-  const handleCostRangeChange = (field, value) => {
-    setFilters(prev => ({
-      ...prev,
-      costRange: {
-        ...prev.costRange,
-        [field]: value
-      }
     }));
   };
   
@@ -45,16 +32,12 @@ const FilterPanel = ({
     setFilters({
       status: 'ALL',
       type: 'ALL',
-      costRange: { min: '', max: '' },
-      equipmentId: 'ALL',
-      technician: 'ALL'
+      equipmentId: 'ALL'
     });
     onApplyFilters({
       status: 'ALL',
       type: 'ALL',
-      costRange: { min: '', max: '' },
-      equipmentId: 'ALL',
-      technician: 'ALL'
+      equipmentId: 'ALL'
     });
   };
   
@@ -122,42 +105,13 @@ const FilterPanel = ({
               onChange={(e) => handleFilterChange('type', e.target.value)}
               className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             >
+              <option value="ALL">All Types</option>
               {maintenanceTypes.map(type => (
                 <option key={type} value={type}>
-                  {type === 'ALL' ? 'All Types' : type.replace('_', ' ')}
+                  {type}
                 </option>
               ))}
             </select>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Cost Range</label>
-            <div className="flex space-x-2">
-              <div className="relative rounded-md shadow-sm flex-1">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <span className="text-gray-500 sm:text-sm">Rs:</span>
-                </div>
-                <input
-                  type="number"
-                  value={filters.costRange.min}
-                  onChange={(e) => handleCostRangeChange('min', e.target.value)}
-                  className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-7 pr-3 py-2 sm:text-sm border-gray-300 rounded-md"
-                  placeholder="Min"
-                />
-              </div>
-              <div className="relative rounded-md shadow-sm flex-1">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <span className="text-gray-500 sm:text-sm">Rs:</span>
-                </div>
-                <input
-                  type="number"
-                  value={filters.costRange.max}
-                  onChange={(e) => handleCostRangeChange('max', e.target.value)}
-                  className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-7 pr-3 py-2 sm:text-sm border-gray-300 rounded-md"
-                  placeholder="Max"
-                />
-              </div>
-            </div>
           </div>
           
           <div>
@@ -170,20 +124,6 @@ const FilterPanel = ({
               <option value="ALL">All Equipment</option>
               {equipmentIds.map(id => (
                 <option key={id} value={id}>{id}</option>
-              ))}
-            </select>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Technician</label>
-            <select
-              value={filters.technician}
-              onChange={(e) => handleFilterChange('technician', e.target.value)}
-              className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            >
-              <option value="ALL">All Technicians</option>
-              {technicianNames.map(name => (
-                <option key={name} value={name}>{name}</option>
               ))}
             </select>
           </div>
@@ -214,7 +154,7 @@ FilterPanel.propTypes = {
   onApplyFilters: PropTypes.func.isRequired,
   initialFilters: PropTypes.object,
   equipmentIds: PropTypes.array,
-  technicianNames: PropTypes.array
+  maintenanceTypes: PropTypes.array
 };
 
 export default FilterPanel;

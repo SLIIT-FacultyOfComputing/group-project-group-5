@@ -9,13 +9,12 @@ const BasicInfoForm = ({
   loading, 
   equipments, 
   maintenanceTypes,
-  getStatusClass,
   handleNextStage 
 }) => {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Equipment ID */}
+
         <div className="col-span-1">
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Equipment ID <span className="text-red-500">*</span>
@@ -65,7 +64,6 @@ const BasicInfoForm = ({
           </div>
         </div>
 
-        {/* Maintenance Type */}
         <div className="col-span-1">
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Maintenance Type <span className="text-red-500">*</span>
@@ -111,7 +109,6 @@ const BasicInfoForm = ({
           </div>
         </div>
 
-        {/* Maintenance Date */}
         <div className="col-span-1">
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Maintenance Date <span className="text-red-500">*</span>
@@ -147,35 +144,6 @@ const BasicInfoForm = ({
             {touched.maintenanceDate && errors.maintenanceDate && (
               <p className="mt-1 text-sm text-red-600 animate-fadeIn">{errors.maintenanceDate}</p>
             )}
-          </div>
-        </div>
-
-        {/* Status */}
-        <div className="col-span-1">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-          <div className="flex flex-wrap gap-2">
-            {['SCHEDULED', 'INPROGRESS', 'COMPLETED', 'CANCELED'].map((status) => (
-              <label 
-                key={status} 
-                className={`flex items-center px-3 py-2 border rounded-md cursor-pointer transition-all duration-200 ${formData.status === status ? getStatusClass(status) + ' ring-2 ring-offset-1' : 'bg-white border-gray-300 hover:bg-gray-50'}`}
-              >
-                <input
-                  type="radio"
-                  name="status"
-                  value={status}
-                  checked={formData.status === status}
-                  onChange={handleChange}
-                  className="sr-only"
-                />
-                <span className={`inline-block w-2 h-2 rounded-full mr-2 ${
-                  status === 'SCHEDULED' ? 'bg-blue-500' :
-                  status === 'INPROGRESS' ? 'bg-yellow-500' :
-                  status === 'COMPLETED' ? 'bg-green-500' :
-                  'bg-red-500'
-                }`}></span>
-                <span>{status === 'INPROGRESS' ? 'In Progress' : status.charAt(0) + status.slice(1).toLowerCase()}</span>
-              </label>
-            ))}
           </div>
         </div>
       </div>

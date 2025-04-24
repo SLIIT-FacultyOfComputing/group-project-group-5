@@ -5,8 +5,9 @@ import AddEquipmentForm from "./Equipment/AddEquipmentForm";
 import Header from "../components/header";
 import Footer from "../components/Footer";
 import MaintenanceScheduleList from "./Maintenance/MaintenanceScheduleList";
-import MaintenanceScheduleAdd from "./Maintenance/MaintenanceScheduleAdd";
+import MaintenanceScheduleAdd from "./Maintenance/AddMaintenanceSchedule";
 import MonthlyCostViewer from "./MonthlyCost/MonthlyCostViewer";
+
 
 const EquipmentPage = () => {
   const location = useLocation();

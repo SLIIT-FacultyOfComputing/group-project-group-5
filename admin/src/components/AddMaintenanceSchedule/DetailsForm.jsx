@@ -10,8 +10,7 @@ const DetailsForm = ({
   equipments, 
   technicianSuggestions,
   handlePrevStage,
-  submitting,
-  getStatusClass
+  submitting
 }) => {
   return (
     <div className="space-y-6">
@@ -114,7 +113,7 @@ const DetailsForm = ({
       </div>
 
       {/* Summary Card */}
-      <SummaryCard formData={formData} equipments={equipments} getStatusClass={getStatusClass} />
+      <SummaryCard formData={formData} equipments={equipments} />
 
       <div className="pt-4 border-t border-gray-200 mt-6">
         <div className="flex justify-between">

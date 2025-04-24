@@ -13,7 +13,7 @@ import {
   ProgressIndicator,
   BasicInfoForm,
   DetailsForm
-} from '../../components/MaintenanceScheduleAdd';
+} from '../../components/AddMaintenanceSchedule';
 
 const MaintenanceScheduleAdd = () => {
   const navigate = useNavigate();
@@ -22,9 +22,9 @@ const MaintenanceScheduleAdd = () => {
     maintenanceType: '',
     maintenanceDate: '',
     maintenanceDescription: '',
-    status: 'SCHEDULED',
+    maintenanceCost: '',
     technician: '',
-    maintenanceCost: ''
+    status: 'SCHEDULED'
   });
   const [equipments, setEquipments] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -166,8 +166,6 @@ const MaintenanceScheduleAdd = () => {
               <div className="font-medium">{formData.maintenanceType}</div>
               <div className="text-gray-600">Date:</div>
               <div className="font-medium">{new Date(formData.maintenanceDate).toLocaleDateString()}</div>
-              <div className="text-gray-600">Status:</div>
-              <div className="font-medium">{formData.status}</div>
               <div className="text-gray-600">Cost:</div>
               <div className="font-medium">${parseFloat(formData.maintenanceCost || 0).toFixed(2)}</div>
             </div>
@@ -202,9 +200,9 @@ const MaintenanceScheduleAdd = () => {
         maintenanceType: '',
         maintenanceDate: '',
         maintenanceDescription: '',
-        status: 'SCHEDULED',
+        maintenanceCost: '',
         technician: '',
-        maintenanceCost: ''
+        status: 'SCHEDULED'
       });
       
       setTimeout(() => {
@@ -232,25 +230,21 @@ const MaintenanceScheduleAdd = () => {
 
   const getStatusClass = (status) => {
     switch (status) {
-      case 'SCHEDULED': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'INPROGRESS': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'COMPLETED': return 'bg-green-100 text-green-800 border-green-200';
-      case 'CANCELED': return 'bg-red-100 text-red-800 border-red-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'SCHEDULED': return 'bg-blue-50 text-blue-700 border-blue-300';
+      case 'INPROGRESS': return 'bg-yellow-50 text-yellow-700 border-yellow-300';
+      case 'COMPLETED': return 'bg-green-50 text-green-700 border-green-300';
+      case 'CANCELED': return 'bg-red-50 text-red-700 border-red-300';
+      default: return 'bg-gray-50 text-gray-700 border-gray-300';
     }
   };
 
   return (
     <div className="container mx-auto p-4 bg-gray-50 min-h-screen">
-      {/* Breadcrumb Navigation */}
       <Breadcrumb />
 
-      {/* Header */}
       <Header />
       
-      {/* Form Card */}
       <div className="bg-white p-6 rounded-lg shadow-md mb-6 animate-fadeIn">
-        {/* Progress indicator */}
         <ProgressIndicator formStage={formStage} />
       </div>
 

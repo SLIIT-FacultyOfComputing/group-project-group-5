@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom"; // Add this import
+import { Link } from "react-router-dom"; 
 import {
   getEquipment,
   deleteEquipment,
   updateEquipmentStatus,
-  getEquipmentById,
   updateEquipmentMaintenanceDate,
-  searchEquipmentByName,
+  searchEquipment,
   filterEquipmentByStatus
 } from "../../services/api";
 import {
@@ -16,10 +15,8 @@ import {
   CardView,
   EmptyState,
   LoadingSkeletons,
-  ConfirmationModal,
-  SuccessModal,
-  ErrorModal
 } from "../../components/EquipmentList";
+import Modal from "../../components/Modal";
 
 const formatDateForInput = (dateString) => {
   if (!dateString) return "";
@@ -28,7 +25,6 @@ const formatDateForInput = (dateString) => {
 };
 
 const EquipmentList = () => {
-  // State declarations
   const [equipment, setEquipment] = useState([]);
   const [displayEquipment, setDisplayEquipment] = useState([]);
   const [search, setSearch] = useState("");
@@ -44,7 +40,6 @@ const EquipmentList = () => {
   const [selectedItemId, setSelectedItemId] = useState(null);
   const [modalAction, setModalAction] = useState("");
 
-  // Event handlers and API calls
   const fetchEquipment = async () => {
     try {
       setLoading(true);
@@ -69,7 +64,6 @@ const EquipmentList = () => {
     }));
   };
 
-  // Effect hooks
   useEffect(() => {
     fetchEquipment();
   }, []);
@@ -95,7 +89,6 @@ const EquipmentList = () => {
     fetchFilteredEquipment();
   }, [activeFilter]);
 
-  // Action handlers
   const openDeleteModal = (id) => {
     setSelectedItemId(id);
     setModalAction("delete");
@@ -202,26 +195,13 @@ const EquipmentList = () => {
     try {
       setLoading(true);
       setSearchNotFound(false);
-      let response;
       
-      if (!isNaN(search)) {
-        // Search by ID
-        response = await getEquipmentById(search);
-        if (response.data) {
-          setDisplayEquipment([response.data]);
-        } else {
-          setSearchNotFound(true);
-          setDisplayEquipment([]);
-        }
+      const response = await searchEquipment(search);
+      if (response.data && response.data.length > 0) {
+        setDisplayEquipment(response.data);
       } else {
-        // Search by name
-        response = await searchEquipmentByName(search);
-        if (response.data && response.data.length > 0) {
-          setDisplayEquipment(response.data);
-        } else {
-          setSearchNotFound(true);
-          setDisplayEquipment([]);
-        }
+        setSearchNotFound(true);
+        setDisplayEquipment([]);
       }
     } catch (error) {
       setError("Error searching for equipment");
@@ -259,7 +239,6 @@ const EquipmentList = () => {
     return counts;
   };
 
-  // Render
   return (
     <div className="bg-gray-50 min-h-screen py-8">
       <div className="container mx-auto px-4 max-w-7xl">
@@ -370,25 +349,45 @@ const EquipmentList = () => {
           </div>
         </div>
       </div>
-
-      <ConfirmationModal
+      
+      {/* Confirmation Modal*/}
+      <Modal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
-        modalAction={modalAction}
-        modalMessage={modalMessage}
-        handleConfirmAction={handleConfirmAction}
+        onConfirm={handleConfirmAction}
+        title={modalAction === "delete" ? "Confirm Deletion" : 
+               modalAction === "status" ? "Confirm Status Update" : 
+               "Confirm Maintenance Update"}
+        message={modalMessage}
+        confirmText={modalAction === "delete" ? "Delete" : 
+                   modalAction === "status" ? "Update Status" : 
+                   "Update Maintenance"}
+        type="warning"
+        showCancel={true}
       />
 
-      <SuccessModal
+      {/* Success Modal*/}
+      <Modal
         isOpen={isSuccessModalOpen}
         onClose={() => setIsSuccessModalOpen(false)}
-        modalMessage={modalMessage}
+        onConfirm={() => setIsSuccessModalOpen(false)}
+        title="Success!"
+        message={modalMessage}
+        confirmText="Great!"
+        type="success"
+        showCancel={false}
       />
 
-      <ErrorModal
+      {/* Error Modal*/}
+      <Modal
         isOpen={isErrorModalOpen}
         onClose={() => setIsErrorModalOpen(false)}
-        modalMessage={modalMessage}
+        onConfirm={() => setIsErrorModalOpen(false)}
+        title="Error"
+        message={modalMessage}
+        confirmText="OK"
+        type="danger"
+        showCancel={false}
       />
     </div>
   );

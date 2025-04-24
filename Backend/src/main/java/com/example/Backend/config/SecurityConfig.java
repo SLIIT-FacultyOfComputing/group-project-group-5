@@ -21,6 +21,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/members/register").permitAll()
                         .requestMatchers("/api/members/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/members/**").permitAll()
+                        .requestMatchers("/api/attendance/**").permitAll()
                         .anyRequest().authenticated())
                 .httpBasic();
 

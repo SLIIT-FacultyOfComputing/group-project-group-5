@@ -5,8 +5,12 @@ const SummaryCard = ({ formData, equipments }) => {
   const getEquipmentName = () => {
     if (!formData.equipmentId) return 'No equipment selected';
     
-    const equipment = equipments.find(item => item.id === formData.equipmentId);
-    return equipment ? equipment.name : 'Unknown Equipment';
+    const equipmentId = String(formData.equipmentId);
+    const equipment = equipments.find(item => String(item.id) === equipmentId);
+    
+    return equipment 
+      ? `${equipmentId}(${equipment.name})` 
+      : `${equipmentId}(Unknown Equipment)`;
   };
 
   return (

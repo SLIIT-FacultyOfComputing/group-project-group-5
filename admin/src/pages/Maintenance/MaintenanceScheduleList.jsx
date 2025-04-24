@@ -393,8 +393,7 @@ const MaintenanceScheduleList = () => {
     <div className="container mx-auto p-4 bg-gray-50 min-h-screen transition-colors duration-300">
       {/* Header */}
       <MaintenanceHeader 
-        schedulesCount={schedules.length} 
-        onRefresh={fetchData} 
+        schedulesCount={schedules.length}
       />
       
       {/* Filter Panel */}

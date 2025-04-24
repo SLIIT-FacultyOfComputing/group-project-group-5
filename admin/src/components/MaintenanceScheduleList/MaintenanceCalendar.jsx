@@ -140,10 +140,6 @@ const MaintenanceCalendar = ({ schedules, equipmentData = [] }) => {
             className={getDateClassName(date)}
             onMouseEnter={(e) => handleMouseEnter(e, date)}
             onMouseLeave={handleMouseLeave}
-            title={maintenanceInfo.length > 0 ? 
-              `${maintenanceInfo.length} maintenance ${maintenanceInfo.length === 1 ? 'task' : 'tasks'}` : 
-              'No scheduled maintenance'
-            }
           >
             {day}
           </button>

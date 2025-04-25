@@ -1,0 +1,144 @@
+@startuml GymSync Use Case Diagram
+' Use vertical layout
+left to right direction
+skinparam packageStyle rectangle
+
+' Define actors
+actor "Admin" as admin
+actor "Member" as member
+actor "Guest" as guest
+actor "Staff" as staff
+
+' Define systems
+rectangle "GymSync System" {
+  ' Membership Management Use Cases
+  package "Membership Management" {
+    usecase "Register as New Member" as UC1
+    usecase "Login to Account" as UC2
+    usecase "View Profile" as UC3
+    usecase "Update Profile" as UC3_1
+    usecase "Access QR Code" as UC4
+    usecase "Download QR Code" as UC5
+    usecase "View Membership Status" as UC6
+    usecase "View All Members" as UC7
+    usecase "Edit Member Information" as UC8
+    usecase "View Member Attendance Logs" as UC9
+    usecase "View Payment History" as UC10
+    usecase "Access Registration Page" as UC11
+    usecase "Submit Registration Form" as UC12
+  }
+  
+  ' Staff Management Use Cases
+  package "Staff Management" {
+    usecase "Add Staff Member" as UC13
+    usecase "Assign Shift to Staff" as UC14
+    usecase "View Staff List" as UC15
+    usecase "Book Appointment with Staff" as UC16
+    usecase "Check Staff Availability" as UC17
+    usecase "View My Appointments" as UC18
+    usecase "Accept Appointment" as UC19
+    usecase "Reject Appointment" as UC20
+  }
+  
+  ' Workout Plans Use Cases
+  package "Workout Plans" {
+    usecase "Create Exercise" as UC21
+    usecase "Retrieve Exercises" as UC22
+    usecase "Update Exercise" as UC23
+    usecase "Delete Exercise" as UC24
+    usecase "Create Routine" as UC25
+    usecase "Retrieve Routine Summaries" as UC26
+    usecase "Retrieve Routine Details" as UC27
+    usecase "Rename Routine" as UC28
+    usecase "Add Exercise to Routine" as UC29
+    usecase "Remove Exercise from Routine" as UC30
+    usecase "Delete Routine" as UC31
+    usecase "Log Workout Session" as UC32
+    usecase "View Exercise Progress" as UC33
+  }
+  
+  ' Equipment Management Use Cases
+  package "Equipment Management" {
+    usecase "Add Equipment" as UC34
+    usecase "View Equipment" as UC35
+    usecase "Update Equipment Status" as UC36
+    usecase "Create Maintenance Schedule" as UC37
+    usecase "View Maintenance Schedule" as UC38
+    usecase "View Monthly Maintenance Cost" as UC39
+    usecase "Raise Ticket" as UC40
+    usecase "Track Ticket Status" as UC41
+    usecase "View Ticket" as UC42
+    usecase "Assign Ticket To Staff" as UC43
+  }
+}
+
+' Define relationships
+' Guest relationships
+guest --> UC11
+guest --> UC12
+UC12 ..> UC1 : <<include>>
+
+' Member relationships
+member --> UC1
+member --> UC2
+member --> UC3
+UC3 ..> UC3_1 : <<extend>>
+member --> UC4
+member --> UC5
+UC5 ..> UC4 : <<include>>
+member --> UC6
+member --> UC16
+member --> UC17
+member --> UC18
+member --> UC32
+member --> UC33
+member --> UC35
+member --> UC40
+member --> UC41
+
+' Admin relationships
+admin --> UC2
+admin --> UC7
+admin --> UC8
+admin --> UC9
+admin --> UC10
+admin --> UC13
+admin --> UC14
+admin --> UC15
+admin --> UC21
+admin --> UC22
+admin --> UC23
+admin --> UC24
+admin --> UC25
+admin --> UC26
+admin --> UC27
+admin --> UC28
+admin --> UC29
+admin --> UC30
+admin --> UC31
+admin --> UC34
+admin --> UC35
+admin --> UC36
+admin --> UC37
+admin --> UC38
+admin --> UC39
+admin --> UC42
+admin --> UC43
+
+' Staff relationships (combined staff & trainer)
+staff --> UC2
+staff --> UC18
+staff --> UC19
+staff --> UC20
+staff --> UC35
+staff --> UC40
+staff --> UC41
+
+' Include/Extend relationships for workflows
+UC16 ..> UC17 : <<include>>
+UC19 ..> UC18 : <<include>>
+UC20 ..> UC18 : <<include>>
+UC25 ..> UC29 : <<include>>
+UC31 ..> UC30 : <<include>>
+UC43 ..> UC42 : <<include>>
+@enduml

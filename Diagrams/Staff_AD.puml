@@ -1,0 +1,54 @@
+@startuml Staff Management Activity Diagram
+
+|Admin|
+start
+:Add new staff member;
+note right
+  Required information:
+  - Name
+  - Role
+  - Contact details
+  - Qualifications
+end note
+
+if () then ([Assign shifts required])
+  :Assign work shifts;
+  note right
+    Shift details:
+    - Date
+    - Time
+    - Location
+  end note
+endif
+
+|Trainee|
+:Submit training appointment request;
+note right
+  Request includes:
+  - Preferred date/time
+  - Training goals
+  - Special requirements
+end note
+
+|Trainer|
+:Review appointment request;
+if () then ([Request accepted])
+  :Confirm appointment;
+  :Update schedule;
+else ([Request rejected])
+  :Decline appointment;
+  :Provide reason for rejection;
+endif
+
+|Trainee|
+:Receive appointment response;
+if () then ([Appointment confirmed])
+  :Prepare for training session;
+else ([Appointment rejected])
+  :Review rejection reason;
+  :Consider alternative options;
+endif
+
+stop
+
+@enduml

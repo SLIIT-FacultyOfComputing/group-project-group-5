@@ -1,0 +1,59 @@
+@startuml Membership Management Class Diagram
+
+' Define packages
+package "Membership Management" {
+  class Member {
+    -id: String
+    -firstName: String
+    -lastName: String
+    -email: String
+    -phoneNumber: String
+    -membershipType: Enum
+    -status: String
+    +register(): Boolean
+    +updateProfile(): Boolean
+    +getProfile(): Member
+  }
+
+  class Registration {
+    -formData: Object
+    -error: String
+    +validateForm(): Boolean
+    +submitForm(): Boolean
+  }
+
+  class QRCode {
+    -memberId: String
+    +generate(): String
+    +download(): Boolean
+  }
+
+  class Attendance {
+    -memberId: String
+    -timestamp: DateTime
+    -type: Enum
+    +record(): Boolean
+    +getHistory(): List<Attendance>
+  }
+}
+
+' Define relationships
+Member "1" -- "1" QRCode : generates >
+Member "1" -- "*" Attendance : records >
+Registration "1" -- "1" Member : creates >
+
+' Add notes for clarification
+note right of Member
+  MembershipType:
+  - BASIC
+  - PREMIUM
+  - VIP
+end note
+
+note right of Attendance
+  Type:
+  - CHECK_IN
+  - CHECK_OUT
+end note
+
+@enduml 

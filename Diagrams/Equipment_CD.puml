@@ -1,0 +1,76 @@
+@startuml
+' Hide methods for brevity unless needed
+skinparam classAttributeIconSize 0
+
+class Equipment {
+    -Long: id
+    -String: name
+    -String: category
+    -Date: purchaseDate
+    -Date: lastMaintenanceDate
+    -String: status
+    -Date: warrantyExpiryDate
+
+    +displayAllEquipment()
+    +addEquipment()
+    +deleteEquipmentById()
+    +updateEquipmentStatus()
+    +updateLastMaintenanceDate()
+    +filterByStatus()
+}
+
+class MaintenanceSchedule {
+    -Long: scheduleId
+    -String: maintenanceType
+    -Date: maintenanceDate
+    -String: description
+    -String: status
+    -String: technician
+    -Double: cost
+
+    +addMaintenanceSchedule()
+    +displayMaintenanceSchedule()
+    +updateMaintenanceSchedule()
+    +filterByStatus()
+}
+
+class Ticket {
+    -Long: id
+    -String: type
+    -String: description
+    -String; status
+    -String: priority
+    -Date: createdDate
+    -Date: updatedDate
+    -Long: raisedBy
+    -Long: assignTo
+
+    +raiseTicket()
+    +displayTicket()
+    +updateStatus()
+    +filterByStatus()
+    +filterByPriority()
+    +assignToStaff()
+
+}
+
+class MonthlyMaintenanceCost {
+    -Date: month
+    -Double: totalCost
+
+    +calculateMonthlyCosts()
+    +updateMonthlyCosts()
+    +displayMonthlyCosts()
+}
+
+' Relationships
+Equipment "1" *-- "0..*" MaintenanceSchedule : schedules
+MaintenanceSchedule "1" *-- "0..*" MonthlyMaintenanceCost :  cost
+
+
+
+Ticket --> Member : raisedByUser
+Ticket --> Staff : raisedByStaff
+Ticket --> Staff : assignedTo
+
+@enduml

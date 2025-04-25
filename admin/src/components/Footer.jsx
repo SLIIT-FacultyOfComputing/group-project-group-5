@@ -3,9 +3,6 @@ import { Link } from "react-router-dom";
 const Footer = () => {
   return (
     <footer className="bg-gradient-to-r from-rose-900 to-rose-800 py-8 sm:py-10 md:py-12 text-center text-sm text-rose-100 relative mt-8 sm:mt-10 md:mt-12">
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute inset-0 gym-pattern"></div>
-      </div>
       <div className="container mx-auto px-4 sm:px-5 md:px-6 relative">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 lg:gap-10">
 

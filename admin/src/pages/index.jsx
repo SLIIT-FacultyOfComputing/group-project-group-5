@@ -108,7 +108,6 @@ const StaffPage = () => {
       </div>
 
       <div className="container mx-auto px-3 sm:px-4 md:px-6 pb-8 md:pb-12 relative mt-4 md:mt-6">
-        <div className="absolute inset-0 gym-equipment-pattern opacity-5 pointer-events-none"></div>
         <div className="glass-effect rounded-xl p-2 sm:p-4">
           <Routes>
             <Route path="/staff-list" element={<StaffList />} />
@@ -144,15 +143,6 @@ const StaffPage = () => {
         
         .bg-pattern-light {
           background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fillRule='evenodd'%3E%3Cg fill='%23000000' fillOpacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        }
-        
-        .gym-pattern {
-          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='%23ffffff' fillOpacity='0.1'%3E%3Cpath d='M20 30a10 10 0 1 1 0-20 10 10 0 0 1 0 20zm0-5a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 60a10 10 0 1 1 0-20 10 10 0 0 1 0 20zm0-5a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm60-55a10 10 0 1 1 0-20 10 10 0 0 1 0 20zm0-5a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 60a10 10 0 1 1 0-20 10 10 0 0 1 0 20zm0-5a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM59 29h2v2h-2v-2zm0 60h2v2h-2v-2zM29 59h2v2h-2v-2zm60 0h2v2h-2v-2zm-59 4h60v2H30v-2z'/%3E%3C/g%3E%3C/svg%3E");
-        }
-        
-        .gym-equipment-pattern {
-          background-image: url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fillOpacity='0.05'%3E%3Cpath d='M25 15h5v90h-5zM90 15h5v90h-5zM15 55h90v10H15zM42 30c0-2.8 2.2-5 5-5s5 2.2 5 5v60c0 2.8-2.2 5-5 5s-5-2.2-5-5V30zM68 30c0-2.8 2.2-5 5-5s5 2.2 5 5v60c0 2.8-2.2 5-5 5s-5-2.2-5-5V30z'/%3E%3Cpath d='M10 10h10v10H10zM100 10h10v10h-10zM10 100h10v10H10zM100 100h10v10h-10z'/%3E%3C/g%3E%3C/svg%3E");
-          background-size: 80px 80px;
         }
         
         @keyframes pulseGlow {

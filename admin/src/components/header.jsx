@@ -14,9 +14,6 @@ const Header = ({ scrolled }) => {
         scrolled ? 'py-2 sm:py-3 shadow-lg' : 'py-3 sm:py-5'
       }`}
     >
-      <div className="absolute inset-0 opacity-15">
-        <div className="absolute inset-0 gym-pattern"></div>
-      </div>
       <div className="container mx-auto px-3 sm:px-4 md:px-6 relative">
         <div className="flex items-center justify-between">
           <div className="flex items-center">

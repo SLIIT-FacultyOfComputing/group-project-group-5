@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react"
 import { getStaffById, updateStaff } from "../../services/api"
 import { useParams, useNavigate } from "react-router-dom"
-import ConfirmationModal from "../../components/ConfirmationModal"
 
 const UpdateStaff = () => {
   const { nic } = useParams()
@@ -20,9 +19,10 @@ const UpdateStaff = () => {
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-  const [success, setSuccess] = useState(false)
+  const [success, setSuccess] = useState(null)
   const [validationErrors, setValidationErrors] = useState({})
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
+  const [showUpdateModal, setShowUpdateModal] = useState(false)
 
   useEffect(() => {
     const fetchStaffDetails = async () => {
@@ -34,6 +34,10 @@ const UpdateStaff = () => {
         if (staffData.startDate) {
           staffData.startDate = formatDateForInput(staffData.startDate)
         }
+
+        // Set password fields to empty
+        staffData.password = ""
+        staffData.confirmPassword = ""
 
         setFormData(staffData)
       } catch (error) {
@@ -150,11 +154,11 @@ const UpdateStaff = () => {
       return
     }
 
-    setShowConfirmDialog(true)
+    setShowUpdateModal(true)
   }
 
-  const confirmUpdate = async () => {
-    setShowConfirmDialog(false)
+  const handleConfirmUpdate = async () => {
+    setShowUpdateModal(false)
     setLoading(true)
 
     try {
@@ -267,7 +271,7 @@ const UpdateStaff = () => {
                 </div>
                 <div>
                   <h3 className="font-medium">Success</h3>
-                  <p className="text-xs sm:text-sm text-green-600">Staff member updated successfully!</p>
+                  <p className="text-xs sm:text-sm text-green-600">{success}</p>
                 </div>
               </div>
             )}
@@ -734,17 +738,27 @@ const UpdateStaff = () => {
         </div>
       </div>
 
-      {showConfirmDialog && (
-        <ConfirmationModal
-          isOpen={showConfirmDialog}
-          title="Confirm Update"
-          message="Are you sure you want to update this staff member's information? This action cannot be undone."
-          confirmText="Update"
-          cancelText="Cancel"
-          onConfirm={confirmUpdate}
-          onCancel={() => setShowConfirmDialog(false)}
-          type="update"
-        />
+      {showUpdateModal && (
+        <div className="fixed inset-0 bg-gray-200 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Update Staff Member</h3>
+            <p className="text-gray-600 mb-6">Are you sure you want to update this staff member's information? This action cannot be undone.</p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={() => setShowUpdateModal(false)}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmUpdate}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              >
+                Update
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

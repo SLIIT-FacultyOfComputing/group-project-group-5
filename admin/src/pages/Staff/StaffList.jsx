@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { getStaff, searchStaffByName, deleteStaff } from "../../services/api"
-import ConfirmationModal from "../../components/ConfirmationModal"
 
 const StaffList = () => {
   const [staff, setStaff] = useState([])
@@ -301,37 +300,6 @@ const StaffList = () => {
                   </svg>
                   Search
                 </button>
-
-                <div className="flex border border-gray-300 rounded-lg overflow-hidden">
-                  <button
-                    onClick={() => setViewMode("table")}
-                    className={`p-2 ${viewMode === "table" ? "bg-rose-600 text-white" : "bg-white text-gray-600 hover:bg-gray-100"}`}
-                    title="Table View"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M3 10h18M3 14h18M3 6h18M3 18h18"
-                      ></path>
-                    </svg>
-                  </button>
-                  <button
-                    onClick={() => setViewMode("card")}
-                    className={`p-2 ${viewMode === "card" ? "bg-rose-600 text-white" : "bg-white text-gray-600 hover:bg-gray-100"}`}
-                    title="Card View"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
-                      ></path>
-                    </svg>
-                  </button>
-                </div>
               </div>
             </div>
           </div>
@@ -373,7 +341,7 @@ const StaffList = () => {
                 Add New Staff Member
               </Link>
             </div>
-          ) : viewMode === "table" ? (
+          ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm text-left text-gray-700">
                 <thead className="text-xs text-white uppercase bg-rose-600">
@@ -477,214 +445,105 @@ const StaffList = () => {
                               strokeLinejoin="round"
                               strokeWidth="2"
                               d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                          ></path>
-                        </svg>
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-            {currentItems.map((member) => (
-              <div
-                key={member.nic}
-                className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-all transform hover:scale-105"
-              >
-                <div className={`${getRoleBadgeColor(member.role)} h-2`}></div>
-                <div className="p-5">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-800">{member.name}</h3>
-                      <p className="text-sm text-gray-500">{member.nic}</p>
-                    </div>
-                    <span className={`${getRoleBadgeColor(member.role)} text-white text-xs px-2.5 py-1 rounded-full`}>
-                      {member.role}
-                    </span>
-                  </div>
+                            ></path>
+                          </svg>
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
 
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center text-sm">
-                      <svg
-                        className="w-4 h-4 text-gray-400 mr-2"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                        ></path>
-                      </svg>
-                      <span>{member.phone || "No phone number"}</span>
-                    </div>
-
-                    {member.shift && (
-                      <div className="flex items-center text-sm">
-                        <svg
-                          className="w-4 h-4 text-gray-400 mr-2"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                          ></path>
-                        </svg>
-                        <span>{member.shift} Shift</span>
-                      </div>
-                    )}
-
-                    <div className="flex items-center text-sm">
-                      <svg
-                        className="w-4 h-4 text-gray-400 mr-2"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                        ></path>
-                      </svg>
-                      <span>Started {member.startDate}</span>
-                    </div>
-                  </div>
-
-                  <div className="pt-4 border-t border-gray-100 space-y-2">
-                    <Link
-                      to={`/update-staff/${member.nic}`}
-                      className="w-full px-4 py-2 bg-rose-600 text-white rounded-lg flex items-center justify-center hover:bg-rose-700 transition-colors shadow-sm hover:shadow"
-                    >
-                      <svg
-                        className="w-4 h-4 mr-2"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                        ></path>
-                      </svg>
-                      Edit Staff Member
-                    </Link>
-                    <button
-                      onClick={() => handleDeleteClick(member)}
-                      className="w-full px-4 py-2 bg-red-600 text-white rounded-lg flex items-center justify-center hover:bg-red-700 transition-colors shadow-sm hover:shadow"
-                    >
-                      <svg
-                        className="w-4 h-4 mr-2"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                        ></path>
-                      </svg>
-                      Delete Staff Member
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Pagination */}
-        {displayStaff.length > 0 && (
-          <div className="p-4 border-t border-gray-200 flex flex-col items-center">
-            <div className="flex justify-center mt-4">
-              <button
-                onClick={() => paginate(Math.max(1, currentPage - 1))}
-                disabled={currentPage === 1}
-                className={`mx-1 w-10 h-10 rounded-full flex items-center justify-center ${
-                  currentPage === 1
-                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                    : "bg-rose-100 text-rose-700 hover:bg-rose-200"
-                }`}
-              >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    fillRule="evenodd"
-                    d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </button>
-
-              {/* Page number circles */}
-              {Array.from({ length: totalPages }, (_, i) => (
+          {/* Pagination */}
+          {displayStaff.length > 0 && (
+            <div className="p-4 border-t border-gray-200 flex flex-col items-center">
+              <div className="flex justify-center mt-4">
                 <button
-                  key={i + 1}
-                  onClick={() => paginate(i + 1)}
-                  className={`mx-1 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 ${
-                    currentPage === i + 1
-                      ? "bg-rose-600 text-white shadow-md transform scale-110"
-                      : "bg-white text-gray-700 border border-gray-300 hover:bg-rose-50"
+                  onClick={() => paginate(Math.max(1, currentPage - 1))}
+                  disabled={currentPage === 1}
+                  className={`mx-1 w-10 h-10 rounded-full flex items-center justify-center ${
+                    currentPage === 1
+                      ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                      : "bg-rose-100 text-rose-700 hover:bg-rose-200"
                   }`}
                 >
-                  {i + 1}
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      fillRule="evenodd"
+                      d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
                 </button>
-              ))}
 
+                {/* Page number circles */}
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <button
+                    key={i + 1}
+                    onClick={() => paginate(i + 1)}
+                    className={`mx-1 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 ${
+                      currentPage === i + 1
+                        ? "bg-rose-600 text-white shadow-md transform scale-110"
+                        : "bg-white text-gray-700 border border-gray-300 hover:bg-rose-50"
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+
+                <button
+                  onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
+                  disabled={currentPage === totalPages}
+                  className={`mx-1 w-10 h-10 rounded-full flex items-center justify-center ${
+                    currentPage === totalPages
+                      ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                      : "bg-rose-100 text-rose-700 hover:bg-rose-200"
+                  }`}
+                >
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      fillRule="evenodd"
+                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              <p className="text-sm text-gray-500 mt-3">
+                Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, displayStaff.length)} of{" "}
+                {displayStaff.length} staff members
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-gray-200 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Delete Staff Member</h3>
+            <p className="text-gray-600 mb-6">Are you sure you want to delete this staff member? This action cannot be undone.</p>
+            <div className="flex justify-end space-x-4">
               <button
-                onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
-                disabled={currentPage === totalPages}
-                className={`mx-1 w-10 h-10 rounded-full flex items-center justify-center ${
-                  currentPage === totalPages
-                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                    : "bg-rose-100 text-rose-700 hover:bg-rose-200"
-                }`}
+                onClick={() => setShowDeleteModal(false)}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800"
               >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    fillRule="evenodd"
-                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmDelete}
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+              >
+                Delete
               </button>
             </div>
-
-            <p className="text-sm text-gray-500 mt-3">
-              Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, displayStaff.length)} of{" "}
-              {displayStaff.length} staff members
-            </p>
           </div>
-        )}
-        {showDeleteModal && (
-          <ConfirmationModal
-            isOpen={showDeleteModal}
-            title="Delete Staff Member"
-            message={`Are you sure you want to delete ${staffToDelete?.name}? This action cannot be undone.`}
-            confirmText="Delete"
-            cancelText="Cancel"
-            onConfirm={handleConfirmDelete}
-            onCancel={() => setShowDeleteModal(false)}
-            type="delete"
-          />
-        )}
-      </div>
-      </div>
+        </div>
+      )}
     </div>
   )
 }

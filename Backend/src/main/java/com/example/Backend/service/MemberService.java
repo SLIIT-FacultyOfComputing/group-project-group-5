@@ -72,4 +72,18 @@ public class MemberService {
         return memberRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Member not found"));
     }
+
+    public Member updateMember(Long id, Member updatedMember) {
+        Member existingMember = getMemberById(id);
+
+        // Update only the fields that are allowed to be changed
+        existingMember.setFirstName(updatedMember.getFirstName());
+        existingMember.setLastName(updatedMember.getLastName());
+        existingMember.setEmail(updatedMember.getEmail());
+        existingMember.setPhoneNumber(updatedMember.getPhoneNumber());
+        existingMember.setMembershipType(updatedMember.getMembershipType());
+        existingMember.setStatus(updatedMember.getStatus());
+
+        return memberRepository.save(existingMember);
+    }
 }

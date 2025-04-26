@@ -37,6 +37,10 @@ const MembersList = () => {
     checkAuth();
   }, [navigate]);
 
+  const handleEdit = (memberId) => {
+    navigate(`/admin/dashboard/members/edit/${memberId}`);
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -120,7 +124,7 @@ const MembersList = () => {
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   <button
                     className="text-rose-600 hover:text-rose-700 mr-3"
-                    onClick={() => {/* Edit member functionality */}}
+                    onClick={() => handleEdit(member.id)}
                   >
                     Edit
                   </button>

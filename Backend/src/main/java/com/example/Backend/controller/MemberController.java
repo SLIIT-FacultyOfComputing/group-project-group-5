@@ -71,6 +71,16 @@ public class MemberController {
         }
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Member> updateMember(@PathVariable Long id, @RequestBody Member updatedMember) {
+        try {
+            Member member = memberService.updateMember(id, updatedMember);
+            return ResponseEntity.ok(member);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @GetMapping("/profile")
     public ResponseEntity<Member> getMemberProfile() {
         try {

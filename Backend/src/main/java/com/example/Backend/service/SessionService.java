@@ -1,57 +1,48 @@
-package com.example.Backend.controller;
+package com.example.Backend.service;
 
 import com.example.Backend.dto.SessionRequestDTO;
 import com.example.Backend.model.*;
-import com.example.Backend.repository.ExerciseLogRepository;
-import com.example.Backend.repository.MemberRepository;
-import com.example.Backend.repository.RoutineRepository;
-import com.example.Backend.repository.ExerciseRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
+import com.example.Backend.repository.*;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
-@RestController
-@RequestMapping("/api")
-public class UserController {
+@Service
+public class SessionService {
 
-    @Autowired
-    private ExerciseLogRepository exerciseLogRepository;
+    private final ExerciseLogRepository exerciseLogRepository;
+    private final MemberRepository memberRepository;
+    private final RoutineRepository routineRepository;
+    private final ExerciseRepository exerciseRepository;
 
-    @Autowired
-    private MemberRepository memberRepository;
+    public SessionService(ExerciseLogRepository exerciseLogRepository, MemberRepository memberRepository,
+                          RoutineRepository routineRepository, ExerciseRepository exerciseRepository) {
+        this.exerciseLogRepository = exerciseLogRepository;
+        this.memberRepository = memberRepository;
+        this.routineRepository = routineRepository;
+        this.exerciseRepository = exerciseRepository;
+    }
 
-    @Autowired
-    private RoutineRepository routineRepository;
-
-    @Autowired
-    private ExerciseRepository exerciseRepository;
-
-    @PostMapping("/sessions")
-    public ResponseEntity<Void> logSession(@RequestBody SessionRequestDTO request) {
-
+    @Transactional
+    public boolean logSession(SessionRequestDTO request) {
         Long memberId = request.getMemberId();
         Long routineId = request.getRoutineId();
 
-        // Validate member and routine
         Optional<Member> memberOpt = memberRepository.findById(memberId);
         Optional<Routine> routineOpt = routineRepository.findById(routineId);
         if (memberOpt.isEmpty() || routineOpt.isEmpty()) {
-            return ResponseEntity.status(400).build();
+            return false;
         }
 
-        // Get max sessionCounter
         Long maxSessionCounter = exerciseLogRepository
                 .findMaxSessionCounterByMemberIdAndRoutineId(memberId, routineId)
                 .orElse(0L);
         Long newSessionCounter = maxSessionCounter + 1;
 
-        // Save logs with new sessionCounter
         for (SessionRequestDTO.ExerciseLogDTO logDTO : request.getExerciseLogs()) {
             Optional<Exercise> exerciseOpt = exerciseRepository.findById(logDTO.getExerciseId());
             if (exerciseOpt.isEmpty()) {
-                return ResponseEntity.status(400).build();
+                return false;
             }
 
             ExerciseLog log = new ExerciseLog();
@@ -64,8 +55,6 @@ public class UserController {
 
             exerciseLogRepository.save(log);
         }
-
-        return ResponseEntity.ok().build();
+        return true;
     }
-
 }

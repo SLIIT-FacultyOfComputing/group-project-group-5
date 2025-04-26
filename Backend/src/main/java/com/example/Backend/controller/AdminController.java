@@ -112,7 +112,7 @@ public class AdminController {
 
     @PostMapping("/routines")
     public ResponseEntity<RoutineResponseDTO> createRoutine(@RequestBody RoutineRequestDTO request) {
-        try {
+
             // Validate member
             Optional<Member> memberOptional = memberRepository.findById(request.getMemberId());
             if (memberOptional.isEmpty()) {
@@ -159,10 +159,6 @@ public class AdminController {
                     exerciseIds
             );
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body(null);
-        }
     }
 
     @GetMapping("/routines/{memberId}")

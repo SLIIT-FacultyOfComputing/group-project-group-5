@@ -14,11 +14,14 @@ const AdminDashboard = () => {
             setActiveTab('equipment');
         } else if (currentPath.includes('/reports')) {
             setActiveTab('reports');
+        } else if (currentPath.includes('/attendance')) {
+            setActiveTab('attendance');
         }
     }, [location.pathname]);
 
     const tabs = [
         { id: 'members', label: 'Members', path: '/admin/dashboard/members' },
+        { id: 'attendance', label: 'Attendance Log', path: '/admin/dashboard/attendance' },
         { id: 'equipment', label: 'Equipment', path: '/admin/dashboard/equipment' },
         { id: 'reports', label: 'Reports', path: '/admin/dashboard/reports' },
     ];

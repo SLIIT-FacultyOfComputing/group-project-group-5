@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/attendance")
+@CrossOrigin(origins = "http://localhost:5173")
 public class AttendanceController {
 
     @Autowired
@@ -21,6 +22,16 @@ public class AttendanceController {
     public ResponseEntity<Attendance> markAttendance(@PathVariable Long memberId) {
         try {
             Attendance attendance = attendanceService.markAttendance(memberId);
+            return ResponseEntity.ok(attendance);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<Attendance>> getAllAttendance() {
+        try {
+            List<Attendance> attendance = attendanceService.getAllAttendance();
             return ResponseEntity.ok(attendance);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(null);

@@ -40,6 +40,10 @@ public class AttendanceService {
         return attendanceRepository.save(attendance);
     }
 
+    public List<Attendance> getAllAttendance() {
+        return attendanceRepository.findAll();
+    }
+
     public List<Attendance> getMemberAttendance(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new RuntimeException("Member not found"));

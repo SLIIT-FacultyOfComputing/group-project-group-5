@@ -6,6 +6,8 @@ const MembersList = () => {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [memberToDelete, setMemberToDelete] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -39,6 +41,36 @@ const MembersList = () => {
 
   const handleEdit = (memberId) => {
     navigate(`/admin/dashboard/members/edit/${memberId}`);
+  };
+
+  const handleDelete = async (memberId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.delete(`http://localhost:8090/api/members/${memberId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (response.status === 204 || response.status === 200) {
+        // Remove the deleted member from the state
+        setMembers(members.filter(member => member.id !== memberId));
+        setShowDeleteConfirm(false);
+        setMemberToDelete(null);
+      }
+    } catch (err) {
+      if (err.response?.status === 401) {
+        navigate('/admin/login');
+      } else {
+        setError('Failed to delete member. Please try again.');
+      }
+      setShowDeleteConfirm(false);
+      setMemberToDelete(null);
+    }
+  };
+
+  const confirmDelete = (member) => {
+    setMemberToDelete(member);
+    setShowDeleteConfirm(true);
   };
 
   if (loading) {
@@ -130,7 +162,7 @@ const MembersList = () => {
                   </button>
                   <button
                     className="text-red-600 hover:text-red-700"
-                    onClick={() => {/* Delete member functionality */}}
+                    onClick={() => confirmDelete(member)}
                   >
                     Delete
                   </button>
@@ -140,6 +172,35 @@ const MembersList = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && memberToDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Confirm Deletion</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete {memberToDelete.firstName} {memberToDelete.lastName}? This action cannot be undone.
+            </p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={() => {
+                  setShowDeleteConfirm(false);
+                  setMemberToDelete(null);
+                }}
+                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDelete(memberToDelete.id)}
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,0 +1,52 @@
+@startuml Data Dictionary
+
+' Members Table
+class "members" {
+  +id: VARCHAR(36) <<PK>>
+  +firstName: VARCHAR(50) <<NOT NULL>>
+  +lastName: VARCHAR(50) <<NOT NULL>>
+  +email: VARCHAR(100) <<UNIQUE, NOT NULL>>
+  +password: VARCHAR(255) <<NOT NULL>>
+  +phoneNumber: VARCHAR(20) <<NOT NULL>>
+  +address: TEXT
+  +dateOfBirth: DATE <<NOT NULL>>
+  +membershipType: ENUM('BASIC', 'PREMIUM', 'VIP') <<NOT NULL>>
+  +emergencyContact: VARCHAR(100)
+  +fitnessGoals: TEXT
+  +medicalConditions: TEXT
+  +preferredWorkoutTime: VARCHAR(50)
+  +status: ENUM('ACTIVE', 'INACTIVE', 'SUSPENDED') <<NOT NULL>>
+  +createdAt: TIMESTAMP <<DEFAULT CURRENT_TIMESTAMP>>
+  +updatedAt: TIMESTAMP <<DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP>>
+}
+
+' Attendance Table
+class "attendance" {
+  +id: VARCHAR(36) <<PK>>
+  +memberId: VARCHAR(36) <<FK, NOT NULL>>
+  +timestamp: TIMESTAMP <<NOT NULL>>
+  +type: ENUM('CHECK_IN', 'CHECK_OUT') <<NOT NULL>>
+  +notes: TEXT
+  +createdAt: TIMESTAMP <<DEFAULT CURRENT_TIMESTAMP>>
+}
+
+' Relationships
+members "1" -- "0..*" attendance : records >
+
+note right of members
+  Table Description:
+  Stores member information and profile details.
+  Primary Key: id
+  Unique Constraint: email
+  Foreign Key Relationships:
+  - attendance.memberId references members.id
+end note
+
+note right of attendance
+  Table Description:
+  Records member attendance with check-in/check-out timestamps.
+  Primary Key: id
+  Foreign Key: memberId
+end note
+
+@enduml 

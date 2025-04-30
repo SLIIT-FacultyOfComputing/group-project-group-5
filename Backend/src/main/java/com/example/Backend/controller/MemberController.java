@@ -81,6 +81,16 @@ public class MemberController {
         }
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteMember(@PathVariable Long id) {
+        try {
+            memberService.deleteMember(id);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @GetMapping("/profile")
     public ResponseEntity<Member> getMemberProfile() {
         try {

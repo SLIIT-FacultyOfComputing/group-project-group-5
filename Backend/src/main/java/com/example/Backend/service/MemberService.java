@@ -86,4 +86,9 @@ public class MemberService {
 
         return memberRepository.save(existingMember);
     }
+
+    public void deleteMember(Long id) {
+        Member member = getMemberById(id);
+        memberRepository.delete(member);
+    }
 }

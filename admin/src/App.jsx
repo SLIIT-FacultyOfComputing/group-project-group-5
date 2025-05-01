@@ -8,6 +8,7 @@ import AdminDashboard from './pages/Admin/AdminDashboard';
 import MembersList from './pages/Admin/MembersList';
 import EditMember from './pages/Admin/EditMember';
 import AttendanceLog from './pages/Admin/AttendanceLog';
+import Payments from './pages/Admin/Payments';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           <Route path="members" element={<MembersList />} />
           <Route path="members/edit/:id" element={<EditMember />} />
           <Route path="attendance" element={<AttendanceLog />} />
+          <Route path="payments" element={<Payments />} />
           <Route path="equipment" element={<div>Equipment Management</div>} />
           <Route path="reports" element={<div>Reports</div>} />
           <Route index element={<Navigate to="members" replace />} />

@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 const AdminDashboard = () => {
     const location = useLocation();
+    const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('members');
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            navigate('/admin/login');
+        }
+    }, [navigate]);
 
     useEffect(() => {
         // Extract the current tab from the URL path
@@ -16,12 +24,20 @@ const AdminDashboard = () => {
             setActiveTab('reports');
         } else if (currentPath.includes('/attendance')) {
             setActiveTab('attendance');
+        } else if (currentPath.includes('/payments')) {
+            setActiveTab('payments');
         }
     }, [location.pathname]);
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        navigate('/admin/login');
+    };
 
     const tabs = [
         { id: 'members', label: 'Members', path: '/admin/dashboard/members' },
         { id: 'attendance', label: 'Attendance Log', path: '/admin/dashboard/attendance' },
+        { id: 'payments', label: 'Payments', path: '/admin/dashboard/payments' },
         { id: 'equipment', label: 'Equipment', path: '/admin/dashboard/equipment' },
         { id: 'reports', label: 'Reports', path: '/admin/dashboard/reports' },
     ];
@@ -69,6 +85,20 @@ const AdminDashboard = () => {
                     <Outlet />
                 </div>
             </main>
+
+            {/* Admin Footer */}
+            <footer className="bg-white shadow-sm">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                    <div className="flex justify-center">
+                        <button
+                            onClick={handleLogout}
+                            className="text-gray-600 hover:text-rose-600 transition-colors"
+                        >
+                            Logout
+                        </button>
+                    </div>
+                </div>
+            </footer>
         </div>
     );
 };

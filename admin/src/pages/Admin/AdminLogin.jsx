@@ -16,6 +16,7 @@ const AdminLogin = () => {
                 password
             });
             if (response.status === 200) {
+                localStorage.setItem('token', response.data.token);
                 navigate('/admin/dashboard');
             }
         } catch (err) {
@@ -51,7 +52,7 @@ const AdminLogin = () => {
                     </div>
                     <button
                         type="submit"
-                        className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+                        className="w-full bg-rose-600 text-white p-2 rounded hover:bg-rose-700"
                     >
                         Login
                     </button>

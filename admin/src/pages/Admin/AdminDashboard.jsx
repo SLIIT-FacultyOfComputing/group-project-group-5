@@ -92,7 +92,7 @@ const AdminDashboard = () => {
                     <div className="flex justify-center">
                         <button
                             onClick={handleLogout}
-                            className="text-gray-600 hover:text-rose-600 transition-colors"
+                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-rose-600 hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500"
                         >
                             Logout
                         </button>

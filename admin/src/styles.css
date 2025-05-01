@@ -1,0 +1,207 @@
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background-color: #1a1a1a;
+    color: #ffffff;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #ffffff;
+}
+
+h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #e0e0e0;
+}
+
+h3 {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin-bottom: 10px;
+    color: #e0e0e0;
+}
+
+.exercise-list,
+.routine-list,
+.member-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.exercise-bar,
+.routine-bar,
+.member-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background-color: #2c2c2c;
+    border-radius: 8px;
+    transition: transform 0.2s;
+}
+
+.exercise-bar:hover,
+.routine-bar:hover,
+.member-bar:hover {
+    transform: translateY(-2px);
+}
+
+.button-group,
+.form-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.create-button,
+.cancel-button,
+.back-button,
+.save-button,
+.ellipsis-button,
+.action-menu-item {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+
+.create-button,
+.save-button {
+    background-color: #ff9500;
+    color: #ffffff;
+}
+
+.create-button:hover,
+.save-button:hover {
+    background-color: #e08600;
+}
+
+.cancel-button {
+    background-color: #4d94ff;
+    color: #ffffff;
+}
+
+.cancel-button:hover {
+    background-color: #4378e0;
+}
+
+.back-button {
+    background-color: transparent;
+    color: #ffffff;
+    font-size: 1.5rem;
+}
+
+.ellipsis-button {
+    background-color: transparent;
+    color: #ffffff;
+    font-size: 1.5rem;
+    padding: 0 10px;
+}
+
+.action-menu {
+    position: absolute;
+    right: 20px;
+    background-color: #3c3c3c;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    z-index: 10;
+}
+
+.action-menu-item {
+    background-color: transparent;
+    color: #ffffff;
+    text-align: left;
+    padding: 10px 20px;
+}
+
+.action-menu-item:hover {
+    background-color: #4c4c4c;
+}
+
+.action-menu-item.delete {
+    color: #ff3b30;
+}
+
+.action-menu-item.delete:hover {
+    background-color: #ff3b30;
+    color: #ffffff;
+}
+
+p {
+    color: #e0e0e0;
+    font-size: 1.1rem;
+}
+
+.routine-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.exercise-actions {
+    position: relative;
+}
+
+.exercise-form-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.exercise-form {
+    background-color: #2c2c2c;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 90%;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    color: #e0e0e0;
+    margin-bottom: 5px;
+}
+
+.input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #4c4c4c;
+    border-radius: 5px;
+    background-color: #3c3c3c;
+    color: #ffffff;
+    font-size: 1rem;
+}
+
+.input:focus {
+    outline: none;
+    border-color: #ff9500;
+}

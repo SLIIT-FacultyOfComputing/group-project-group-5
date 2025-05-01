@@ -66,14 +66,7 @@ public class ExerciseService {
         if (exerciseOpt.isEmpty()) {
             return false;
         }
-        Exercise exercise = exerciseOpt.get();
-        List<Routine> routines = routineRepository.findByExercisesContaining(exercise);
-        for (Routine routine : routines) {
-            List<RoutineExercise> routineExercises = routine.getRoutineExercises();
-            routineExercises.removeIf(re -> re.getExercise().equals(exercise));
-        }
-        routineRepository.saveAll(routines);
-        exerciseRepository.delete(exercise);
+        exerciseRepository.delete(exerciseOpt.get());
         return true;
     }
 }

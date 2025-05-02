@@ -34,6 +34,10 @@ const AdminDashboard = () => {
         navigate('/admin/login');
     };
 
+    const handleScanQR = () => {
+        navigate('/membership/scan-qr');
+    };
+
     const tabs = [
         { id: 'members', label: 'Members', path: '/admin/dashboard/members' },
         { id: 'attendance', label: 'Attendance Log', path: '/admin/dashboard/attendance' },
@@ -49,12 +53,20 @@ const AdminDashboard = () => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center py-4">
                         <h1 className="text-2xl font-bold text-rose-600">GYMSYNC Admin</h1>
-                        <Link
-                            to="/"
-                            className="text-gray-600 hover:text-rose-600 transition-colors"
-                        >
-                            Back to Home
-                        </Link>
+                        <div className="flex items-center space-x-4">
+                            <button
+                                onClick={handleScanQR}
+                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-rose-600 hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500"
+                            >
+                                Scan QR
+                            </button>
+                            <Link
+                                to="/"
+                                className="text-gray-600 hover:text-rose-600 transition-colors"
+                            >
+                                Back to Home
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </header>

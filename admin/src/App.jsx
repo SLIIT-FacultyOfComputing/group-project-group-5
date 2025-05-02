@@ -9,6 +9,7 @@ import MembersList from './pages/Admin/MembersList';
 import EditMember from './pages/Admin/EditMember';
 import AttendanceLog from './pages/Admin/AttendanceLog';
 import Payments from './pages/Admin/Payments';
+import QRScanner from './pages/Membership/QRScanner';
 
 function App() {
   return (
@@ -36,6 +37,9 @@ function App() {
           <Route index element={<Navigate to="members" replace />} />
         </Route>
         <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
+
+        {/*QR Scanner Route*/}
+        <Route path="/membership/scan-qr" element={<QRScanner />} />
 
         {/*Default Redirect*/}
         <Route path="*" element={<Navigate to="/" replace />} />

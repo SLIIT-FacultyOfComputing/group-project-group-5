@@ -150,7 +150,8 @@ const Footer = () => {
         </div>
       </div>
       
-      <style jsx>{`
+      <style>
+        {`
         .touch-target {
           min-height: 32px;
           display: flex;
@@ -162,7 +163,8 @@ const Footer = () => {
             min-height: 44px;
           }
         }
-      `}</style>
+        `}
+      </style>
     </footer>
   );
 };

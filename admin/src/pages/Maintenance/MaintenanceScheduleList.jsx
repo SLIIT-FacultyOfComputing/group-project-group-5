@@ -31,6 +31,7 @@ const MaintenanceScheduleList = () => {
   const [editCost, setEditCost] = useState({ id: null, cost: '' });
   const [editDescription, setEditDescription] = useState({ id: null, description: '' });
   const [editTechnician, setEditTechnician] = useState({ id: null, technician: '' });
+  const [editDate, setEditDate] = useState({ id: null, date: '' });
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const [toast, setToast] = useState({ visible: false, message: '', type: '' });

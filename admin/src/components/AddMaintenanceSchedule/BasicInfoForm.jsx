@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 const BasicInfoForm = ({ 
   formData, 
@@ -11,6 +11,55 @@ const BasicInfoForm = ({
   maintenanceTypes,
   handleNextStage 
 }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  // Update suggestions when user types
+  useEffect(() => {
+    if (searchTerm !== null && searchTerm !== undefined && equipments) {
+      // Ensure searchTerm is a string before calling toLowerCase
+      const lowerSearchTerm = String(searchTerm).toLowerCase();
+      const filtered = equipments.filter(equipment => {
+        // Safely convert values to strings before using toLowerCase
+        const id = String(equipment.id || '').toLowerCase();
+        const name = equipment.name ? String(equipment.name).toLowerCase() : '';
+        const type = equipment.type ? String(equipment.type).toLowerCase() : '';
+        
+        return id.includes(lowerSearchTerm) || 
+               name.includes(lowerSearchTerm) || 
+               type.includes(lowerSearchTerm);
+      });
+      setSuggestions(filtered);
+    } else {
+      setSuggestions(equipments || []);
+    }
+  }, [searchTerm, equipments]);
+
+  const handleEquipmentChange = (e) => {
+    // Make sure we store the value as a string
+    setSearchTerm(String(e.target.value || ''));
+    // Also update the form data
+    handleChange({
+      target: {
+        name: 'equipmentId',
+        value: e.target.value
+      }
+    });
+  };
+
+  const selectEquipment = (id) => {
+    setSearchTerm(id);
+    // Update the form data
+    handleChange({
+      target: {
+        name: 'equipmentId',
+        value: id
+      }
+    });
+    setShowSuggestions(false);
+  };
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -25,25 +74,21 @@ const BasicInfoForm = ({
                 <path fillRule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z" clipRule="evenodd" />
               </svg>
             </div>
-            <select
+            <input
+              type="text"
               name="equipmentId"
               value={formData.equipmentId}
-              onChange={handleChange}
-              onBlur={handleBlur}
+              onChange={handleEquipmentChange}
+              onFocus={() => setShowSuggestions(true)}
+              onBlur={(e) => {
+                // Delay hiding suggestions to allow clicking on them
+                setTimeout(() => setShowSuggestions(false), 200);
+                handleBlur(e);
+              }}
+              placeholder="Search or type equipment ID"
               className={`block w-full pl-10 p-3 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition-all duration-200 ${touched.equipmentId && errors.equipmentId ? 'border-red-500 bg-red-50' : 'border-gray-300'} ${formData.equipmentId ? 'bg-green-50 border-green-300' : ''}`}
               required
-            >
-              <option value="">Select Equipment</option>
-              {loading ? (
-                <option disabled>Loading equipment list...</option>
-              ) : (
-                equipments.map((equipment) => (
-                  <option key={equipment.id} value={equipment.id}>
-                    {equipment.id} - {equipment.name || equipment.type}
-                  </option>
-                ))
-              )}
-            </select>
+            />
             {touched.equipmentId && errors.equipmentId ? (
               <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                 <svg className="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
@@ -57,10 +102,35 @@ const BasicInfoForm = ({
                 </svg>
               </div>
             ) : null}
+            
+            {/* Equipment suggestions dropdown */}
+            {showSuggestions && (
+              <div className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 overflow-auto rounded-md border border-gray-300">
+                {loading ? (
+                  <div className="p-2 text-gray-500">Loading equipment list...</div>
+                ) : suggestions.length > 0 ? (
+                  <ul className="py-1">
+                    {suggestions.map((equipment) => (
+                      <li 
+                        key={equipment.id} 
+                        className="px-4 py-2 hover:bg-blue-50 cursor-pointer flex justify-between items-center"
+                        onClick={() => selectEquipment(equipment.id)}
+                      >
+                        <span className="font-medium">{equipment.id}</span>
+                        <span className="text-gray-500">{equipment.name || equipment.type}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="p-2 text-gray-500">No matching equipment found</div>
+                )}
+              </div>
+            )}
+            
             {touched.equipmentId && errors.equipmentId && (
               <p className="mt-1 text-sm text-red-600 animate-fadeIn">{errors.equipmentId}</p>
             )}
-            <p className="mt-1 text-xs text-gray-500">Select the equipment that needs maintenance</p>
+            <p className="mt-1 text-xs text-gray-500">Enter the equipment ID or search by name</p>
           </div>
         </div>
 

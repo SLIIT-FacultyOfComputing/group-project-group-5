@@ -216,7 +216,8 @@ const Modal = (props) => {
         </div>
       </div>
 
-      <style jsx="true">{`
+      <style>
+        {`
         @keyframes modalEnterAnimation {
           from {
             opacity: 0;
@@ -280,7 +281,8 @@ const Modal = (props) => {
             box-shadow: 0 0 0 0 rgba(66, 133, 244, 0);
           }
         }
-      `}</style>
+      `}
+      </style>
     </div>
   );
 };

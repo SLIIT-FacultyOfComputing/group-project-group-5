@@ -60,13 +60,31 @@ public class ExerciseService {
         return exerciseRepository.save(exercise);
     }
 
-    @Transactional
+   /* @Transactional
     public boolean deleteExercise(Long exerciseId) {
         Optional<Exercise> exerciseOpt = exerciseRepository.findById(exerciseId);
         if (exerciseOpt.isEmpty()) {
             return false;
         }
         exerciseRepository.delete(exerciseOpt.get());
+        return true;
+    }
+
+    */
+    @Transactional
+    public boolean deleteExercise(Long exerciseId) {
+        Optional<Exercise> exerciseOpt = exerciseRepository.findById(exerciseId);
+        if (exerciseOpt.isEmpty()) {
+            return false;
+        }
+        Exercise exercise = exerciseOpt.get();
+        List<Routine> routines = routineRepository.findByExercisesContaining(exercise);
+        for (Routine routine : routines) {
+            List<RoutineExercise> routineExercises = routine.getRoutineExercises();
+            routineExercises.removeIf(re -> re.getExercise().equals(exercise));
+        }
+        routineRepository.saveAll(routines);
+        exerciseRepository.delete(exercise);
         return true;
     }
 }

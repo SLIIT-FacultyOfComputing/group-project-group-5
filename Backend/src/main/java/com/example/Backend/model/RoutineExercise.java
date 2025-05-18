@@ -102,7 +102,6 @@ public class RoutineExercise {
             this.exerciseId = exerciseId;
         }
 
-        // to prevent having different reps and sets for the same exercise in same routine
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;

@@ -4,7 +4,9 @@ import com.example.Backend.model.Exercise;
 import com.example.Backend.model.Routine;
 import com.example.Backend.model.RoutineExercise;
 import com.example.Backend.repository.ExerciseRepository;
+import com.example.Backend.repository.RoutineExerciseRepository;
 import com.example.Backend.repository.RoutineRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -13,8 +15,12 @@ import java.util.Optional;
 @Service
 public class ExerciseService {
 
+    @Autowired
     private final ExerciseRepository exerciseRepository;
+    @Autowired
     private final RoutineRepository routineRepository;
+    @Autowired
+    private RoutineExerciseRepository routineExerciseRepository;
 
     public ExerciseService(ExerciseRepository exerciseRepository, RoutineRepository routineRepository) {
         this.exerciseRepository = exerciseRepository;
@@ -70,21 +76,41 @@ public class ExerciseService {
         return true;
     }
 
+
+   @Transactional
+   public boolean deleteExercise(Long exerciseId) {
+       Optional<Exercise> exerciseOptional = exerciseRepository.findById(exerciseId);
+       if (!exerciseOptional.isPresent()) {
+           return false;
+       }
+       Exercise exercise = exerciseOptional.get();
+       List<Routine> routines = routineRepository.findAll();
+       for (Routine routine : routines) {
+           List<RoutineExercise> routineExercises = routine.getRoutineExercises();
+           routineExercises.removeIf(re -> re.getExercise().getId().equals(exerciseId));
+       }
+       routineRepository.saveAll(routines);
+       exerciseRepository.delete(exercise);
+       return true;
+   }
+
     */
-    @Transactional
-    public boolean deleteExercise(Long exerciseId) {
-        Optional<Exercise> exerciseOpt = exerciseRepository.findById(exerciseId);
-        if (exerciseOpt.isEmpty()) {
-            return false;
-        }
-        Exercise exercise = exerciseOpt.get();
-        List<Routine> routines = routineRepository.findByExercisesContaining(exercise);
-        for (Routine routine : routines) {
-            List<RoutineExercise> routineExercises = routine.getRoutineExercises();
-            routineExercises.removeIf(re -> re.getExercise().equals(exercise));
-        }
-        routineRepository.saveAll(routines);
-        exerciseRepository.delete(exercise);
-        return true;
-    }
+   @Transactional
+   public boolean deleteExercise(Long exerciseId) {
+       // Check if exercise exists
+       if (!exerciseRepository.existsById(exerciseId)) {
+           return false;
+       }
+
+       // Check if exercise is used in any routines
+       if (routineExerciseRepository.existsByExerciseId(exerciseId)) {
+           throw new IllegalStateException("Exercise is used in routines");
+       }
+
+       // Delete the exercise (will cascade to routine_exercise due to ON DELETE CASCADE)
+       exerciseRepository.deleteById(exerciseId);
+       return true;
+   }
+
+
 }

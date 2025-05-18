@@ -9,10 +9,10 @@ import java.util.List;
 public interface RoutineRepository extends JpaRepository<Routine, Long> {
     List<Routine> findByMemberId(Long memberId);
 
+    // New filter: Find routines by name (partial match, case-insensitive)
     List<Routine> findByNameContainingIgnoreCase(String name);
 
+    // Combined filter: Find routines by member ID and name
     List<Routine> findByMemberIdAndNameContainingIgnoreCase(Long memberId, String name);
 
-    @Query("SELECT DISTINCT re.routine FROM RoutineExercise re WHERE re.exercise = :exercise")
-    List<Routine> findByExercisesContaining(Exercise exercise);
 }

@@ -23,7 +23,7 @@ public class Appointment {
     private Status status;
 
     public enum Status {
-        PENDING, ACCEPTED, REJECTED
+        PENDING, ACCEPTED, REJECTED, COMPLETED
     }
 
     // Default constructor

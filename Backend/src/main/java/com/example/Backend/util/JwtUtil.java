@@ -32,6 +32,13 @@ public class JwtUtil {
         return createToken(claims, email);
     }
 
+    public String generateStaffToken(String nic, String role) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", role);
+        claims.put("userType", "STAFF");
+        return createToken(claims, nic);
+    }
+
     private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
                 .setClaims(claims)

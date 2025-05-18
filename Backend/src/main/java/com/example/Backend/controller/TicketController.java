@@ -72,4 +72,9 @@ public class TicketController {
     public int countTicketsByStatus(@RequestParam String status) {
         return ticketService.countTicketsByStatus(status);
     }
+
+    @GetMapping("/count-by-status-staff")
+    public int countTicketsByStatusStaff(@RequestParam String status, @RequestParam String staffId) {
+        return ticketService.countTicketsByStatusAndStaffId(status, staffId);
+    }
 }

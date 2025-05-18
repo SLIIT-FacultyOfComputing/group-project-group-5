@@ -28,16 +28,6 @@ public class AppointmentController {
         return service.getAllAppointments();
     }
 
-    @GetMapping("/upcoming")
-    public List<Appointment> getUpcomingAppointments() {
-        return service.getAppointmentsForNextThreeDays();
-    }
-
-    @GetMapping("/slots")
-    public List<TimeSlot> getAvailableSlots() {
-        return service.getAvailableSlotsForNextThreeDays();
-    }
-
     @PutMapping("/{id}/status")
     public Appointment updateStatus(@PathVariable Long id, @RequestParam Appointment.Status status) {
         return service.updateStatus(id, status);

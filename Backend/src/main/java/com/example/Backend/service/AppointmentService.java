@@ -34,8 +34,7 @@ public class AppointmentService {
     private StaffRepository staffRepo;
 
     public String bookAppointment(AppointmentBookingRequest request) {
-        if (request == null || request.getTrainerId() == null || request.getStatus() == null ||
-                request.getDate() == null || request.getStartTime() == null || request.getEndTime() == null) {
+        if (request == null || request.getTrainerId() == null || request.getStatus() == null || request.getDate() == null || request.getStartTime() == null || request.getEndTime() == null) {
             return "Invalid appointment data";
         }
 
@@ -53,12 +52,7 @@ public class AppointmentService {
         }
 
         List<TimeSlot> overlappingSlots = timeSlotRepo
-                .findByDateAndAppointment_Trainer_NICAndStartTimeLessThanAndEndTimeGreaterThan(
-                        request.getDate(),
-                        request.getTrainerId(),
-                        request.getEndTime(),
-                        request.getStartTime()
-                );
+                .findByDateAndAppointment_Trainer_NICAndStartTimeLessThanAndEndTimeGreaterThan(request.getDate(), request.getTrainerId(), request.getEndTime(), request.getStartTime());
 
         boolean hasConflict = overlappingSlots.stream()
                 .anyMatch(slot -> slot.getStatus() == TimeSlot.SlotStatus.BOOKED
@@ -68,9 +62,7 @@ public class AppointmentService {
             return "Trainer already has a booking in this time period";
         }
 
-        TimeSlot slot = timeSlotRepo.findByDateAndStartTimeAndEndTime(
-                request.getDate(), request.getStartTime(), request.getEndTime()
-        ).orElse(null);
+        TimeSlot slot = timeSlotRepo.findByDateAndStartTimeAndEndTime(request.getDate(), request.getStartTime(), request.getEndTime()).orElse(null);
 
         if (slot != null) {
             if (slot.getStatus() != TimeSlot.SlotStatus.AVAILABLE) {
@@ -121,24 +113,6 @@ public class AppointmentService {
             }
             return dto;
         }).collect(Collectors.toList());
-    }
-
-    public List<Appointment> getAppointmentsForNextThreeDays() {
-        List<Appointment> appointments = appointmentRepo.findAll();
-        return appointments.stream()
-                .filter(appointment -> {
-                    Optional<TimeSlot> timeSlot = timeSlotRepo.findByAppointmentId(appointment.getId());
-                    return timeSlot.isPresent() &&
-                            !timeSlot.get().getDate().isBefore(LocalDate.now()) &&
-                            !timeSlot.get().getDate().isAfter(LocalDate.now().plusDays(3));
-                })
-                .collect(Collectors.toList());
-    }
-
-    public List<TimeSlot> getAvailableSlotsForNextThreeDays() {
-        LocalDate now = LocalDate.now();
-        LocalDate end = now.plusDays(3);
-        return timeSlotRepo.findByDateBetween(now, end);
     }
 
     public Appointment updateStatus(Long id, Appointment.Status status) {

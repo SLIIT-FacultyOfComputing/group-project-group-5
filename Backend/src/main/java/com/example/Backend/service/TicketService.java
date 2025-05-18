@@ -170,4 +170,19 @@ public class TicketService {
             throw new RuntimeException("Invalid status value: " + status);
         }
     }
+
+    public int countTicketsByStatusAndStaffId(String status, String staffId) {
+        try {
+            Ticket.TicketStatus ticketStatus = Ticket.TicketStatus.valueOf(status.toUpperCase());
+            int count = 0;
+            for (TicketAssignedTo ticket : ticketAssignedToRepository.findByStaffNIC(staffId)) {
+                if (ticket.getTicket().getStatus() == ticketStatus) {
+                    count++;
+                }
+            }
+            return count;
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid status value: " + status);
+        }
+    }
 }

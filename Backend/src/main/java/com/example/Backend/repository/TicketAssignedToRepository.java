@@ -1,5 +1,6 @@
 package com.example.Backend.repository;
 
+import com.example.Backend.model.Ticket;
 import com.example.Backend.model.TicketAssignedTo;
 import org.springframework.data.jpa.repository.JpaRepository;
 

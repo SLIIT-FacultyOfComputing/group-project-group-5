@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+@tailwind utilities;
+
+/* Removed pattern-related CSS classes */
+

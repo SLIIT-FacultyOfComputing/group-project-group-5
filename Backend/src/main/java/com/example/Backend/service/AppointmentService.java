@@ -13,7 +13,6 @@ import com.example.Backend.repository.TimeSlotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -120,6 +119,13 @@ public class AppointmentService {
         if (optional.isPresent()) {
             Appointment app = optional.get();
             app.setStatus(status);
+
+            // If the appointment is rejected, delete the associated time slot
+            if (status == Appointment.Status.REJECTED) {
+                Optional<TimeSlot> timeSlot = timeSlotRepo.findByAppointmentId(id);
+                timeSlot.ifPresent(slot -> timeSlotRepo.delete(slot));
+            }
+
             return appointmentRepo.save(app);
         }
         return null;

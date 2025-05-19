@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getTicketsRaisedByStaff } from '../../services/ticketApi';
 import TicketTable from '../../components/TicketList/TicketTable';
 import MobileTicketCard from '../../components/TicketList/MobileTicketCard';
+import Pagination from '../../components/Pagination';
 
 const TicketsByRaiserPage = () => {
   const [tickets, setTickets] = useState([]);
@@ -10,6 +11,9 @@ const TicketsByRaiserPage = () => {
   const [expandedTicket, setExpandedTicket] = useState(null);
   const [selectedStatuses, setSelectedStatuses] = useState({});
   const [staffInfo, setStaffInfo] = useState({ id: '', name: '' });
+  
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10; 
 
   useEffect(() => {
     const fetchCurrentUserTickets = async () => {
@@ -17,7 +21,6 @@ const TicketsByRaiserPage = () => {
       setError(null);
       
       try {
-        // Get current staff ID from localStorage
         const staffId = localStorage.getItem('userId');
         const staffName = localStorage.getItem('userName');
         
@@ -31,7 +34,6 @@ const TicketsByRaiserPage = () => {
         
         const response = await getTicketsRaisedByStaff(staffId);
 
-        // Transform the data to match the format expected by TicketTable
         const transformedData = Array.isArray(response.data) ? 
           response.data.map(item => ({
             id: item.ticketId,
@@ -62,6 +64,10 @@ const TicketsByRaiserPage = () => {
 
     fetchCurrentUserTickets();
   }, []);
+  
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [tickets.length]);
 
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
@@ -82,13 +88,24 @@ const TicketsByRaiserPage = () => {
     }));
   };
 
-  const handleUpdateStatus = async () => {
-    // Placeholder - would need to implement later
-  };
+  const handleUpdateStatus = async () => {  };
 
-  const handleAssignTicket = async () => {
-    // Placeholder - would need to implement later
+  const handleAssignTicket = async () => {  };
+  
+  // Pagination handler
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
+  
+  // Get paginated tickets
+  const getPaginatedTickets = () => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return tickets.slice(startIndex, endIndex);
+  };
+  
+  const paginatedTickets = getPaginatedTickets();
+  const totalPages = Math.max(1, Math.ceil(tickets.length / itemsPerPage));
 
   return (
     <div className="bg-gray-50 min-h-screen py-8">
@@ -160,7 +177,7 @@ const TicketsByRaiserPage = () => {
 
               {/* Desktop Table View */}
               <TicketTable
-                tickets={tickets}
+                tickets={paginatedTickets}
                 expandedTicket={expandedTicket}
                 setExpandedTicket={setExpandedTicket}
                 handleStatusChange={handleStatusChange}
@@ -174,7 +191,7 @@ const TicketsByRaiserPage = () => {
 
               {/* Mobile Card View */}
               <MobileTicketCard
-                tickets={tickets}
+                tickets={paginatedTickets}
                 expandedTicket={expandedTicket}
                 setExpandedTicket={setExpandedTicket}
                 handleStatusChange={handleStatusChange}
@@ -184,6 +201,14 @@ const TicketsByRaiserPage = () => {
                 loading={loading}
                 formatDate={formatDate}
                 getTicketId={getTicketId}
+              />
+              
+              {/* Pagination - Bottom only */}
+              <Pagination 
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+                totalItems={tickets.length}
               />
             </>
           )}

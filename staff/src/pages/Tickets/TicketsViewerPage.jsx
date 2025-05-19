@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import TicketsByRaiserPage from './TicketsByRaiserPage';
 import TicketsAssignedPage from './TicketsAssignedPage';
+import AddTicketFormPage from './AddTicketForm';
 
 const TicketsViewerPage = () => {
-  const [activeTab, setActiveTab] = useState('assigned'); // Default to assigned tickets
+  const [activeTab, setActiveTab] = useState('assigned');
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -41,10 +42,28 @@ const TicketsViewerPage = () => {
               Raised by Me
             </div>
           </button>
+
+          <button
+            onClick={() => setActiveTab('ticket')}
+            className={`flex-1 py-3 px-4 rounded-md text-sm font-medium transition-all duration-200 ${
+              activeTab === 'ticket'
+                ? 'bg-rose-100 text-rose-700 shadow-sm'
+                : 'text-gray-600 hover:text-rose-600'
+            }`}
+          >
+            <div className="flex items-center justify-center">
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+              Raise Ticket
+            </div>
+          </button>
         </div>
 
         {/* Show selected component based on active tab */}
-        {activeTab === 'assigned' ? <TicketsAssignedPage /> : <TicketsByRaiserPage />}
+        {activeTab === 'assigned' ? <TicketsAssignedPage /> : 
+         activeTab === 'raised' ? <TicketsByRaiserPage /> : 
+         <AddTicketFormPage />}
       </div>
     </div>
   );

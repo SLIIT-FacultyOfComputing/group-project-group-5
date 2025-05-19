@@ -12,7 +12,6 @@ const AddTicketFormPage = () => {
   const navigate = useNavigate();
   const [currentStaffId, setCurrentStaffId] = useState('');
   
-  // Initialize ticket data with empty values
   const [ticketData, setTicketData] = useState({
     type: '',
     description: '',
@@ -26,7 +25,6 @@ const AddTicketFormPage = () => {
   const [success, setSuccess] = useState(false);
   
   useEffect(() => {
-    // Get the logged-in staff ID from localStorage
     const staffId = localStorage.getItem('userId');
     
     if (!staffId) {
@@ -36,7 +34,6 @@ const AddTicketFormPage = () => {
     
     setCurrentStaffId(staffId);
     
-    // Update the ticket data with the staff ID
     setTicketData(prevData => ({
       ...prevData,
       staffId: staffId

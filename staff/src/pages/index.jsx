@@ -6,11 +6,14 @@ import Header from "../components/header.jsx"
 import Footer from "../components/Footer.jsx"
 import AppointmentList from "./Appointments/AppointmentList.jsx"
 import BookAppointment from "./Appointments/BookAppointment.jsx"
-import RaiseTicket from "./Tickets/AddTicketForm.jsx"
 import TicketsViewerPage from "./Tickets/TicketsViewerPage.jsx"
 import ProfilePage from "./Profile/ProfilePage.jsx"
+import MemberList from "./Members/MembersList.jsx"
 import { getTicketCountBystaffId } from "../services/ticketApi"
 import EquipmentList from "./Equipment/EquipmentList.jsx"
+import EditMember from "./Members/EditMember.jsx"
+import RegisterMember from "./Members/RegisterPage.jsx"
+import Dashboard from "./Dashboard/Dashboard.jsx"
 
 const StaffPage = () => {
   const location = useLocation()
@@ -24,20 +27,17 @@ const StaffPage = () => {
   const [ticketCountLoading, setTicketCountLoading] = useState(true)
 
   useEffect(() => {
-    // Check if user is logged in
     const token = localStorage.getItem('token')
     if (!token) {
       navigate('/staff/login')
       return
     }
 
-    // Get user info
     const name = localStorage.getItem('userName')
     const role = localStorage.getItem('userRole')
     setUserName(name || '')
     setUserRole(role || '')
 
-    // Fetch in-progress ticket count
     const fetchInProgressTicketCount = async () => {
       setTicketCountLoading(true)
       try {
@@ -55,7 +55,6 @@ const StaffPage = () => {
     
     fetchInProgressTicketCount()
     
-    // Refresh ticket count every minute
     const intervalId = setInterval(fetchInProgressTicketCount, 60 * 1000)
 
     const handleScroll = () => {
@@ -107,9 +106,42 @@ const StaffPage = () => {
           <nav className={`flex flex-col md:flex-row ${mobileMenuOpen ? "block" : "hidden md:flex"}`}>
             
             <Link 
+              to="/staff/dashboard" 
+              className={`px-4 sm:px-5 md:px-7 py-3 md:py-4 text-sm font-medium flex items-center transition-all duration-300 group ${
+                currentPath === '/staff/dashboard' || currentPath === '/' 
+                  ? 'bg-gradient-to-r from-rose-700 to-rose-500 text-white shadow-md'
+                  : 'text-gray-700 hover:bg-rose-50 hover:text-rose-700'
+              }`}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <svg className="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+              </svg>
+              <span className="whitespace-nowrap">Dashboard</span>
+            </Link>
+            
+            {/* Only show Members link to MANAGER and RECEPTIONIST roles */}
+            {(userRole === 'MANAGER' || userRole === 'RECEPTIONIST') && (
+              <Link 
+                to="/staff/members" 
+                className={`px-4 sm:px-5 md:px-7 py-3 md:py-4 text-sm font-medium flex items-center transition-all duration-300 group ${
+                  currentPath === '/staff/members' || currentPath.includes('/staff/member/')
+                    ? 'bg-gradient-to-r from-rose-700 to-rose-500 text-white shadow-md'
+                    : 'text-gray-700 hover:bg-rose-50 hover:text-rose-700'
+                }`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <svg className="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                </svg>
+                <span className="whitespace-nowrap">View Members</span>
+              </Link>
+            )}
+
+            <Link 
               to="/staff/equipment-list" 
               className={`px-4 sm:px-5 md:px-7 py-3 md:py-4 text-sm font-medium flex items-center transition-all duration-300 group ${
-                currentPath === '/equipment-list' || currentPath === '/' 
+                currentPath === '/staff/equipment-list'
                   ? 'bg-gradient-to-r from-rose-700 to-rose-500 text-white shadow-md'
                   : 'text-gray-700 hover:bg-rose-50 hover:text-rose-700'
               }`}
@@ -120,6 +152,7 @@ const StaffPage = () => {
               </svg>
               <span className="whitespace-nowrap">View Gym Equipment</span>
             </Link>
+            
             <Link
               to="/staff/appointments"
               className={`px-4 sm:px-5 md:px-7 py-3 md:py-4 text-sm font-medium flex items-center transition-all duration-300 group ${
@@ -146,34 +179,6 @@ const StaffPage = () => {
               <span className="whitespace-nowrap">Appointments</span>
             </Link>
             
-            {userRole !== 'TRAINER' && (
-              <Link
-                to="/staff/book-appointment"
-                className={`px-4 sm:px-5 md:px-7 py-3 md:py-4 text-sm font-medium flex items-center transition-all duration-300 group ${
-                  currentPath === "/staff/book-appointment"
-                    ? "bg-gradient-to-r from-rose-700 to-rose-500 text-white shadow-md"
-                    : "text-gray-700 hover:bg-blue-50 hover:text-rose-700"
-                }`}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <svg
-                  className="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-45"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                  ></path>
-                </svg>
-                <span className="whitespace-nowrap">Book Trainer</span>
-              </Link>
-            )}
-            
             <Link 
               to="/staff/tickets" 
               className={`px-4 sm:px-5 md:px-7 py-3 md:py-4 text-sm font-medium flex items-center transition-all duration-300 group ${
@@ -197,21 +202,7 @@ const StaffPage = () => {
                 </span>
               )}
             </Link>
-            
-            <Link 
-              to="/staff/raise-tickets" 
-              className={`px-4 sm:px-5 md:px-7 py-3 md:py-4 text-sm font-medium flex items-center transition-all duration-300 group ${
-                  currentPath === "/staff/raise-tickets"
-                    ? "bg-gradient-to-r from-rose-700 to-rose-500 text-white shadow-md"
-                    : "text-gray-700 hover:bg-blue-50 hover:text-rose-700"
-                }`}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-              <svg className="w-5 h-5 mr-2 transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-              </svg>
-              <span className="whitespace-nowrap">Raise Ticket</span>
-            </Link>
+
           </nav>
         </div>
       </div>
@@ -219,13 +210,40 @@ const StaffPage = () => {
       <div className="container mx-auto px-3 sm:px-4 md:px-6 pb-8 md:pb-12 relative mt-4 md:mt-6">
         <div className="glass-effect rounded-xl p-2 sm:p-4">
           <Routes>
-            <Route path="dashboard" element={<AppointmentList />} />
+            <Route path="dashboard" element={<Dashboard />} />
             <Route path="equipment-list" element={<EquipmentList />} />
+            
+            {/* Protected routes - only for MANAGER and RECEPTIONIST */}
+            <Route path="members" element={
+              (userRole === 'MANAGER' || userRole === 'RECEPTIONIST') && userRole !== 'TRAINER' 
+                ? <MemberList /> 
+                : <Navigate to="/staff/dashboard" replace />
+            } />
+            
+            <Route path="member/register-member" element={
+              (userRole === 'MANAGER' || userRole === 'RECEPTIONIST') && userRole !== 'TRAINER'
+                ? <RegisterMember />
+                : <Navigate to="/staff/dashboard" replace />
+            } />
+            
+            <Route path="member/edit-member/:id" element={
+              (userRole === 'MANAGER' || userRole === 'RECEPTIONIST') && userRole !== 'TRAINER'
+                ? <EditMember />
+                : <Navigate to="/staff/dashboard" replace />
+            } />
+            
+            <Route path="book-appointment" element={
+              (userRole === 'MANAGER' || userRole === 'RECEPTIONIST') && userRole !== 'TRAINER'
+                ? <BookAppointment />
+                : <Navigate to="/staff/dashboard" replace />
+            } />
+            
+            
             <Route path="appointments" element={<AppointmentList />} />
-            <Route path="book-appointment" element={<BookAppointment />} />
             <Route path="tickets" element={<TicketsViewerPage />} />
-            <Route path="raise-tickets" element={<RaiseTicket />} />
             <Route path="profile" element={<ProfilePage />} />
+            <Route path="member/edit-member/:id" element={<EditMember />} />
+            <Route path="member/register-member" element={<RegisterMember />} />
             <Route path="/" element={<Navigate to="/staff/dashboard" replace />} />
             <Route
               path="*"
@@ -239,7 +257,7 @@ const StaffPage = () => {
                     to="/staff/dashboard"
                     className="px-5 md:px-7 py-2.5 md:py-3.5 bg-gradient-to-r from-rose-600 to-rose-500 text-white rounded-lg font-medium hover:from-rose-700 hover:to-rose-600 transition-all duration-300 flex items-center shadow-lg transform hover:-translate-y-1 text-sm md:text-base"
                   >
-                    Return to Staff List
+                    Return to Dashboard
                   </Link>
                 </div>
               }
@@ -249,7 +267,7 @@ const StaffPage = () => {
       </div>
 
       <Footer />
-      <style jsx>{`
+      <style>{`
         .bg-pattern {
           background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fillRule='evenodd'%3E%3Cg fill='%23ffffff' fillOpacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }

@@ -11,7 +11,7 @@ const BookAppointment = () => {
   const [formData, setFormData] = useState({
     trainerId: "",
     traineeId: "", 
-    status: "PENDING", // Default status
+    status: "PENDING",
     date: "",
     startTime: "",
     endTime: "",
@@ -22,7 +22,6 @@ const BookAppointment = () => {
       try {
         setLoading(true)
         const response = await getStaff()
-        // Filter to only get trainers
         const trainersOnly = response.data.filter(staff => staff.role === "TRAINER")
         setTrainers(trainersOnly)
       } catch (error) {
@@ -51,29 +50,24 @@ const BookAppointment = () => {
     if (!formData.startTime) return "Please select a start time"
     if (!formData.endTime) return "Please select an end time"
     
-    // Convert times to minutes for easier comparison
     const startTimeParts = formData.startTime.split(':')
     const endTimeParts = formData.endTime.split(':')
     
     const startTimeMinutes = parseInt(startTimeParts[0]) * 60 + parseInt(startTimeParts[1])
     const endTimeMinutes = parseInt(endTimeParts[0]) * 60 + parseInt(endTimeParts[1])
     
-    // Check if start time is before end time
     if (startTimeMinutes >= endTimeMinutes) {
       return "End time must be after start time"
     }
     
-    // Check minimum booking duration (20 minutes)
     if (endTimeMinutes - startTimeMinutes < 20) {
       return "Booking must be at least 20 minutes long"
     }
     
-    // Check maximum booking duration (2 hours = 120 minutes)
     if (endTimeMinutes - startTimeMinutes > 120) {
       return "Booking cannot exceed 2 hours"
     }
     
-    // Check if the booking is within the allowed time range (8 AM to 9 PM)
     const openingTimeMinutes = 8 * 60 // 8 AM
     const closingTimeMinutes = 21 * 60 // 9 PM
     
@@ -85,7 +79,6 @@ const BookAppointment = () => {
       return "Booking cannot end after 9:00 PM"
     }
 
-    // Check if the date is not in the past
     const selectedDate = new Date(formData.date)
     const today = new Date()
     today.setHours(0, 0, 0, 0)
@@ -117,7 +110,6 @@ const BookAppointment = () => {
         setError(response.data)
       } else {
         setSuccess("Appointment booked successfully!")
-        // Reset form
         setFormData({
           trainerId: "",
           traineeId: "",
@@ -127,9 +119,8 @@ const BookAppointment = () => {
           endTime: "",
         })
         
-        // Navigate or show success message
         setTimeout(() => {
-          navigate("/appointments")
+          navigate("/staff/appointments")
         }, 2000)
       }
     } catch (error) {
@@ -247,7 +238,7 @@ const BookAppointment = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                     value={formData.date}
                     onChange={handleChange}
-                    min={new Date().toISOString().split('T')[0]} // Set min to today
+                    min={new Date().toISOString().split('T')[0]}
                     required
                   />
                 </div>

@@ -3,7 +3,6 @@ import AdminLogin from "./pages/Auth/StaffLogin.jsx";
 import StaffPage from "./pages/index.jsx";
 
 function App() {
-  // Simple authentication check
   const isAuthenticated = () => {
     return localStorage.getItem("token") !== null;
   };

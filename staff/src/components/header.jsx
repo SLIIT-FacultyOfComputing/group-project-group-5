@@ -9,7 +9,6 @@ const Header = ({ scrolled }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Get user info from localStorage
     const name = localStorage.getItem('userName');
     const role = localStorage.getItem('userRole');
     setUserName(name || '');
@@ -43,7 +42,6 @@ const Header = ({ scrolled }) => {
     localStorage.removeItem('userName');
     localStorage.removeItem('userRole');
     
-    // Update the logout URL to include /staff prefix
     window.location.href = '/staff/login';
   };
 

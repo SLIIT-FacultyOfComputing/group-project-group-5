@@ -11,9 +11,9 @@ const AppointmentList = () => {
   const [editingId, setEditingId] = useState(null)
   const [userRole, setUserRole] = useState('')
   const [userId, setUserId] = useState('')
+  const [totalAppointments, setTotalAppointments] = useState(0)
   
   useEffect(() => {
-    // Get user info from localStorage
     const role = localStorage.getItem('userRole')
     const id = localStorage.getItem('userId')
     setUserRole(role || '')
@@ -27,18 +27,17 @@ const AppointmentList = () => {
       setLoading(true)
       let response;
       
-      // If user is a TRAINER, show only their appointments
       if (role === 'TRAINER') {
         response = await getAppointmentsByTrainer(id)
         console.log('Fetching appointments for trainer:', id)
       } else {
-        // For MANAGER, RECEPTIONIST or any other role, show all appointments
         response = await getAllAppointments()
         console.log('Fetching all appointments')
       }
       
       console.log('Appointments data:', response.data)
       setAppointments(response.data)
+      setTotalAppointments(response.data.length)
     } catch (error) {
       console.error("Error fetching appointments:", error)
       setError("Failed to load appointments")
@@ -50,25 +49,22 @@ const AppointmentList = () => {
   const handleStatusChange = async (id, newStatus) => {
     try {
       await updateAppointmentStatus(id, newStatus)
-      // Update local state to reflect the change
       setAppointments(appointments.map(appointment => 
         appointment.id === id 
           ? { ...appointment, status: newStatus } 
           : appointment
       ))
-      setEditingId(null) // Close the dropdown after changing status
+      setEditingId(null)
     } catch (error) {
       console.error("Error updating appointment status:", error)
       alert("Failed to update appointment status")
     }
   }
   
-  // Get current appointments
   const indexOfLastItem = currentPage * itemsPerPage
   const indexOfFirstItem = indexOfLastItem - itemsPerPage
   const currentAppointments = appointments.slice(indexOfFirstItem, indexOfLastItem)
   
-  // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber)
   
   const getStatusBadgeColor = (status) => {
@@ -97,13 +93,12 @@ const AppointmentList = () => {
   const formatTime = (timeString) => {
     if (!timeString) return 'N/A';
     try {
-      return timeString.substring(0, 5); // Extract HH:MM from HH:MM:SS
+      return timeString.substring(0, 5);
     } catch (error) {
       return timeString || 'N/A';
     }
   }
 
-  // Status dropdown component
   const StatusDropdown = ({ appointment }) => {
     const isEditing = editingId === appointment.id;
     
@@ -153,7 +148,6 @@ const AppointmentList = () => {
     );
   };
 
-  // Calculate pagination info
   const firstItemIndex = appointments.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
   const lastItemIndex = Math.min(currentPage * itemsPerPage, appointments.length);
   const totalPages = Math.ceil(appointments.length / itemsPerPage);
@@ -201,6 +195,44 @@ const AppointmentList = () => {
               <h1 className="text-2xl sm:text-3xl font-bold text-white drop-shadow-sm">
                 {userRole === 'TRAINER' ? 'My Appointments' : 'All Appointments'}
               </h1>
+            </div>
+            
+            <div className="flex items-center space-x-3">
+              <div className="flex items-center bg-white bg-opacity-10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white border-opacity-20">
+                <svg
+                  className="w-5 h-5 text-red opacity-80 mr-2"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"/>
+                </svg>
+                <span className="text-black font-medium">Total: {totalAppointments} appointments</span>
+              </div>
+              
+              {/* Only show Book Appointment button to excluding TRAINER */}
+              {(userRole === 'MANAGER' || userRole === 'RECEPTIONIST') && userRole !== 'TRAINER' && (
+                <Link
+                  to="/staff/book-appointment"
+                  className="flex items-center bg-white text-rose-600 px-4 py-2 rounded-lg border border-white shadow-sm hover:bg-opacity-90 transition-all duration-200 transform hover:scale-105"
+                >
+                  <svg
+                    className="w-5 h-5 mr-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    ></path>
+                  </svg>
+                  <span className="font-medium">Book Appointment</span>
+                </Link>
+              )}
             </div>
           </div>
 

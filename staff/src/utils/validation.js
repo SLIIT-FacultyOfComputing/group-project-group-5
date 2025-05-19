@@ -1,8 +1,3 @@
-/**
- * Validates a National Identity Card (NIC) number
- * @param {string} nic - The NIC to validate
- * @returns {string|null} - Error message or null if valid
- */
 export const validateNIC = (nic) => {
     if (!nic) return "NIC is required"
   
@@ -17,18 +12,12 @@ export const validateNIC = (nic) => {
     return null
   }
   
-  /**
-   * Validates a phone number
-   * @param {string} phone - The phone number to validate
-   * @returns {string|null} - Error message or null if valid
-   */
   export const validatePhone = (phone) => {
     if (!phone) return "Phone number is required"
   
     // Remove any spaces or dashes
     const cleanPhone = phone.replace(/[\s-]/g, "")
   
-    // Check if it's a valid Sri Lankan phone number
     // Format: 07XXXXXXXX (10 digits) or +947XXXXXXXX (12 digits)
     const mobileRegex = /^(0|(\+94))7[0-9]{8}$/
   
@@ -39,13 +28,8 @@ export const validateNIC = (nic) => {
     return null
   }
   
-  /**
-   * Validates a password
-   * @param {string} password - The password to validate
-   * @returns {string|null} - Error message or null if valid
-   */
   export const validatePassword = (password) => {
-    if (!password) return null // Password is optional for updates
+    if (!password) return null
   
     if (password.length < 8) {
       return "Password must be at least 8 characters long"

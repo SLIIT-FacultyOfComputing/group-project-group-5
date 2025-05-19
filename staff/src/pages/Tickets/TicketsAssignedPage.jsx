@@ -4,6 +4,7 @@ import TicketTable from '../../components/TicketList/TicketTable';
 import MobileTicketCard from '../../components/TicketList/MobileTicketCard';
 import Modal from '../../components/Modal';
 import StatusChangePreview from '../../components/TicketList/StatusChangePreview';
+import Pagination from '../../components/Pagination';
 
 const TicketsAssignedPage = () => {
   const [tickets, setTickets] = useState([]);
@@ -14,7 +15,10 @@ const TicketsAssignedPage = () => {
   const [updating, setUpdating] = useState(false);
   const [updateSuccess, setUpdateSuccess] = useState(null);
   
-  // Modal state
+  // Add pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  
   const [modalOpen, setModalOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [modalMessage, setModalMessage] = useState('');
@@ -22,7 +26,6 @@ const TicketsAssignedPage = () => {
   const [modalConfirmText, setModalConfirmText] = useState('Confirm');
   const [modalType, setModalType] = useState('info');
 
-  // Get user info from localStorage (similar to AppointmentList approach)
   useEffect(() => {
     const staffId = localStorage.getItem('userId');
     
@@ -33,6 +36,11 @@ const TicketsAssignedPage = () => {
       setError('User ID not found. Please log in again.');
     }
   }, []);
+
+  // Reset to first page when tickets change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [tickets.length]);
 
   const fetchTicketsForStaff = async (staffId) => {
     setLoading(true);
@@ -51,12 +59,10 @@ const TicketsAssignedPage = () => {
           priority: item.ticket.priority,
           createdAt: item.ticket.createdAt,
           updatedAt: item.ticket.updatedAt,
-          // Staff information
           assignedToId: staffId,
           assignedToName: item.staff?.name || 'Unknown',
           staffRole: item.staff?.role || 'N/A',
           staffPhone: item.staff?.phone || 'N/A',
-          // Member information
           raisedByMember: item.member ? true : false,
           raisedByName: item.member?.name || (item.staff?.name || 'Unknown'),
           raisedById: item.member?.id || staffId,
@@ -120,7 +126,6 @@ const TicketsAssignedPage = () => {
           setUpdating(true);
           await updateTicketStatus(ticketId, newStatus);
           
-          // Update local state to reflect the change
           setTickets(tickets.map(ticket => 
             getTicketId(ticket) === ticketId 
               ? { ...ticket, status: newStatus }
@@ -130,7 +135,6 @@ const TicketsAssignedPage = () => {
           setModalOpen(false);
           setUpdateSuccess(`Ticket #${ticketId} status updated to ${newStatus.replace('_', ' ')}`);
           
-          // Clear success message after 3 seconds
           setTimeout(() => {
             setUpdateSuccess(null);
           }, 3000);
@@ -140,7 +144,6 @@ const TicketsAssignedPage = () => {
           setModalOpen(false);
           setError(`Failed to update ticket status. ${err.response?.data?.message || err.message || 'Please try again later.'}`);
           
-          // Clear error message after 3 seconds
           setTimeout(() => {
             setError(null);
           }, 3000);
@@ -153,6 +156,25 @@ const TicketsAssignedPage = () => {
     );
   };
 
+  // Pagination handlers
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const handleItemsPerPageChange = (newItemsPerPage) => {
+    setItemsPerPage(newItemsPerPage);
+    setCurrentPage(1); // Reset to first page when changing items per page
+  };
+
+  // Get paginated tickets
+  const getPaginatedTickets = () => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return tickets.slice(startIndex, endIndex);
+  };
+
+  const paginatedTickets = getPaginatedTickets();
+  const totalPages = Math.max(1, Math.ceil(tickets.length / itemsPerPage));
   const staffName = tickets.length > 0 ? tickets[0].assignedToName : localStorage.getItem('userName') || 'your';
   
   return (
@@ -236,32 +258,40 @@ const TicketsAssignedPage = () => {
 
               {/* Desktop Table View */}
               <TicketTable
-                tickets={tickets}
+                tickets={paginatedTickets}
                 expandedTicket={expandedTicket}
                 setExpandedTicket={setExpandedTicket}
                 handleStatusChange={handleStatusChange}
                 handleUpdateStatus={handleUpdateStatus}
                 selectedStatuses={selectedStatuses}
-                loading={updating} // Pass the updating state instead of loading
+                loading={updating} 
                 formatDate={formatDate}
                 getTicketId={getTicketId}
                 isReadOnly={false}
-                showUpdateStatus={true} // New prop to indicate status updates should be shown
+                showUpdateStatus={true}
               />
 
               {/* Mobile Ticket Card View*/}
               <MobileTicketCard
-                tickets={tickets}
+                tickets={paginatedTickets}
                 expandedTicket={expandedTicket}
                 setExpandedTicket={setExpandedTicket}
                 handleStatusChange={handleStatusChange}
                 handleUpdateStatus={handleUpdateStatus}
                 selectedStatuses={selectedStatuses}
-                loading={updating} // Pass the updating state instead of loading
+                loading={updating} 
                 formatDate={formatDate}
                 getTicketId={getTicketId}
                 isReadOnly={false}
-                showUpdateStatus={true} // New prop to indicate status updates should be shown
+                showUpdateStatus={true} 
+              />
+
+              {/* Pagination - Bottom only */}
+              <Pagination 
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+                totalItems={tickets.length}
               />
             </>
           )}

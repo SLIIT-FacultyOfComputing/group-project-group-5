@@ -26,7 +26,7 @@ const AdminLogin = () => {
     setLoading(true);
 
     try {
-      console.log('Submitting login with:', formData); // Debug login data
+      console.log('Submitting login with:', formData);
 
       const response = await fetch('http://localhost:8090/api/staff/login', {
         method: 'POST',
@@ -36,7 +36,7 @@ const AdminLogin = () => {
         body: JSON.stringify(formData),
       });
 
-      console.log('Login response status:', response.status); // Debug response
+      console.log('Login response status:', response.status);
 
       if (!response.ok) {
         throw new Error('Invalid NIC or password');
@@ -44,17 +44,15 @@ const AdminLogin = () => {
 
       const data = await response.json();
       
-      // Store user data in localStorage
       localStorage.setItem('token', data.token);
       localStorage.setItem('userId', data.staff.nic);
       localStorage.setItem('userName', data.staff.name);
       localStorage.setItem('userRole', data.staff.role);
       
-      // Update redirect URL to include /staff prefix
       window.location.href = '/staff/dashboard';
       
     } catch (err) {
-      console.error('Login error:', err); // Debug error
+      console.error('Login error:', err);
       setError('Invalid NIC or password');
       setLoading(false);
     }

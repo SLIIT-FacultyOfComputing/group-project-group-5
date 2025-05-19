@@ -5,6 +5,7 @@ const AdminDashboard = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('members');
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -18,10 +19,6 @@ const AdminDashboard = () => {
         const currentPath = location.pathname;
         if (currentPath.includes('/members')) {
             setActiveTab('members');
-        } else if (currentPath.includes('/equipment')) {
-            setActiveTab('equipment');
-        } else if (currentPath.includes('/reports')) {
-            setActiveTab('reports');
         } else if (currentPath.includes('/attendance')) {
             setActiveTab('attendance');
         } else if (currentPath.includes('/payments')) {
@@ -39,11 +36,36 @@ const AdminDashboard = () => {
     };
 
     const tabs = [
-        { id: 'members', label: 'Members', path: '/admin/dashboard/members' },
-        { id: 'attendance', label: 'Attendance Log', path: '/admin/dashboard/attendance' },
-        { id: 'payments', label: 'Payments', path: '/admin/dashboard/payments' },
-        { id: 'equipment', label: 'Equipment', path: '/admin/dashboard/equipment' },
-        { id: 'reports', label: 'Reports', path: '/admin/dashboard/reports' },
+        { 
+            id: 'members', 
+            label: 'Members', 
+            path: '/admin/dashboard/members',
+            icon: (
+                <svg className="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+            )
+        },
+        { 
+            id: 'attendance', 
+            label: 'Attendance Log', 
+            path: '/admin/dashboard/attendance',
+            icon: (
+                <svg className="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                </svg>
+            )
+        },
+        { 
+            id: 'payments', 
+            label: 'Payments', 
+            path: '/admin/dashboard/payments',
+            icon: (
+                <svg className="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+            )
+        },
     ];
 
     return (
@@ -56,13 +78,16 @@ const AdminDashboard = () => {
                         <div className="flex items-center space-x-4">
                             <button
                                 onClick={handleScanQR}
-                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-rose-600 hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500"
+                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-rose-600 hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500 transition-all duration-200"
                             >
+                                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v2m0 5h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
                                 Scan QR
                             </button>
                             <Link
                                 to="/"
-                                className="text-gray-600 hover:text-rose-600 transition-colors"
+                                className="text-gray-600 hover:text-rose-600 transition-colors duration-200"
                             >
                                 Back to Home
                             </Link>
@@ -73,19 +98,39 @@ const AdminDashboard = () => {
 
             {/* Main Content */}
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                {/* Mobile Menu Toggle */}
+                <div className="md:hidden mb-4">
+                    <button
+                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                        className="w-full flex items-center justify-between p-4 bg-white rounded-lg shadow-sm"
+                    >
+                        <span className="font-medium text-gray-700">Menu</span>
+                        <svg
+                            className={`w-5 h-5 transition-transform duration-200 ${mobileMenuOpen ? 'transform rotate-180' : ''}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                </div>
+
                 {/* Tabs */}
-                <div className="border-b border-gray-200 mb-8">
-                    <nav className="-mb-px flex space-x-8">
+                <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200 neu-convex mb-8">
+                    <nav className={`flex flex-col md:flex-row ${mobileMenuOpen ? 'block' : 'hidden md:flex'}`}>
                         {tabs.map((tab) => (
                             <Link
                                 key={tab.id}
                                 to={tab.path}
-                                className={`${
+                                className={`px-4 sm:px-5 md:px-7 py-3 md:py-4 text-sm font-medium flex items-center transition-all duration-300 group ${
                                     activeTab === tab.id
-                                        ? 'border-rose-600 text-rose-600'
-                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
+                                        ? 'bg-gradient-to-r from-rose-700 to-rose-500 text-white shadow-md'
+                                        : 'text-gray-700 hover:bg-rose-50 hover:text-rose-700'
+                                }`}
+                                onClick={() => setMobileMenuOpen(false)}
                             >
+                                {tab.icon}
                                 {tab.label}
                             </Link>
                         ))}
@@ -93,24 +138,53 @@ const AdminDashboard = () => {
                 </div>
 
                 {/* Tab Content */}
-                <div className="bg-white rounded-lg shadow-sm p-6">
+                <div className="bg-white rounded-xl shadow-lg p-6 glass-effect">
                     <Outlet />
                 </div>
             </main>
 
             {/* Admin Footer */}
-            <footer className="bg-white shadow-sm">
+            <footer className="bg-white shadow-sm mt-8">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                     <div className="flex justify-center">
                         <button
                             onClick={handleLogout}
-                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-rose-600 hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500"
+                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-rose-600 hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500 transition-all duration-200"
                         >
+                            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
                             Logout
                         </button>
                     </div>
                 </div>
             </footer>
+
+            <style>
+                {`
+                .neu-convex {
+                    background: linear-gradient(145deg, #e2e8ec, #ffffff);
+                    box-shadow: 5px 5px 10px #d1d9e6, -5px -5px 10px #ffffff;
+                }
+                
+                .glass-effect {
+                    background: rgba(255, 255, 255, 0.05);
+                    backdrop-filter: blur(10px);
+                    -webkit-backdrop-filter: blur(10px);
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                }
+                
+                @media (max-width: 640px) {
+                    .glass-effect {
+                        background: rgba(255, 255, 255, 0.1);
+                    }
+                    
+                    .neu-convex {
+                        box-shadow: 3px 3px 6px #d1d9e6, -3px -3px 6px #ffffff;
+                    }
+                }
+                `}
+            </style>
         </div>
     );
 };

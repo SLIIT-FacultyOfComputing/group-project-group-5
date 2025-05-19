@@ -1,35 +1,51 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import RegisterPage from "./pages/RegisterPage";
+import HomePage from "./pages/HomePage";
+import MemberPage from "./pages/Membership/MemberPage";
+import LoginPage from "./pages/LoginPage";
+import AdminLogin from './pages/Admin/AdminLogin';
+import AdminDashboard from './pages/Admin/AdminDashboard';
+import MembersList from './pages/Admin/MembersList';
+import EditMember from './pages/Admin/EditMember';
+import AttendanceLog from './pages/Admin/AttendanceLog';
+import Payments from './pages/Admin/Payments';
+import QRScanner from './pages/Membership/QRScanner';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Router>
+      <Routes>
+        {/*Home Route*/}
+        <Route path="/" element={<HomePage />} />
+
+        {/*Auth Routes*/}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+
+        {/*Member Routes*/}
+        <Route path="/members/*" element={<MemberPage />} />
+
+        {/*Admin Routes*/}
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />}>
+          <Route path="members" element={<MembersList />} />
+          <Route path="members/edit/:id" element={<EditMember />} />
+          <Route path="attendance" element={<AttendanceLog />} />
+          <Route path="payments" element={<Payments />} />
+          <Route path="equipment" element={<div>Equipment Management</div>} />
+          <Route path="reports" element={<div>Reports</div>} />
+          <Route index element={<Navigate to="members" replace />} />
+        </Route>
+        <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
+
+        {/*QR Scanner Route*/}
+        <Route path="/membership/scan-qr" element={<QRScanner />} />
+
+        {/*Default Redirect*/}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>     
+    </Router>
+  );
 }
 
-export default App
+export default App;

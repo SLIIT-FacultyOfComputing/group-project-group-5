@@ -5,7 +5,9 @@ const AdminDashboard = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('members');
+    const [activeCategory, setActiveCategory] = useState('members');
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [dropdownOpen, setDropdownOpen] = useState(null);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -19,12 +21,16 @@ const AdminDashboard = () => {
         const currentPath = location.pathname;
         if (currentPath.includes('/members')) {
             setActiveTab('members');
+            setActiveCategory('members');
         } else if (currentPath.includes('/attendance')) {
             setActiveTab('attendance');
+            setActiveCategory('members');
         } else if (currentPath.includes('/payments')) {
             setActiveTab('payments');
+            setActiveCategory('members');
         } else if (currentPath.includes('/equipment')) {
             setActiveTab('equipment');
+            setActiveCategory('equipment');
         }
     }, [location.pathname]);
 
@@ -37,48 +43,50 @@ const AdminDashboard = () => {
         navigate('/membership/scan-qr');
     };
 
-    const tabs = [
-        { 
-            id: 'members', 
-            label: 'Members', 
-            path: '/admin/dashboard/members',
+    const categories = [
+        {
+            id: 'members',
+            label: 'Members',
             icon: (
-                <svg className="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg className="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
-            )
+            ),
+            items: [
+                { id: 'members', label: 'Members List', path: '/admin/dashboard/members' },
+                { id: 'attendance', label: 'Attendance Log', path: '/admin/dashboard/attendance' },
+                { id: 'payments', label: 'Payments', path: '/admin/dashboard/payments' }
+            ]
         },
-        { 
-            id: 'attendance', 
-            label: 'Attendance Log', 
-            path: '/admin/dashboard/attendance',
+        {
+            id: 'equipment',
+            label: 'Equipment',
             icon: (
-                <svg className="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-                </svg>
-            )
-        },
-        { 
-            id: 'payments', 
-            label: 'Payments', 
-            path: '/admin/dashboard/payments',
-            icon: (
-                <svg className="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-            )
-        },
-        { 
-            id: 'equipment', 
-            label: 'View Gym Equipment', 
-            path: '/admin/dashboard/equipment',
-            icon: (
-                <svg className="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg className="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                 </svg>
-            )
+            ),
+            items: [
+                { id: 'equipment', label: 'View Gym Equipment', path: '/admin/dashboard/equipment' }
+            ]
+        },
+        {
+            id: 'staff',
+            label: 'Staff',
+            icon: (
+                <svg className="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            ),
+            items: [
+                { id: 'staff', label: 'Coming Soon', path: '#' }
+            ]
         }
     ];
+
+    const toggleDropdown = (categoryId) => {
+        setDropdownOpen(dropdownOpen === categoryId ? null : categoryId);
+    };
 
     return (
         <div className="min-h-screen bg-gray-50 text-gray-900">
@@ -129,28 +137,64 @@ const AdminDashboard = () => {
                 </div>
 
                 {/* Tabs */}
-                <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200 neu-convex mb-8">
+                <div className="bg-white rounded-xl shadow-lg border border-gray-200 neu-convex mb-8">
                     <nav className={`flex flex-col md:flex-row ${mobileMenuOpen ? 'block' : 'hidden md:flex'}`}>
-                        {tabs.map((tab) => (
-                            <Link
-                                key={tab.id}
-                                to={tab.path}
-                                className={`px-4 sm:px-5 md:px-7 py-3 md:py-4 text-sm font-medium flex items-center transition-all duration-300 group ${
-                                    activeTab === tab.id
-                                        ? 'bg-gradient-to-r from-rose-700 to-rose-500 text-white shadow-md'
-                                        : 'text-gray-700 hover:bg-rose-50 hover:text-rose-700'
-                                }`}
-                                onClick={() => setMobileMenuOpen(false)}
-                            >
-                                {tab.icon}
-                                {tab.label}
-                            </Link>
+                        {categories.map((category) => (
+                            <div key={category.id} className="relative">
+                                <div
+                                    onClick={() => toggleDropdown(category.id)}
+                                    className={`w-full px-4 sm:px-5 md:px-7 py-3 md:py-4 text-sm font-medium flex items-center justify-between cursor-pointer transition-all duration-300 ${
+                                        activeCategory === category.id
+                                            ? 'bg-gradient-to-r from-rose-700 to-rose-500 text-white shadow-md'
+                                            : 'text-gray-700 hover:bg-rose-50 hover:text-rose-700'
+                                    }`}
+                                >
+                                    <div className="flex items-center">
+                                        {category.icon}
+                                        {category.label}
+                                    </div>
+                                    <svg
+                                        className={`w-4 h-4 ml-2 transition-transform duration-200 ${
+                                            dropdownOpen === category.id ? 'transform rotate-180' : ''
+                                        }`}
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
+                                
+                                {/* Dropdown Menu */}
+                                {dropdownOpen === category.id && (
+                                    <div className="absolute left-0 w-48 mt-1 bg-white rounded-lg shadow-lg overflow-hidden z-50">
+                                        {category.items.map((item) => (
+                                            <Link
+                                                key={item.id}
+                                                to={item.path}
+                                                className={`block px-4 py-3 text-sm transition-colors duration-200 ${
+                                                    activeTab === item.id
+                                                        ? 'bg-rose-50 text-rose-700'
+                                                        : 'text-gray-700 hover:bg-rose-50 hover:text-rose-700'
+                                                }`}
+                                                onClick={() => {
+                                                    setActiveTab(item.id);
+                                                    setMobileMenuOpen(false);
+                                                    setDropdownOpen(null);
+                                                }}
+                                            >
+                                                {item.label}
+                                            </Link>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         ))}
                     </nav>
                 </div>
 
                 {/* Tab Content */}
-                <div className="bg-white rounded-xl shadow-lg p-6 glass-effect">
+                <div className={`bg-white rounded-xl shadow-lg p-6 ${activeTab !== 'equipment' ? 'glass-effect' : ''}`}>
                     <Outlet />
                 </div>
             </main>
@@ -201,4 +245,4 @@ const AdminDashboard = () => {
     );
 };
 
-export default AdminDashboard; 
+export default AdminDashboard;

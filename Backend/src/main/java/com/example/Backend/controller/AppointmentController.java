@@ -3,7 +3,6 @@ package com.example.Backend.controller;
 import com.example.Backend.dto.AppointmentBookingRequest;
 import com.example.Backend.dto.AppointmentDTO;
 import com.example.Backend.model.Appointment;
-import com.example.Backend.model.TimeSlot;
 import com.example.Backend.service.AppointmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

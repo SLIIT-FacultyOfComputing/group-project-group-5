@@ -6,8 +6,7 @@ import {
   getEquipment,
   getAllMembers
 } from '../../services/api';
-import { searchTicketsByStaffId, getTicketCountBystaffId } from '../../services/ticketApi';
-import axios from 'axios';
+import { getTicketCountBystaffId, getTicketsAssignedToStaff } from '../../services/ticketApi';
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -97,62 +96,38 @@ const Dashboard = () => {
           try {
             console.log("Fetching tickets for staff ID:", staffId);
             
-            try {
-              const ticketsResponse = await searchTicketsByStaffId(staffId);
-              console.log("Tickets from searchTicketsByStaffId:", ticketsResponse);
-              if (ticketsResponse && ticketsResponse.data && 
-                  (Array.isArray(ticketsResponse.data) ? ticketsResponse.data.length > 0 : ticketsResponse.data)) {
-                tickets = Array.isArray(ticketsResponse.data) ? ticketsResponse.data : [ticketsResponse.data];
-              }
-            } catch (err) {
-              console.log("Error with searchTicketsByStaffId, trying direct API call", err);
+            const ticketsResponse = await getTicketsAssignedToStaff(staffId);
+            if (ticketsResponse && Array.isArray(ticketsResponse.data)) {
+              tickets = ticketsResponse.data;
+            } else if (ticketsResponse && ticketsResponse.data && Array.isArray(ticketsResponse.data.content)) {
+              tickets = ticketsResponse.data.content;
+            } else if (ticketsResponse && ticketsResponse.data && Array.isArray(ticketsResponse.data.tickets)) {
+              tickets = ticketsResponse.data.tickets;
             }
-            
-            if (tickets.length === 0) {
-              const BASE_URL = "http://localhost:8090";
-              
-              const endpoints = [
-                `/api/tickets/assignedStaff/${staffId}`,
-                `/api/tickets/staff/${staffId}`,
-                `/api/tickets?staffId=${staffId}`
-              ];
-              
-              for (const endpoint of endpoints) {
-                try {
-                  console.log(`Trying endpoint: ${endpoint}`);
-                  const response = await axios.get(`${BASE_URL}${endpoint}`);
-                  console.log(`Response from ${endpoint}:`, response);
-                  
-                  if (response && response.data) {
-                    const data = response.data;
-                    
-                    if (Array.isArray(data) && data.length > 0) {
-                      tickets = data;
-                      console.log(`Found ${tickets.length} tickets from ${endpoint}`);
-                      break;
-                    } else if (typeof data === 'object' && data !== null) {
-                      if (data.content && Array.isArray(data.content)) {
-                        tickets = data.content;
-                      } else if (data.tickets && Array.isArray(data.tickets)) {
-                        tickets = data.tickets;
-                      } else {
-                        tickets = [data];
-                      }
-                      console.log(`Found tickets from ${endpoint}:`, tickets);
-                      break;
-                    }
-                  }
-                } catch (endpointError) {
-                  console.log(`Endpoint ${endpoint} failed:`, endpointError);
-                }
-              }
-            }
-            
-            console.log("Final tickets data:", tickets);
           } catch (ticketError) {
             console.error("Error fetching assigned tickets for staff:", ticketError);
           }
         }
+        
+        const transformedTickets = Array.isArray(tickets) && tickets.length > 0
+          ? tickets.map(item => ({
+              id: item.ticketId,
+              type: item.ticket?.type,
+              description: item.ticket?.description,
+              status: item.ticket?.status,
+              priority: item.ticket?.priority,
+              createdAt: item.ticket?.createdAt,
+              updatedAt: item.ticket?.updatedAt,
+              staffName: item.staff?.name,
+              staffRole: item.staff?.role
+            }))
+          : [];
+        const sortedTickets = transformedTickets.sort((a, b) => {
+          const dateA = new Date(a.createdAt || a.updatedAt || 0);
+          const dateB = new Date(b.createdAt || b.updatedAt || 0);
+          return dateB - dateA;
+        });
+        setRecentTickets(sortedTickets.slice(0, 3));
         
         const today = new Date().toISOString().split('T')[0];
         const todaysAppointments = appointments.filter(app => 
@@ -164,11 +139,6 @@ const Dashboard = () => {
         const activeMembers = Array.isArray(members) ? 
           members.filter(member => member.status && member.status.toUpperCase() === 'ACTIVE').length : 0;
         
-        const openTicketsCount = Array.isArray(tickets) ? 
-          tickets.filter(ticket => 
-            ticket.status && (ticket.status === 'OPEN' || ticket.status === 'IN_PROGRESS')
-          ).length : 0;
-        
         setStats({
           membersTotal: totalMemberCount,
           membersActive: activeMembers || 0,
@@ -178,10 +148,6 @@ const Dashboard = () => {
         });
         
         setRecentAppointments(appointments.slice(0, 3)); 
-        const sortedTickets = Array.isArray(tickets) && tickets.length > 0 ? 
-          [...tickets].sort((a, b) => new Date(b.createdAt || b.date || 0) - new Date(a.createdAt || a.date || 0)) : 
-          [];
-        
         setRecentTickets(sortedTickets.slice(0, 3));
         console.log("Setting recent tickets:", sortedTickets.slice(0, 3));
         
@@ -209,7 +175,7 @@ const Dashboard = () => {
     if (!status) return "bg-gray-500";
     
     const statusStr = String(status).toUpperCase();
-    
+     
     if (statusStr === "PENDING") return "bg-yellow-500";
     if (statusStr === "ACCEPTED") return "bg-green-500"; 
     if (statusStr === "REJECTED") return "bg-red-500";

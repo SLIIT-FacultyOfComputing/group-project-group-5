@@ -66,35 +66,6 @@ public class ExerciseService {
         return exerciseRepository.save(exercise);
     }
 
-   /* @Transactional
-    public boolean deleteExercise(Long exerciseId) {
-        Optional<Exercise> exerciseOpt = exerciseRepository.findById(exerciseId);
-        if (exerciseOpt.isEmpty()) {
-            return false;
-        }
-        exerciseRepository.delete(exerciseOpt.get());
-        return true;
-    }
-
-
-   @Transactional
-   public boolean deleteExercise(Long exerciseId) {
-       Optional<Exercise> exerciseOptional = exerciseRepository.findById(exerciseId);
-       if (!exerciseOptional.isPresent()) {
-           return false;
-       }
-       Exercise exercise = exerciseOptional.get();
-       List<Routine> routines = routineRepository.findAll();
-       for (Routine routine : routines) {
-           List<RoutineExercise> routineExercises = routine.getRoutineExercises();
-           routineExercises.removeIf(re -> re.getExercise().getId().equals(exerciseId));
-       }
-       routineRepository.saveAll(routines);
-       exerciseRepository.delete(exercise);
-       return true;
-   }
-
-    */
    @Transactional
    public boolean deleteExercise(Long exerciseId) {
        // Check if exercise exists

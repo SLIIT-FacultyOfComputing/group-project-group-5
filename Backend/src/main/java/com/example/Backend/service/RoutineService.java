@@ -10,6 +10,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+// Custom exception class for meaningful error messages
+class RoutineServiceException extends RuntimeException {
+    public RoutineServiceException(String message) {
+        super(message);
+    }
+}
+
 @Service
 public class RoutineService {
 
@@ -18,6 +25,7 @@ public class RoutineService {
     private final ExerciseRepository exerciseRepository;
     private final RoutineExerciseRepository routineExerciseRepository;
 
+    // Constructor to inject repositories
     public RoutineService(RoutineRepository routineRepository, MemberRepository memberRepository,
                           ExerciseRepository exerciseRepository, RoutineExerciseRepository routineExerciseRepository) {
         this.routineRepository = routineRepository;
@@ -28,23 +36,32 @@ public class RoutineService {
 
     @Transactional
     public RoutineResponseDTO createRoutine(RoutineRequestDTO request) {
+        // Check if member exists
         Optional<Member> memberOpt = memberRepository.findById(request.getMemberId());
         if (memberOpt.isEmpty()) {
-            return null;
+            throw new RoutineServiceException("Member not found");
         }
         Member member = memberOpt.get();
 
+        // Set up new routine
         Routine routine = new Routine();
         routine.setName(request.getName());
         routine.setMember(member);
         routine.setRoutineExercises(new ArrayList<>());
         routine = routineRepository.save(routine);
 
+        // Add exercises to routine
         List<RoutineExercise> routineExercises = routine.getRoutineExercises();
         for (RoutineRequestDTO.ExerciseAssignment assignment : request.getExerciseAssignments()) {
             Optional<Exercise> exerciseOpt = exerciseRepository.findById(assignment.getExerciseId());
-            if (exerciseOpt.isEmpty() || assignment.getSets() <= 0 || assignment.getReps() <= 0) {
-                return null;
+            if (exerciseOpt.isEmpty()) {
+                throw new RoutineServiceException("Exercise not found");
+            }
+            if (assignment.getSets() <= 0) {
+                throw new RoutineServiceException("Invalid number of sets");
+            }
+            if (assignment.getReps() <= 0) {
+                throw new RoutineServiceException("Invalid number of reps");
             }
             Exercise exercise = exerciseOpt.get();
             RoutineExercise routineExercise = new RoutineExercise(routine, exercise, assignment.getSets(), assignment.getReps());
@@ -53,6 +70,7 @@ public class RoutineService {
 
         routineRepository.save(routine);
 
+        // Build response with exercise IDs
         List<Long> exerciseIds = new ArrayList<>();
         for (RoutineExercise re : routineExercises) {
             exerciseIds.add(re.getExercise().getId());
@@ -68,9 +86,10 @@ public class RoutineService {
     }
 
     public List<RoutineSummaryDTO> getRoutineSummariesByMemberId(Long memberId) {
+        // Fetch all routines for member
         List<Routine> routines = routineRepository.findByMemberId(memberId);
         if (routines.isEmpty()) {
-            return null;
+            throw new RoutineServiceException("No routines found for member");
         }
         List<RoutineSummaryDTO> responseList = new ArrayList<>();
         for (Routine routine : routines) {
@@ -83,12 +102,14 @@ public class RoutineService {
     }
 
     public RoutineDetailsResponseDTO getRoutineDetails(Long routineId) {
+        // Look up routine by ID
         Optional<Routine> routineOpt = routineRepository.findById(routineId);
         if (routineOpt.isEmpty()) {
-            return null;
+            throw new RoutineServiceException("Routine not found");
         }
         Routine routine = routineOpt.get();
 
+        // Get exercises for routine
         List<RoutineExercise> routineExercises = routineExerciseRepository.findByRoutineId(routineId);
         List<ExerciseDetailsDTO> exerciseDetails = new ArrayList<>();
         for (RoutineExercise re : routineExercises) {
@@ -114,9 +135,10 @@ public class RoutineService {
 
     public RoutineRenameDTO updateRoutineName(Long routineId, Map<String, String> request) {
         String name = request.get("name");
+        // Update routine name
         Optional<Routine> routineOpt = routineRepository.findById(routineId);
         if (routineOpt.isEmpty()) {
-            return null;
+            throw new RoutineServiceException("Routine not found");
         }
         Routine routine = routineOpt.get();
         routine.setName(name);
@@ -126,21 +148,33 @@ public class RoutineService {
 
     @Transactional
     public RoutineResponseDTO addExerciseToRoutine(Long routineId, ExerciseAssignmentDTO assignment) {
+        // Validate routine and exercise
         Optional<Routine> routineOpt = routineRepository.findById(routineId);
         Optional<Exercise> exerciseOpt = exerciseRepository.findById(assignment.getExerciseId());
-        if (routineOpt.isEmpty() || exerciseOpt.isEmpty() || assignment.getSets() <= 0 || assignment.getReps() <= 0) {
-            return null;
+        if (routineOpt.isEmpty()) {
+            throw new RoutineServiceException("Routine not found");
+        }
+        if (exerciseOpt.isEmpty()) {
+            throw new RoutineServiceException("Exercise not found");
+        }
+        if (assignment.getSets() <= 0) {
+            throw new RoutineServiceException("Invalid number of sets");
+        }
+        if (assignment.getReps() <= 0) {
+            throw new RoutineServiceException("Invalid number of reps");
         }
         Routine routine = routineOpt.get();
         Exercise exercise = exerciseOpt.get();
 
+        // Check for duplicate exercise
         List<RoutineExercise> routineExercises = routine.getRoutineExercises();
         for (RoutineExercise re : routineExercises) {
             if (re.getExercise().getId().equals(assignment.getExerciseId())) {
-                return null;
+                throw new RoutineServiceException("Exercise already in routine");
             }
         }
 
+        // Add new exercise to routine
         RoutineExercise routineExercise = new RoutineExercise(routine, exercise, assignment.getSets(), assignment.getReps());
         routineExerciseRepository.save(routineExercise);
 
@@ -151,6 +185,7 @@ public class RoutineService {
         routineExercises.add(routineExercise);
         routineRepository.save(routine);
 
+        // Build response
         List<Long> exerciseIds = new ArrayList<>();
         for (RoutineExercise re : routineExercises) {
             exerciseIds.add(re.getExercise().getId());
@@ -167,12 +202,14 @@ public class RoutineService {
 
     @Transactional
     public RoutineResponseDTO removeExerciseFromRoutine(Long routineId, Long exerciseId) {
+        // Find routine
         Optional<Routine> routineOpt = routineRepository.findById(routineId);
         if (routineOpt.isEmpty()) {
-            return null;
+            throw new RoutineServiceException("Routine not found");
         }
         Routine routine = routineOpt.get();
 
+        // Look for exercise to remove
         List<RoutineExercise> routineExercises = routine.getRoutineExercises();
         RoutineExercise toRemove = null;
         for (RoutineExercise re : routineExercises) {
@@ -183,13 +220,15 @@ public class RoutineService {
         }
 
         if (toRemove == null) {
-            return null;
+            throw new RoutineServiceException("Exercise not found in routine");
         }
 
+        // Remove exercise
         routineExercises.remove(toRemove);
         routineExerciseRepository.delete(toRemove);
         routineRepository.save(routine);
 
+        // Build response
         List<Long> exerciseIds = new ArrayList<>();
         for (RoutineExercise re : routineExercises) {
             exerciseIds.add(re.getExercise().getId());
@@ -206,9 +245,10 @@ public class RoutineService {
 
     @Transactional
     public boolean deleteRoutine(Long routineId) {
+        // Delete routine if it exists
         Optional<Routine> routineOpt = routineRepository.findById(routineId);
         if (routineOpt.isEmpty()) {
-            return false;
+            throw new RoutineServiceException("Routine not found");
         }
         routineRepository.deleteById(routineId);
         return true;

@@ -11,19 +11,21 @@ const ExerciseSelector = ({ onSelect, onCancel, isModal = false }) => {
     const [reps, setReps] = useState('');
     const [error, setError] = useState(null);
 
-    const muscleGroups = ['Chest', 'Back', 'Legs', 'Shoulders', 'Bicep','Tricep', 'Core'];
+    const muscleGroups = ['Chest', 'Back', 'Legs', 'Shoulders', 'Bicep', 'Tricep', 'Core'];
     const equipmentOptions = ['Barbell', 'Dumbbell', 'Machine', 'Bodyweight', 'Kettlebell', 'Resistance Band'];
 
     useEffect(() => {
         handleSearch();
-    }, []);
+    }, [searchTerm, primaryMuscleGroup, equipment]); // Trigger search when these change
 
     const handleSearch = async () => {
         try {
             const response = await fetchExercises(searchTerm, primaryMuscleGroup, equipment);
             setSearchResults(response || []);
+            setError(null); // Clear any previous errors
         } catch (err) {
             setError('Failed to search exercises.');
+            setSearchResults([]);
         }
     };
 
@@ -104,9 +106,6 @@ const ExerciseSelector = ({ onSelect, onCancel, isModal = false }) => {
                                     ))}
                                 </select>
                             </div>
-                            <button className="create-button" onClick={handleSearch}>
-                                Search
-                            </button>
                             {error && <p className="error-message">{error}</p>}
                             <h3>Results</h3>
                             {searchResults.length === 0 ? (
@@ -139,7 +138,7 @@ const ExerciseSelector = ({ onSelect, onCancel, isModal = false }) => {
                                     type="number"
                                     min="1"
                                     value={sets}
-                                    onChange={(e) => setSets(parseInt(e.target.value) || '')}
+                                    onChange={(e) => setSets(e.target.value)}
                                     placeholder="Enter number of sets"
                                 />
                             </div>
@@ -150,7 +149,7 @@ const ExerciseSelector = ({ onSelect, onCancel, isModal = false }) => {
                                     type="number"
                                     min="1"
                                     value={reps}
-                                    onChange={(e) => setReps(parseInt(e.target.value) || '')}
+                                    onChange={(e) => setReps(e.target.value)}
                                     placeholder="Enter number of reps"
                                 />
                             </div>

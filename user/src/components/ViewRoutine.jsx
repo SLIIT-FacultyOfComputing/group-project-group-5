@@ -12,6 +12,7 @@ const ViewRoutine = () => {
     const [error, setError] = useState(null);
     const [stats, setStats] = useState({});
     const [chartInstances, setChartInstances] = useState({});
+    const [showVideo, setShowVideo] = useState(null);
 
     useEffect(() => {
         const loadRoutineDetails = async () => {
@@ -62,6 +63,8 @@ const ViewRoutine = () => {
         setChartInstances(prev => ({ ...prev, [exerciseId]: newChart }));
     };
 
+    const closeVideo = () => setShowVideo(null);
+
     if (!routine) return <div className="container"><p>Loading...</p></div>;
 
     return (
@@ -84,8 +87,29 @@ const ViewRoutine = () => {
                         >
                             Show Statistics
                         </button>
+                        <button
+                            className="start-button"
+                            onClick={() => setShowVideo(exercise.id)}
+                            disabled={!exercise.animationUrl}
+                        >
+                            Show Tutorial
+                        </button>
                         <canvas id={`chart-${exercise.id}`} style={{ maxHeight: '200px' }}></canvas>
                         {stats[exercise.id] && stats[exercise.id].length === 0 && <p>No previous data</p>}
+                        {showVideo === exercise.id && exercise.animationUrl && (
+                            <div className="video-popup" onClick={closeVideo}>
+                                <div className="video-content" onClick={e => e.stopPropagation()}>
+                                    <video
+                                        src={exercise.animationUrl}
+                                        controls
+                                        autoPlay
+                                        onError={() => setError('Failed to load video. Check the file path or URL.')}
+                                        style={{ maxWidth: '600px', maxHeight: '500px' }}
+                                    />
+                                    <button className="close-button" onClick={closeVideo}>X</button>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 ))}
             </div>

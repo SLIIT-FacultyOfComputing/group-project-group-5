@@ -31,6 +31,9 @@ const AdminDashboard = () => {
         } else if (currentPath.includes('/equipment')) {
             setActiveTab('equipment');
             setActiveCategory('equipment');
+        } else if (currentPath.includes('/maintenance-list') || currentPath.includes('/maintenance-add')) {
+            setActiveTab('maintenance');
+            setActiveCategory('equipment');
         }
     }, [location.pathname]);
 
@@ -67,7 +70,8 @@ const AdminDashboard = () => {
                 </svg>
             ),
             items: [
-                { id: 'equipment', label: 'View Gym Equipment', path: '/admin/dashboard/equipment' }
+                { id: 'equipment', label: 'View Gym Equipment', path: '/admin/dashboard/equipment' },
+                { id: 'maintenance', label: 'Maintenance', path: '/admin/dashboard/maintenance-list' }
             ]
         },
         {

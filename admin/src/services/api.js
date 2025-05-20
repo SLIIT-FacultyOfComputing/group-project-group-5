@@ -10,6 +10,10 @@ export const getEquipment = async () => {
   return axios.get(`${BASE_URL}/api/equipment`);
 };
 
+export const getEquipmentWithDeleted = async () => {
+  return axios.get(`${BASE_URL}/api/equipment/with-deleted`);
+};
+
 export const getEquipmentById = async (id) => {
   return axios.get(`${BASE_URL}/api/equipment/${id}`);
 };
@@ -80,6 +84,14 @@ export const updateMaintenanceDescription = async (id, description) => {
 
 export const filterMaintenanceScheduleByStatus = async (status) => {
   return axios.get(`${BASE_URL}/api/maintenance-schedule/filter-by-status?status=${status}`);
+}
+
+export const filterMaintenanceScheduleByEquipmentId = async (equipmentId) => {
+  return axios.get(`${BASE_URL}/api/maintenance-schedule/filter-by-equipment?equipmentId=${equipmentId}`);
+}
+
+export const filterMaintenanceScheduleByType = async (type) => {
+  return axios.get(`${BASE_URL}/api/maintenance-schedule/filter-by-type?type=${type}`);
 }
 
 export const monthlyMaintenanceCost = async () => {

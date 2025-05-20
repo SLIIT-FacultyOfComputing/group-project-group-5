@@ -12,6 +12,9 @@ import Payments from './pages/Admin/Payments';
 import QRScanner from './pages/Membership/QRScanner';
 import EquipmentList from './pages/Equipment/EquipmentList';
 import AddEquipmentForm from './pages/Equipment/AddEquipmentForm';
+import MaintenanceScheduleList from './pages/Maintenance/MaintenanceScheduleList';
+import AddMaintenanceSchedule from './pages/Maintenance/AddMaintenanceSchedule';
+
 
 function App() {
   return (
@@ -36,6 +39,8 @@ function App() {
           <Route path="payments" element={<Payments />} />
           <Route path="equipment" element={<EquipmentList />} />
           <Route path="add-equipment" element={<AddEquipmentForm />} />
+          <Route path="maintenance-list" element={<MaintenanceScheduleList />} />
+          <Route path="maintenance-add" element={<AddMaintenanceSchedule />} />
           <Route path="reports" element={<div>Reports</div>} />
           <Route index element={<Navigate to="members" replace />} />
         </Route>

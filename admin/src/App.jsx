@@ -10,6 +10,7 @@ import EditMember from './pages/Admin/EditMember';
 import AttendanceLog from './pages/Admin/AttendanceLog';
 import Payments from './pages/Admin/Payments';
 import QRScanner from './pages/Membership/QRScanner';
+import EquipmentList from './pages/Equipment/EquipmentList';
 
 function App() {
   return (
@@ -32,7 +33,7 @@ function App() {
           <Route path="members/edit/:id" element={<EditMember />} />
           <Route path="attendance" element={<AttendanceLog />} />
           <Route path="payments" element={<Payments />} />
-          <Route path="equipment" element={<div>Equipment Management</div>} />
+          <Route path="equipment" element={<EquipmentList />} />
           <Route path="reports" element={<div>Reports</div>} />
           <Route index element={<Navigate to="members" replace />} />
         </Route>

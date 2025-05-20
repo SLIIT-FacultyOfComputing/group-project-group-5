@@ -5,7 +5,7 @@ import {
   deleteEquipment,
   updateEquipmentStatus,
   updateEquipmentMaintenanceDate,
-  searchEquipment,
+  searchEquipmentByName,
   filterEquipmentByStatus
 } from "../../services/api";
 import {
@@ -196,7 +196,7 @@ const EquipmentList = () => {
       setLoading(true);
       setSearchNotFound(false);
       
-      const response = await searchEquipment(search);
+      const response = await searchEquipmentByName(search);
       if (response.data && response.data.length > 0) {
         setDisplayEquipment(response.data);
       } else {

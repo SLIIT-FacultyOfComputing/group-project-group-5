@@ -10,16 +10,45 @@ import EditMember from './pages/Admin/EditMember';
 import AttendanceLog from './pages/Admin/AttendanceLog';
 import Payments from './pages/Admin/Payments';
 import QRScanner from './pages/Membership/QRScanner';
-import EquipmentList from './pages/Equipment/EquipmentList';
+import EquipmentList from './pages/Equipment/Admin_EquipmentList';
 import AddEquipmentForm from './pages/Equipment/AddEquipmentForm';
 import MaintenanceScheduleList from './pages/Maintenance/MaintenanceScheduleList';
 import AddMaintenanceSchedule from './pages/Maintenance/AddMaintenanceSchedule';
+import StaffLogin from "./pages/Auth/StaffLogin.jsx";
+import StaffPage from "./pages/StaffIndex.jsx";
 
 
 function App() {
+  // Add staff authentication check
+  const isStaffAuthenticated = () => {
+    return localStorage.getItem("token") !== null;
+  };
+
   return (
     <Router>
       <Routes>
+        {/* Staff Routes */}
+        <Route
+          path="/staff/login"
+          element={
+            isStaffAuthenticated() ? (
+              <Navigate to="/staff/dashboard" replace />
+            ) : (
+              <StaffLogin />
+            )
+          }
+        />
+        <Route
+          path="/staff/*"
+          element={
+            isStaffAuthenticated() ? (
+              <StaffPage />
+            ) : (
+              <Navigate to="/staff/login" replace />
+            )
+          }
+        />
+
         {/*Home Route*/}
         <Route path="/" element={<HomePage />} />
 

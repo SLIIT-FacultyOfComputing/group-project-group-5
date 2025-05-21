@@ -41,3 +41,4 @@ export const searchEquipment = async (search) => {
 export const filterEquipmentByStatus = async (status) => {
   return axios.get(`${BASE_URL}/api/equipment/filter-by-status?status=${status}`);
 };
+

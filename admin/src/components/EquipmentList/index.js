@@ -1,7 +1,9 @@
 import FilterButtons from './FilterButtons';
 import SearchBar from './SearchBar';
-import TableView from './TableView';
-import CardView from './CardView';
+import Admin_TableView from './Admin_TableView';
+import Admin_CardView from './Admin_CardView';
+import Staff_TableView from './Staff_TableView';
+import Staff_CardView from './Staff_CardView';
 import EmptyState from './EmptyState';
 import { TableSkeleton, CardSkeleton } from './LoadingSkeleton';
 
@@ -10,8 +12,10 @@ import { TableSkeleton, CardSkeleton } from './LoadingSkeleton';
 export {
   FilterButtons,
   SearchBar,
-  TableView,
-  CardView,
+  Admin_TableView,
+  Admin_CardView,
+  Staff_TableView,
+  Staff_CardView,
   EmptyState,
 
 };

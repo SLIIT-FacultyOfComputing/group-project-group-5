@@ -47,10 +47,28 @@ export const updateMember = async (id, memberData) => {
 // Delete member
 export const deleteMember = async (id) => {
   try {
-    const response = await api.delete(`/members/${id}`);
-    return response.data;
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('Authentication token not found');
+    }
+
+    const response = await api.delete(`/members/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    
+    // Return true for successful deletion (both 200 and 204 status codes)
+    return response.status === 200 || response.status === 204;
   } catch (error) {
-    throw error.response?.data?.message || "Failed to delete member";
+    console.error('Delete member error:', error);
+    if (error.response?.status === 401) {
+      throw new Error('Authentication failed. Please log in again.');
+    } else if (error.response?.status === 404) {
+      throw new Error('Member not found');
+    } else {
+      throw new Error(error.response?.data?.message || "Failed to delete member");
+    }
   }
 };
 

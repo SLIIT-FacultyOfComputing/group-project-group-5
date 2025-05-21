@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { getMembers, deleteMember } from '../../services/memberService';
 
 const MembersList = () => {
   const [members, setMembers] = useState([]);
@@ -11,20 +11,10 @@ const MembersList = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        navigate('/admin/login');
-        return;
-      }
-
+    const fetchMembers = async () => {
       try {
-        const response = await axios.get('http://localhost:8090/api/members', {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-        setMembers(response.data);
+        const data = await getMembers();
+        setMembers(data);
         setLoading(false);
       } catch (err) {
         if (err.response?.status === 401) {
@@ -36,7 +26,7 @@ const MembersList = () => {
       }
     };
 
-    checkAuth();
+    fetchMembers();
   }, [navigate]);
 
   const handleEdit = (memberId) => {
@@ -45,26 +35,25 @@ const MembersList = () => {
 
   const handleDelete = async (memberId) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.delete(`http://localhost:8090/api/members/${memberId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      if (response.status === 204 || response.status === 200) {
-        // Remove the deleted member from the state
-        setMembers(members.filter(member => member.id !== memberId));
-        setShowDeleteConfirm(false);
-        setMemberToDelete(null);
-      }
-    } catch (err) {
-      if (err.response?.status === 401) {
-        navigate('/admin/login');
-      } else {
-        setError('Failed to delete member. Please try again.');
-      }
+      await deleteMember(memberId);
+      // Remove the deleted member from the state
+      setMembers(members.filter(member => member.id !== memberId));
       setShowDeleteConfirm(false);
       setMemberToDelete(null);
+    } catch (err) {
+      console.error('Delete error:', err);
+      if (err.message === 'Authentication failed. Please log in again.') {
+        navigate('/admin/login');
+      } else {
+        setError(err.message);
+        // Keep the modal open if it's a non-auth error
+        if (err.message !== 'Authentication failed. Please log in again.') {
+          setShowDeleteConfirm(true);
+        } else {
+          setShowDeleteConfirm(false);
+          setMemberToDelete(null);
+        }
+      }
     }
   };
 

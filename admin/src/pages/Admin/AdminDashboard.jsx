@@ -71,7 +71,8 @@ const AdminDashboard = () => {
             ),
             items: [
                 { id: 'equipment', label: 'View Gym Equipment', path: '/admin/dashboard/equipment' },
-                { id: 'maintenance', label: 'Maintenance', path: '/admin/dashboard/maintenance-list' }
+                { id: 'maintenance', label: 'Maintenance', path: '/admin/dashboard/maintenance-list' },
+                { id: 'maintenance-cost', label: 'Maintenance Cost', path: '/admin/dashboard/maintenance-cost' }
             ]
         },
         {

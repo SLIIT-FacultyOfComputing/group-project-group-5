@@ -5,6 +5,8 @@ import { Routes, Route, Link, Navigate, useLocation } from "react-router-dom"
 import StaffList from "./Staff/StaffList.jsx"
 import AddStaff from "./Staff/AddStaff.jsx"
 import UpdateStaff from "./Staff/UpdateStaff.jsx"
+import AppointmentList from "./Appointments/AppointmentList.jsx"
+import BookAppointment from "./Appointments/BookAppointment.jsx"
 import Header from "../components/header.jsx"
 import Footer from "../components/Footer.jsx"
 
@@ -103,6 +105,56 @@ const StaffPage = () => {
               </svg>
               <span className="whitespace-nowrap">Add Staff</span>
             </Link>
+            <Link
+              to="/appointments"
+              className={`px-4 sm:px-5 md:px-7 py-3 md:py-4 text-sm font-medium flex items-center transition-all duration-300 group ${
+                currentPath === "/appointments"
+                  ? "bg-gradient-to-r from-blue-700 to-blue-500 text-white shadow-md"
+                  : "text-gray-700 hover:bg-blue-50 hover:text-blue-700"
+              }`}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                ></path>
+              </svg>
+              <span className="whitespace-nowrap">Appointments</span>
+            </Link>
+            <Link
+              to="/book-appointment"
+              className={`px-4 sm:px-5 md:px-7 py-3 md:py-4 text-sm font-medium flex items-center transition-all duration-300 group ${
+                currentPath === "/book-appointment"
+                  ? "bg-gradient-to-r from-blue-700 to-blue-500 text-white shadow-md"
+                  : "text-gray-700 hover:bg-blue-50 hover:text-blue-700"
+              }`}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <svg
+                className="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-45"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                ></path>
+              </svg>
+              <span className="whitespace-nowrap">Book Trainer</span>
+            </Link>
           </nav>
         </div>
       </div>
@@ -113,6 +165,8 @@ const StaffPage = () => {
             <Route path="/staff-list" element={<StaffList />} />
             <Route path="/add-staff" element={<AddStaff />} />
             <Route path="/update-staff/:nic" element={<UpdateStaff />} />
+            <Route path="/appointments" element={<AppointmentList />} />
+            <Route path="/book-appointment" element={<BookAppointment />} />
             <Route path="/" element={<Navigate to="/staff-list" replace />} />
             <Route
               path="*"

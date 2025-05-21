@@ -1,9 +1,13 @@
 package com.example.Backend.controller;
 
+import com.example.Backend.dto.StaffLoginRequest;
+import com.example.Backend.dto.StaffLoginResponse;
 import com.example.Backend.model.Staff;
 import com.example.Backend.service.StaffService;
+import com.example.Backend.util.JwtUtil;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +20,9 @@ public class StaffController {
 
     @Autowired
     private StaffService staffService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @PostMapping
     public Staff addStaff(@Valid @RequestBody Staff staff) {
@@ -77,6 +84,18 @@ public class StaffController {
         System.out.println("Received update request for NIC: " + NIC);
         System.out.println("Updated staff data: " + updatedStaff);
         return staffService.updateStaff(NIC, updatedStaff);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> loginStaff(@RequestBody StaffLoginRequest loginRequest) {
+        try {
+            Staff staff = staffService.authenticateStaff(loginRequest.getNic(), loginRequest.getPassword());
+            String token = jwtUtil.generateToken(staff.getEmail() != null ? staff.getEmail() : staff.getNIC());
+            StaffLoginResponse response = new StaffLoginResponse(staff, token);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(401).body(e.getMessage());
+        }
     }
 
 }

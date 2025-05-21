@@ -1,8 +1,7 @@
 package com.example.Backend.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 public class Appointment {
@@ -10,31 +9,36 @@ public class Appointment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long trainerId;
-    private String trainerName;
+    @NotNull(message = "Trainer must not be null")
+    @ManyToOne
+    @JoinColumn(name = "trainer_id", nullable = true)
+    private Staff trainer;
 
-    private Long traineeId;
-    private String traineeName;
+    @ManyToOne
+    @JoinColumn(name = "trainee_id", nullable = true)
+    private Member trainee;
 
-    private LocalDate date;
-
-    @Enumerated(EnumType.STRING)
-    private Shift shift;
-
-    private LocalTime timeSlot; // e.g., 09:00, 10:00
-
+    @NotNull(message = "Status must not be null")
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    public enum Shift {
-        MORNING, EVENING
-    }
-
     public enum Status {
-        PENDING, ACCEPTED, REJECTED
+        PENDING, ACCEPTED, REJECTED, COMPLETED
     }
 
-    // Getters and Setters for Appointment.java
+    // Default constructor
+    public Appointment() {
+    }
+
+    // Parameterized constructor
+    public Appointment(Long id, Staff trainer, Member trainee, Status status) {
+        this.id = id;
+        this.trainer = trainer;
+        this.trainee = trainee;
+        this.status = status;
+    }
+
+    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -43,60 +47,20 @@ public class Appointment {
         this.id = id;
     }
 
-    public Long getTrainerId() {
-        return trainerId;
+    public Staff getTrainer() {
+        return trainer;
     }
 
-    public void setTrainerId(Long trainerId) {
-        this.trainerId = trainerId;
+    public void setTrainer(Staff trainer) {
+        this.trainer = trainer;
     }
 
-    public String getTrainerName() {
-        return trainerName;
+    public Member getTrainee() {
+        return trainee;
     }
 
-    public void setTrainerName(String trainerName) {
-        this.trainerName = trainerName;
-    }
-
-    public Long getTraineeId() {
-        return traineeId;
-    }
-
-    public void setTraineeId(Long traineeId) {
-        this.traineeId = traineeId;
-    }
-
-    public String getTraineeName() {
-        return traineeName;
-    }
-
-    public void setTraineeName(String traineeName) {
-        this.traineeName = traineeName;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public Shift getShift() {
-        return shift;
-    }
-
-    public void setShift(Shift shift) {
-        this.shift = shift;
-    }
-
-    public LocalTime getTimeSlot() {
-        return timeSlot;
-    }
-
-    public void setTimeSlot(LocalTime timeSlot) {
-        this.timeSlot = timeSlot;
+    public void setTrainee(Member trainee) {
+        this.trainee = trainee;
     }
 
     public Status getStatus() {
@@ -105,5 +69,9 @@ public class Appointment {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public String getTrainerId() {
+        return trainer != null ? trainer.getNIC() : null;
     }
 }

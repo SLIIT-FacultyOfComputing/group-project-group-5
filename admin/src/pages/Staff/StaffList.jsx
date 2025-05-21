@@ -136,16 +136,16 @@ const StaffList = () => {
 
   const handleConfirmDelete = async () => {
     if (!staffToDelete) return
-    
+
     try {
       setLoading(true)
       await deleteStaff(staffToDelete.nic)
-      
-      // Remove the deleted staff from the lists
-      const updatedStaff = staff.filter(member => member.nic !== staffToDelete.nic)
+
+      // Update the staff list after deletion
+      const updatedStaff = staff.filter((member) => member.nic !== staffToDelete.nic)
       setStaff(updatedStaff)
       setDisplayStaff(updatedStaff)
-      
+
       setShowDeleteModal(false)
       setStaffToDelete(null)
     } catch (error) {
@@ -193,7 +193,7 @@ const StaffList = () => {
                 <span className="text-white font-medium">Total: {stats.total} members</span>
               </div>
               <Link
-                to="/add-staff"
+                to="/staff/add-staff"
                 className="flex items-center bg-white text-rose-600 px-4 py-2 rounded-lg border border-white shadow-sm hover:bg-opacity-90 transition-all duration-200 transform hover:scale-105"
               >
                 <svg
@@ -327,7 +327,7 @@ const StaffList = () => {
                 staff member.
               </p>
               <Link
-                to="/add-staff"
+                to="/staff/add-staff"
                 className="px-6 py-3 bg-gradient-to-r from-rose-600 to-rose-500 text-white rounded-lg hover:from-rose-700 hover:to-rose-600 transition-all duration-300 flex items-center shadow-md"
               >
                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -1,35 +1,47 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import AdminLogin from "./pages/Auth/StaffLogin.jsx";
+import StaffPage from "./pages/index.jsx";
 
 function App() {
-  const [count, setCount] = useState(0)
+  // Simple authentication check
+  const isAuthenticated = () => {
+    return localStorage.getItem("token") !== null;
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Router>
+      <Routes>
+        {/* Add /staff prefix to all routes */}
+        <Route
+          path="/staff/login"
+          element={
+            isAuthenticated() ? (
+              <Navigate to="/staff/dashboard" replace />
+            ) : (
+              <AdminLogin />
+            )
+          }
+        />
+
+        <Route
+          path="/staff/*"
+          element={
+            isAuthenticated() ? (
+              <StaffPage />
+            ) : (
+              <Navigate to="/staff/login" replace />
+            )
+          }
+        />
+
+        {/* Redirect root to staff login */}
+        <Route path="/" element={<Navigate to="/staff/login" replace />} />
+
+        {/* Redirect any unknown paths to login */}
+        <Route path="*" element={<Navigate to="/staff/login" replace />} />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;

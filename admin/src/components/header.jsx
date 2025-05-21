@@ -1,11 +1,32 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Header = ({ scrolled }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [userName, setUserName] = useState('');
+  const [userRole, setUserRole] = useState('');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Get user info from localStorage
+    const name = localStorage.getItem('userName');
+    const role = localStorage.getItem('userRole');
+    setUserName(name || '');
+    setUserRole(role || '');
+  }, []);
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('userRole');
+    
+    // Update the logout URL to include /staff prefix
+    window.location.href = '/staff/login';
   };
 
   return (
@@ -44,31 +65,22 @@ const Header = ({ scrolled }) => {
           </div>
 
           <div className="hidden md:flex items-center space-x-4">
-            <span className="inline-flex items-center px-3.5 py-1.5 bg-gradient-to-r from-rose-900 to-rose-800 rounded-full text-xs font-medium text-white shadow-lg border border-rose-500 border-opacity-40 pulse-border hover:from-rose-800 hover:to-rose-700 transition-all duration-300 transform hover:scale-105 cursor-pointer group">
-              <span className="w-2.5 h-2.5 bg-green-400 rounded-full mr-2 shadow-lg animate-pulse ring-2 ring-green-400 ring-opacity-50 group-hover:ring-opacity-70 transition-all duration-300"></span>
-              <span className="relative">
-                System Active
-                <span className="absolute inset-0 bg-gradient-to-r from-white to-transparent bg-clip-text blur-sm opacity-50 animate-pulse-slow"></span>
-              </span>
-            </span>
-            <div className="relative">
-              <button className="flex items-center text-rose-100 hover:text-white transition-colors p-2 bg-rose-800 bg-opacity-40 rounded-full hover:bg-opacity-60">
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  ></path>
-                </svg>
-              </button>
-            </div>
+            {userName && (
+              <div className="flex items-center bg-rose-900 bg-opacity-40 rounded-lg px-3 py-1.5 text-white">
+                <span className="text-sm">Welcome, {userName}</span>
+                <span className="ml-2 text-xs bg-rose-800 px-2 py-0.5 rounded-full">{userRole}</span>
+              </div>
+            )}
+            
+            <button 
+              onClick={handleLogout}
+              className="flex items-center space-x-1 text-rose-100 hover:text-white transition-colors p-2 bg-rose-800 bg-opacity-40 rounded-lg hover:bg-opacity-60"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+              </svg>
+              <span>Logout</span>
+            </button>
           </div>
 
           <div className="flex items-center md:hidden">
@@ -93,24 +105,22 @@ const Header = ({ scrolled }) => {
 
         <div className={`${mobileMenuOpen ? 'max-h-64 opacity-100' : 'max-h-0 opacity-0'} md:hidden overflow-hidden transition-all duration-300 ease-in-out mt-2`}>
           <div className="bg-rose-800 bg-opacity-90 backdrop-blur-sm rounded-lg shadow-lg px-3 py-2 my-1 transition-all">
-            <div className="flex items-center py-2 border-b border-rose-700 border-opacity-50">
-              <span className="w-2.5 h-2.5 bg-green-400 rounded-full mr-2 shadow-lg animate-pulse"></span>
-              <span className="text-rose-100 text-sm">System Active</span>
-            </div>
+            {userName && (
+              <div className="flex flex-col py-2 border-b border-rose-700 border-opacity-50">
+                <span className="text-white text-sm">Welcome, {userName}</span>
+                <span className="mt-1 text-xs bg-rose-900 inline-block w-fit px-2 py-0.5 rounded-full text-white">{userRole}</span>
+              </div>
+            )}
             <div className="py-2">
-              <Link to="/profile" className="flex items-center py-2 text-rose-100 hover:text-white" onClick={() => setMobileMenuOpen(false)}>
+              <button
+                onClick={handleLogout}
+                className="flex w-full items-center py-2 text-rose-100 hover:text-white"
+              >
                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
                 </svg>
-                Admin Profile
-              </Link>
-              <Link to="/settings" className="flex items-center py-2 text-rose-100 hover:text-white" onClick={() => setMobileMenuOpen(false)}>
-                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                </svg>
-                Settings
-              </Link>
+                Logout
+              </button>
             </div>
           </div>
         </div>

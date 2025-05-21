@@ -1,6 +1,7 @@
 package com.example.Backend.model;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -10,9 +11,13 @@ public class TimeSlot {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long trainerId;
+    @ManyToOne
+    @JoinColumn(name = "appointment_id", nullable = true)
+    private Appointment appointment;
+
     private LocalDate date;
-    private LocalTime time;
+    private LocalTime startTime;
+    private LocalTime endTime;
 
     @Enumerated(EnumType.STRING)
     private SlotStatus status;
@@ -21,44 +26,22 @@ public class TimeSlot {
         AVAILABLE, BOOKED, IN_PROGRESS
     }
 
-    // Getters and Setters for TimeSlot.java
-    public Long getId() {
-        return id;
-    }
+    // Getters and Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public Appointment getAppointment() { return appointment; }
+    public void setAppointment(Appointment appointment) { this.appointment = appointment; }
 
-    public Long getTrainerId() {
-        return trainerId;
-    }
+    public LocalDate getDate() { return date; }
+    public void setDate(LocalDate date) { this.date = date; }
 
-    public void setTrainerId(Long trainerId) {
-        this.trainerId = trainerId;
-    }
+    public LocalTime getStartTime() { return startTime; }
+    public void setStartTime(LocalTime startTime) { this.startTime = startTime; }
 
-    public LocalDate getDate() {
-        return date;
-    }
+    public LocalTime getEndTime() { return endTime; }
+    public void setEndTime(LocalTime endTime) { this.endTime = endTime; }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public LocalTime getTime() {
-        return time;
-    }
-
-    public void setTime(LocalTime time) {
-        this.time = time;
-    }
-
-    public SlotStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(SlotStatus status) {
-        this.status = status;
-    }
+    public SlotStatus getStatus() { return status; }
+    public void setStatus(SlotStatus status) { this.status = status; }
 }

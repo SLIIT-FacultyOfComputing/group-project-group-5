@@ -350,6 +350,47 @@ const AddStaff = () => {
                       {validationErrors.phone && <p className="mt-1 text-xs text-rose-500">{validationErrors.phone}</p>}
                     </div>
                   </div>
+
+                  {/* Email input field */}
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <label
+                      htmlFor="email"
+                      className="block text-xs sm:text-sm font-medium text-gray-700 flex items-center"
+                    >
+                      Email
+                      <span className="ml-1 sm:ml-2 text-xs text-gray-400 font-normal">(Optional)</span>
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={2}
+                          stroke="currentColor"
+                          className="w-5 h-5 mr-2 text-gray-400"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M16 12l-4-4-4 4m8 0v6a2 2 0 01-2 2H6a2 2 0 01-2-2v-6m16 0l-8-8-8 8"
+                          />
+                        </svg>
+                      </div>
+                      <input
+                        id="email"
+                        name="email"
+                        className={`w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2.5 sm:py-3 bg-white border ${
+                          validationErrors.email ? "border-rose-500" : "border-gray-300"
+                        } text-gray-900 text-xs sm:text-sm rounded-lg focus:ring-rose-500 focus:border-rose-500 block transition-all duration-200 shadow-sm hover:border-gray-400`}
+                        type="email"
+                        placeholder="Enter email address (optional)"
+                        value={formData.email || ""}
+                        onChange={handleChange}
+                      />
+                      {validationErrors.email && <p className="mt-1 text-xs text-rose-500">{validationErrors.email}</p>}
+                    </div>
+                  </div>
                 </div>
               </div>
 

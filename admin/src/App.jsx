@@ -15,6 +15,7 @@ import AddEquipmentForm from './pages/Equipment/AddEquipmentForm';
 import MaintenanceScheduleList from './pages/Maintenance/MaintenanceScheduleList';
 import AddMaintenanceSchedule from './pages/Maintenance/AddMaintenanceSchedule';
 import MonthlyCostViewer from './pages/MonthlyCost/MonthlyCostViewer';
+import TicketList from './pages/Tickets/TicketList';
 
 
 function App() {
@@ -43,6 +44,7 @@ function App() {
           <Route path="maintenance-list" element={<MaintenanceScheduleList />} />
           <Route path="maintenance-add" element={<AddMaintenanceSchedule />} />
           <Route path="maintenance-cost" element={<MonthlyCostViewer />} />
+          <Route path="tickets" element={<TicketList />} />
           <Route path="reports" element={<div>Reports</div>} />
           <Route index element={<Navigate to="members" replace />} />
         </Route>

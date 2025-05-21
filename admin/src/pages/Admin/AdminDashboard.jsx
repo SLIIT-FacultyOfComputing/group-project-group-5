@@ -34,6 +34,9 @@ const AdminDashboard = () => {
         } else if (currentPath.includes('/maintenance-list') || currentPath.includes('/maintenance-add')) {
             setActiveTab('maintenance');
             setActiveCategory('equipment');
+        } else if (currentPath.includes('/tickets')) {
+            setActiveTab('tickets');
+            setActiveCategory('tickets');
         }
     }, [location.pathname]);
 
@@ -73,6 +76,18 @@ const AdminDashboard = () => {
                 { id: 'equipment', label: 'View Gym Equipment', path: '/admin/dashboard/equipment' },
                 { id: 'maintenance', label: 'Maintenance', path: '/admin/dashboard/maintenance-list' },
                 { id: 'maintenance-cost', label: 'Maintenance Cost', path: '/admin/dashboard/maintenance-cost' }
+            ]
+        },
+        {
+            id: 'tickets',
+            label: 'Tickets',
+            icon: (
+                <svg className="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                </svg>
+            ),
+            items: [
+                { id: 'tickets', label: 'View Tickets', path: '/admin/dashboard/tickets' },
             ]
         },
         {

@@ -189,7 +189,7 @@ const StaffList = () => {
                 <span className="text-white font-medium">Total: {stats.total} members</span>
               </div>
               <Link
-                to="/staff/add-staff"
+                to="/admin/dashboard/add-staff"
                 className="flex items-center bg-white text-rose-600 px-4 py-2 rounded-lg border border-white shadow-sm hover:bg-opacity-90 transition-all duration-200 transform hover:scale-105"
               >
                 <svg

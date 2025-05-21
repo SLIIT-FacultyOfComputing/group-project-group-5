@@ -99,7 +99,7 @@ const AdminDashboard = () => {
                 </svg>
             ),
             items: [
-                { id: 'staff', label: 'Coming Soon', path: '#' }
+                { id: 'staff', label: 'View Staff', path: '/admin/dashboard/staff' }
             ]
         }
     ];

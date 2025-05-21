@@ -43,3 +43,4 @@ export const searchEquipmentByName = async (name) => {
 export const filterEquipmentByStatus = async (status) => {
   return api.get(`/equipment/filter-by-status?status=${status}`);
 };
+

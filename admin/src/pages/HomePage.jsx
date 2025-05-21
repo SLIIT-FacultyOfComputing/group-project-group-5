@@ -236,7 +236,7 @@ const HomePage = () => {
         {/* Features Section */}
         {renderFeaturesSection()}
 
-        {/* Admin Login Button */}
+        {/* Admin/Staff Login Button */}
         <div className="text-center py-4">
           <Link
             to="/admin/login"
@@ -244,7 +244,16 @@ const HomePage = () => {
           >
             Admin Login
           </Link>
+          
+          <Link
+            to="/staff/login"
+            className="inline-block px-4 py-2 text-sm text-gray-300 hover:text-white transition-colors"
+          >
+            Staff Login
+          </Link>
         </div>
+
+        
       </main>
 
       <Footer />

@@ -9,8 +9,8 @@ import {
 import Modal from '../../components/Modal';
 import StatusChangePreview from '../../components/TicketList/StatusChangePreview';
 import FilterButtons from '../../components/TicketList/FilterButtons';
-import TicketTable from '../../components/TicketList/TicketTable';
-import MobileTicketCard from '../../components/TicketList/MobileTicketCard';
+import TicketTable from '../../components/TicketList/Admin_TicketTable';
+import MobileTicketCard from '../../components/TicketList/Admin_MobileTicketCard';
 
 const TicketList = () => {
   const [expandedTicket, setExpandedTicket] = useState(null);

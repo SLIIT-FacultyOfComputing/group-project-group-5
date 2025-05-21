@@ -1,6 +1,6 @@
 import React from 'react';
 import StatusBadge from './StatusBadge';
-import TicketDetails from './TicketDetails';
+import Admin_TicketDetails from './Admin_TicketDetails';
 
 const TicketTable = ({
   tickets,
@@ -97,7 +97,7 @@ const TicketTable = ({
                 {expandedTicket === getTicketId(ticket) && (
                   <tr>
                     <td colSpan="6" className="px-0 py-0 border-b">
-                      <TicketDetails 
+                      <Admin_TicketDetails 
                         ticket={ticket}
                         handleStatusChange={handleStatusChange}
                         handleUpdateStatus={handleUpdateStatus}

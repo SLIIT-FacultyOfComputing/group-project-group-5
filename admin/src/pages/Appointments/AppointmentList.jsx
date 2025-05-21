@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react"
-import { getAllAppointments, getAppointmentsByTrainer, updateAppointmentStatus } from "../../services/api"
+import React, { useState, useEffect } from 'react';
+import { getAllAppointments, getAppointmentsByTrainer, updateAppointmentStatus } from '../../services/api';
 import { Link } from "react-router-dom"
 
 const AppointmentList = () => {

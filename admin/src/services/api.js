@@ -26,3 +26,5 @@ export * from './equipmentApi';
 export * from './maintenanceApi';
 export * from './ticketApi';
 export * from './memberService';
+export * from './staff';
+export * from './Appointment';

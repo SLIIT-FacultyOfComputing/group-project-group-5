@@ -1,42 +1,66 @@
-import axios from "axios";
+import api from './api';
 
 const BASE_URL = "http://localhost:8090";
 
 export const bookAppointment = async (appointmentData) => {
-  return axios.post(`${BASE_URL}/api/appointments`, appointmentData)
+  return api.post('/api/appointments', appointmentData)
 }
 
 export const getAllAppointments = async () => {
-  return axios.get(`${BASE_URL}/api/appointments`)
+  return api.get('/api/appointments');
 }
 
 export const getAvailableSlots = async () => {
-  return axios.get(`${BASE_URL}/api/appointments/slots`)
+  return api.get('/api/appointments/slots')
 }
 
 export const getAppointmentsByTrainer = async (trainerId) => {
-  return axios.get(`${BASE_URL}/api/appointments/trainer/${trainerId}`)
+  return api.get(`/api/appointments/trainer/${trainerId}`)
 }
 
 export const getAppointmentsByTrainee = async (traineeId) => {
-  return axios.get(`${BASE_URL}/api/appointments/trainee/${traineeId}`)
+  return api.get(`/api/appointments/trainee/${traineeId}`)
 }
 
 export const updateAppointmentStatus = async (id, status) => {
-  return axios.put(`${BASE_URL}/api/appointments/${id}/status?status=${status}`)
+  return api.put(`/api/appointments/${id}/status?status=${status}`)
 }
 
 export const getTrainersByRole = async () => {
-  return axios.get(`${BASE_URL}/api/staff?role=TRAINER`)
+  return api.get('/api/staff?role=TRAINER')
 }
 
 export const getAllMembers = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/api/members`);
+    const response = await api.get('/api/members');
     console.log("Members API response:", response);
     return response;
   } catch (error) {
     console.error("Error fetching members:", error);
     throw error;
   }
+};
+
+export const getAppointmentById = async (id) => {
+  return api.get(`/api/appointments/${id}`);
+};
+
+export const createAppointment = async (appointmentData) => {
+  return api.post('/api/appointments', appointmentData);
+};
+
+export const updateAppointment = async (id, appointmentData) => {
+  return api.put(`/api/appointments/${id}`, appointmentData);
+};
+
+export const deleteAppointment = async (id) => {
+  return api.delete(`/api/appointments/${id}`);
+};
+
+export const getAppointmentsByMember = async (memberId) => {
+  return api.get(`/api/appointments/member/${memberId}`);
+};
+
+export const getAppointmentsByStaff = async (staffId) => {
+  return api.get(`/api/appointments/staff/${staffId}`);
 };

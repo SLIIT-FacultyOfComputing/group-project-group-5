@@ -4,7 +4,7 @@ import { fetchRoutines, fetchRoutineDetails, renameRoutine, deleteRoutine, addEx
 import ExerciseSelector from '../components/ExerciseSelector';
 
 const ViewRoutine = () => {
-    const { memberId } = useParams();
+    const { id } = useParams();
     const navigate = useNavigate();
     const [routines, setRoutines] = useState([]);
     const [selectedRoutine, setSelectedRoutine] = useState(null);
@@ -20,16 +20,17 @@ const ViewRoutine = () => {
         const loadRoutines = async () => {
             setLoading(true);
             try {
-                const data = await fetchRoutines(memberId);
+                const data = await fetchRoutines(id);
                 setRoutines(data || []);
             } catch (err) {
+                console.error('Error fetching routines:', err);
                 setError('Failed to load routines.');
             } finally {
                 setLoading(false);
             }
         };
         loadRoutines();
-    }, [memberId]);
+    }, [id]);
 
     const handleRoutineClick = async (routineId) => {
         setLoading(true);
@@ -69,7 +70,7 @@ const ViewRoutine = () => {
         setLoading(true);
         try {
             await renameRoutine(renameModal, newName);
-            const data = await fetchRoutines(memberId);
+            const data = await fetchRoutines(id);
             setRoutines(data || []);
             setRenameModal(null);
             setNewName('');
@@ -86,7 +87,7 @@ const ViewRoutine = () => {
         setLoading(true);
         try {
             await deleteRoutine(routineId);
-            const data = await fetchRoutines(memberId);
+            const data = await fetchRoutines(id);
             setRoutines(data || []);
             setMenuOpenRoutine(null);
             setError(null);
@@ -151,7 +152,7 @@ const ViewRoutine = () => {
     return (
         <div className="min-h-screen bg-gray-50 p-6">
             <div className="max-w-7xl mx-auto">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Routines for Member ID: {memberId}</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Routines for Member ID: {id}</h2>
                 {loading && (
                     <div className="flex justify-center items-center h-64">
                         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-rose-600"></div>
@@ -205,7 +206,7 @@ const ViewRoutine = () => {
                         <div className="mt-6 flex space-x-4">
                             <button
                                 className="px-4 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700 transition-colors duration-200"
-                                onClick={() => navigate(`/create-routine/${memberId}`)}
+                                onClick={() => navigate(`/create-routine/${id}`)}
                             >
                                 Add Routine
                             </button>

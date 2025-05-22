@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { createRoutine } from '../services/api';
+import { createRoutine } from '../services/exerciseApi';
 import ExerciseSelector from '../components/ExerciseSelector';
 
 const CreateRoutine = () => {
-    const { memberId } = useParams();
+    const { id } = useParams();
     const navigate = useNavigate();
     const [routineName, setRoutineName] = useState('Workout Routine Title');
     const [selectedExercises, setSelectedExercises] = useState([]);
@@ -30,7 +30,7 @@ const CreateRoutine = () => {
         }
         try {
             const routineRequest = {
-                memberId: parseInt(memberId),
+                memberId: parseInt(id),
                 name: routineName,
                 exerciseAssignments: selectedExercises.map((item) => ({
                     exerciseId: item.exerciseId,
@@ -39,8 +39,9 @@ const CreateRoutine = () => {
                 }))
             };
             await createRoutine(routineRequest);
-            navigate(`/view-routine/${memberId}`);
+            navigate(`/admin/dashboard/view-routine/${id}`);
         } catch (err) {
+            console.error('Error creating routine:', err);
             setError('Failed to save routine.');
         }
     };

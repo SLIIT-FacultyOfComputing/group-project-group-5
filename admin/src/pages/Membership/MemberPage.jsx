@@ -3,7 +3,7 @@ import { Routes, Route, Link, Navigate, useLocation, useNavigate } from 'react-r
 import Header from "../../components/header";
 import Footer from "../../components/Footer";
 import MemberDashboard from '../../components/MemberDashboard';
-import WorkoutPlans from './WorkoutPlans';
+import MemberRoutines from '../../components/MemberRoutines';
 import QRCodePage from './QRCode';
 import QRScanner from './QRScanner';
 import axios from 'axios';
@@ -131,7 +131,7 @@ const MemberPage = () => {
           <div className="p-4 sm:p-6">
             <Routes>
               <Route path="/dashboard/:id" element={<MemberDashboard />} />
-              <Route path="/workouts/:id" element={<WorkoutPlans />} />
+              <Route path="/workouts/:id" element={<MemberRoutines />} />
               <Route path="/qrcode/:id" element={<QRCodePage />} />
               <Route path="/scanner" element={<QRScanner />} />
               <Route path="/" element={<Navigate to={`/members/dashboard/${memberId}`} replace />} />

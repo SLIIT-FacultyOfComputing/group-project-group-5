@@ -7,7 +7,9 @@ const Exercises = () => {
     const [exercises, setExercises] = useState([]);
     const [showForm, setShowForm] = useState(false);
     const [editingExercise, setEditingExercise] = useState(null);
-    const [menuOpen, setMenuOpen] = useState(null); // Track which exercise's menu is open
+    const [menuOpen, setMenuOpen] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -15,12 +17,17 @@ const Exercises = () => {
     }, []);
 
     const fetchExercisesData = async () => {
+        setLoading(true);
         try {
             const response = await fetchExercises();
             setExercises(response || []);
+            setError(null);
         } catch (err) {
             console.error('Failed to fetch exercises:', err);
             setExercises([]);
+            setError('Failed to load exercises. Please try again.');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -37,6 +44,7 @@ const Exercises = () => {
                 fetchExercisesData();
             } catch (err) {
                 console.error('Failed to delete exercise:', err);
+                setError('Exercise is already in Routines. Failed to delete exercise.');
             }
         }
     };
@@ -52,69 +60,98 @@ const Exercises = () => {
     };
 
     return (
-        <div>
-            <h2>Exercises</h2>
-            <div className="button-group">
-                <button
-                    className="create-button"
-                    onClick={() => {
-                        setEditingExercise(null);
-                        setShowForm(true);
-                    }}
-                >
-                    Create Exercise
-                </button>
-                <button
-                    className="cancel-button"
-                    onClick={() => navigate('/')}
-                >
-                    Back to Members
-                </button>
-            </div>
-            {showForm && (
-                <ExerciseForm
-                    onClose={() => {
-                        setShowForm(false);
-                        setEditingExercise(null);
-                    }}
-                    onExerciseCreated={handleExerciseCreated}
-                    initialExercise={editingExercise}
-                />
-            )}
-            <div className="exercise-list">
-                {exercises.length === 0 ? (
-                    <p>No exercises found.</p>
-                ) : (
-                    exercises.map((exercise) => (
-                        <div key={exercise.id} className="exercise-bar">
-                            <span>{exercise.name} - {exercise.primaryMuscleGroup}</span>
-                            <div className="exercise-actions">
-                                <button
-                                    className="ellipsis-button"
-                                    onClick={() => toggleMenu(exercise.id)}
-                                >
-                                    ⋮
-                                </button>
-                                {menuOpen === exercise.id && (
-                                    <div className="action-menu">
-                                        <button
-                                            className="action-menu-item"
-                                            onClick={() => handleUpdate(exercise)}
-                                        >
-                                            Update
-                                        </button>
-                                        <button
-                                            className="action-menu-item delete"
-                                            onClick={() => handleDelete(exercise.id)}
-                                        >
-                                            Delete
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    ))
+        <div className="min-h-screen bg-gray-50 p-6">
+            <div className="max-w-7xl mx-auto">
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-2xl font-bold text-gray-900">Exercises</h2>
+                    <div className="flex space-x-4">
+                        <button
+                            className="px-4 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700 transition-colors duration-200"
+                            onClick={() => {
+                                setEditingExercise(null);
+                                setShowForm(true);
+                            }}
+                        >
+                            Create Exercise
+                        </button>
+                        <button
+                            className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                            onClick={() => navigate('/')}
+                        >
+                            Back to Members
+                        </button>
+                    </div>
+                </div>
+
+                {loading && (
+                    <div className="flex justify-center items-center h-64">
+                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-rose-600"></div>
+                    </div>
                 )}
+
+                {error && (
+                    <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mb-6">
+                        {error}
+                    </div>
+                )}
+
+                {showForm && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="bg-white p-6 rounded-lg shadow-xl max-w-2xl w-full">
+                            <ExerciseForm
+                                onClose={() => {
+                                    setShowForm(false);
+                                    setEditingExercise(null);
+                                }}
+                                onExerciseCreated={handleExerciseCreated}
+                                initialExercise={editingExercise}
+                            />
+                        </div>
+                    </div>
+                )}
+
+                <div className="space-y-4">
+                    {exercises.length === 0 ? (
+                        <p className="text-gray-500 text-center py-4">No exercises found.</p>
+                    ) : (
+                        exercises.map((exercise) => (
+                            <div key={exercise.id} className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-200 relative">
+                                <div className="flex justify-between items-center">
+                                    <div>
+                                        <h3 className="text-lg font-semibold text-gray-900">{exercise.name}</h3>
+                                        <p className="text-gray-600">Primary Muscle: {exercise.primaryMuscleGroup}</p>
+                                    </div>
+                                    <div className="relative">
+                                        <button
+                                            className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100"
+                                            onClick={() => toggleMenu(exercise.id)}
+                                        >
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                                            </svg>
+                                        </button>
+                                        {menuOpen === exercise.id && (
+                                            <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
+                                                <button
+                                                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-rose-50 hover:text-rose-700"
+                                                    onClick={() => handleUpdate(exercise)}
+                                                >
+                                                    Update
+                                                </button>
+                                                <button
+                                                    className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                                                    onClick={() => handleDelete(exercise.id)}
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
             </div>
         </div>
     );

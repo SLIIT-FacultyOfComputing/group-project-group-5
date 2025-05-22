@@ -34,7 +34,7 @@ export const getAllMembers = async () => {
   try {
     const response = await api.get('/api/members');
     console.log("Members API response:", response);
-    return response;
+    return response.data;
   } catch (error) {
     console.error("Error fetching members:", error);
     throw error;

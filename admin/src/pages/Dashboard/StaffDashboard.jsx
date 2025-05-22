@@ -4,7 +4,7 @@ import {
   getAllAppointments, 
   getAppointmentsByTrainer,
   getEquipment,
-  getAllMembers
+  getMembers
 } from '../../services/api';
 import { getTicketCountBystaffId, getTicketsAssignedToStaff } from '../../services/ticketApi';
 
@@ -57,16 +57,16 @@ const Dashboard = () => {
         
         let members = [];
         try {
-          const membersResponse = await getAllMembers();
+          const membersResponse = await getMembers();
           console.log("Members response:", membersResponse);
           
-          if (membersResponse && membersResponse.data) {
-            if (Array.isArray(membersResponse.data)) {
-              members = membersResponse.data;
-            } else if (membersResponse.data.members && Array.isArray(membersResponse.data.members)) {
-              members = membersResponse.data.members;
-            } else if (typeof membersResponse.data === 'object') {
-              members = [membersResponse.data];
+          if (membersResponse) {
+            if (Array.isArray(membersResponse)) {
+              members = membersResponse;
+            } else if (membersResponse.members && Array.isArray(membersResponse.members)) {
+              members = membersResponse.members;
+            } else if (typeof membersResponse === 'object') {
+              members = [membersResponse];
             }
             console.log(`Found ${members.length} members`);
           }
@@ -134,22 +134,27 @@ const Dashboard = () => {
           app.date && app.date.startsWith(today)
         ).length;
         
-        const totalMemberCount = members && members.length ? members.length : 0;
+        const totalMemberCount = members.length;
+        const activeMembers = members.filter(member => member.status && member.status.toUpperCase() === 'ACTIVE').length;
         
-        const activeMembers = Array.isArray(members) ? 
-          members.filter(member => member.status && member.status.toUpperCase() === 'ACTIVE').length : 0;
+        console.log("Setting stats:", {
+          membersTotal: totalMemberCount,
+          membersActive: activeMembers,
+          equipmentTotal: equipment.length,
+          appointmentsToday: todaysAppointments,
+          inProgressTickets: inProgressTicketsCount
+        });
         
         setStats({
           membersTotal: totalMemberCount,
-          membersActive: activeMembers || 0,
-          equipmentTotal: equipment.length || 0,
-          appointmentsToday: todaysAppointments || 0,
-          inProgressTickets: inProgressTicketsCount 
+          membersActive: activeMembers,
+          equipmentTotal: equipment.length,
+          appointmentsToday: todaysAppointments,
+          inProgressTickets: inProgressTicketsCount
         });
         
         setRecentAppointments(appointments.slice(0, 3)); 
         setRecentTickets(sortedTickets.slice(0, 3));
-        console.log("Setting recent tickets:", sortedTickets.slice(0, 3));
         
         setLoading(false);
       } catch (err) {
@@ -243,7 +248,7 @@ const Dashboard = () => {
               <h1 className="text-2xl sm:text-3xl font-bold text-white drop-shadow-sm">Dashboard</h1>
             </div>
             <p className="text-rose-100 text-sm max-w-lg">
-              Welcome to the Fitness Gym dashboard. Get a quick overview of gym operations and key metrics.
+              Welcome to the GymSync Staff dashboard. Get a quick overview of gym operations and key metrics.
             </p>
           </div>
 
@@ -257,7 +262,7 @@ const Dashboard = () => {
                 </svg>
               </div>
               <p className="text-xs text-gray-500 font-medium">Total Members</p>
-              <p className="text-xl font-bold text-blue-700">{stats.membersTotal ?? 0}</p>
+              <p className="text-xl font-bold text-blue-700">{stats.membersTotal}</p>
               <Link to="/staff/members" className="text-xs text-blue-600 hover:underline mt-1">View all</Link>
             </div>
 

@@ -1,7 +1,5 @@
 import api from './api';
 
-import axios from "axios";
-
 const BASE_URL = "http://localhost:8090";
 
 // Register a new member

@@ -9,6 +9,8 @@ import com.example.Backend.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.HashMap;
+import java.util.Map;
 
 import java.util.List;
 
@@ -26,12 +28,15 @@ public class MemberController {
     // Handles new member registration and returns the created member or bad request
     // if registration fails
     @PostMapping("/register")
-    public ResponseEntity<Member> registerMember(@RequestBody MemberRegistrationDTO registrationDTO) {
+    public ResponseEntity<?> registerMember(@RequestBody MemberRegistrationDTO registrationDTO) {
         try {
             Member member = memberService.registerMember(registrationDTO);
             return ResponseEntity.ok(member);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
+            // Return proper JSON error response
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
         }
     }
 

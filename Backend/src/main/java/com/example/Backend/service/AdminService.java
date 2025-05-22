@@ -1,7 +1,9 @@
 package com.example.Backend.service;
 
 import com.example.Backend.model.Admin;
+import com.example.Backend.model.Staff;
 import com.example.Backend.repository.AdminRepository;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,8 +16,12 @@ public class AdminService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public boolean authenticate(String email, String password) {
+    public Admin authenticate(String email, String password) {
         Admin admin = adminRepository.findByEmail(email).orElse(null);
-        return admin != null && passwordEncoder.matches(password, admin.getPassword());
+        if (!BCrypt.checkpw(password, admin.getPassword())) {
+            throw new RuntimeException("Invalid NIC or password");
+        }
+
+        return admin;
     }
 }

@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
-import Header from "../../components/header";
+import Header from "../../components/member_header";
 import Footer from "../../components/Footer";
 import MemberDashboard from '../../components/MemberDashboard';
 import WorkoutPlans from './WorkoutPlans';
 import QRCodePage from './QRCode';
 import QRScanner from './QRScanner';
+import TicketsViewerPage from '../Tickets/TicketsViewerPage';
+import MemberProfile from '../Profile/MemberProfile';
+import CreateRoutine from '../Routine/CreateRoutine';
 import axios from 'axios';
 
 const MemberPage = () => {
@@ -126,6 +129,20 @@ const MemberPage = () => {
               </svg>
               <span className="whitespace-nowrap">QR Code</span>
             </Link>
+            <Link 
+              to={`/members/ticket`} 
+              className={`px-4 sm:px-5 md:px-7 py-3 md:py-4 text-sm font-medium flex items-center transition-all duration-300 group ${
+                currentPath.startsWith('/members/ticket') 
+                  ? 'bg-gradient-to-r from-rose-700 to-rose-500 text-white shadow-md'
+                  : 'text-gray-700 hover:bg-rose-50 hover:text-rose-700'
+              }`}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <svg className="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path>
+              </svg>
+              <span className="whitespace-nowrap">Ticket</span>
+            </Link>
           </nav>
 
           <div className="p-4 sm:p-6">
@@ -134,6 +151,8 @@ const MemberPage = () => {
               <Route path="/workouts/:id" element={<WorkoutPlans />} />
               <Route path="/qrcode/:id" element={<QRCodePage />} />
               <Route path="/scanner" element={<QRScanner />} />
+              <Route path="/ticket" element={<TicketsViewerPage />} />
+              <Route path="/profile" element={<MemberProfile />} />
               <Route path="/" element={<Navigate to={`/members/dashboard/${memberId}`} replace />} />
             </Routes>
           </div>

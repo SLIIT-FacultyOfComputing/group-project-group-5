@@ -99,7 +99,7 @@ const QRScanner = () => {
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-2xl font-bold text-center">Scan Member QR Code</h1>
                     <button
-                        onClick={() => navigate('/admin/dashboard')}
+                        onClick={() => navigate('/admin')}
                         className="text-gray-600 hover:text-rose-600 transition-colors"
                     >
                         Back to Dashboard

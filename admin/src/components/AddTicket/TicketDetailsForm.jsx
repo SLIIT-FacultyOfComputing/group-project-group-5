@@ -1,6 +1,31 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 const TicketDetailsForm = ({ ticketData, setTicketData, isSubmitting }) => {
+  // Get the logged-in user info when component mounts
+  useEffect(() => {
+    const userRole = localStorage.getItem('userRole');
+    const userId = localStorage.getItem('userId');
+    
+    if (userRole && userId) {
+      // If logged in as staff
+      if (userRole !== 'member') {
+        setTicketData(prev => ({
+          ...prev,
+          assigneeType: 'STAFF',
+          staffId: userId
+        }));
+      } 
+      // If logged in as member
+      else {
+        setTicketData(prev => ({
+          ...prev,
+          assigneeType: 'MEMBER',
+          memberId: userId
+        }));
+      }
+    }
+  }, [setTicketData]);
+  
   return (
     <div className="p-4 sm:p-6 bg-gray-50 rounded-lg sm:rounded-xl border border-gray-100 shadow-sm">
       <h2 className="text-base sm:text-lg font-medium text-gray-800 mb-3 sm:mb-4 flex items-center">
@@ -11,79 +36,6 @@ const TicketDetailsForm = ({ ticketData, setTicketData, isSubmitting }) => {
       </h2>
       
       <div className="space-y-4 sm:space-y-5">
-        <div className="space-y-1.5 sm:space-y-2">
-          <label htmlFor="assignee" className="block text-xs sm:text-sm font-medium text-gray-700 flex items-center">
-            Raise by
-            <span className="ml-1 sm:ml-2 text-xs text-gray-400 font-normal">(Optional)</span>
-          </label>
-          
-          <div className="mb-2">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center">
-                <input
-                  id="assignStaff"
-                  name="assigneeType"
-                  type="radio"
-                  value="STAFF"
-                  checked={ticketData.assigneeType === 'STAFF'}
-                  onChange={(e) => setTicketData({ ...ticketData, assigneeType: e.target.value })}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                  disabled={isSubmitting}
-                />
-                <label htmlFor="assignStaff" className="ml-2 block text-sm text-gray-700">
-                  Staff
-                </label>
-              </div>
-              <div className="flex items-center">
-                <input
-                  id="assignMember"
-                  name="assigneeType"
-                  type="radio"
-                  value="MEMBER"
-                  checked={ticketData.assigneeType === 'MEMBER'}
-                  onChange={(e) => setTicketData({ ...ticketData, assigneeType: e.target.value })}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                  disabled={isSubmitting}
-                />
-                <label htmlFor="assignMember" className="ml-2 block text-sm text-gray-700">
-                  Member
-                </label>
-              </div>
-            </div>
-          </div>
-          
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-              </svg>
-            </div>
-            {ticketData.assigneeType === 'STAFF' ? (
-              <input
-                id="staffId"
-                name="staffId"
-                className="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2.5 sm:py-3 bg-white border border-gray-300 text-gray-900 text-xs sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block transition-all duration-200 shadow-sm hover:border-gray-400"
-                type="text"
-                placeholder="Enter staff ID (e.g., 2)"
-                value={ticketData.staffId}
-                onChange={(e) => setTicketData({ ...ticketData, staffId: e.target.value })}
-                disabled={isSubmitting}
-              />
-            ) : (
-              <input
-                id="memberId"
-                name="memberId"
-                className="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2.5 sm:py-3 bg-white border border-gray-300 text-gray-900 text-xs sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block transition-all duration-200 shadow-sm hover:border-gray-400"
-                type="number"
-                placeholder="Enter member ID (e.g., 5)"
-                value={ticketData.memberId}
-                onChange={(e) => setTicketData({ ...ticketData, memberId: e.target.value })}
-                disabled={isSubmitting}
-              />
-            )}
-          </div>
-          <p className="text-xs text-gray-500 mt-1">Leave empty if unassigned. {ticketData.assigneeType === 'STAFF' ? 'Staff' : 'member'} will be responsible for this ticket.</p>
-        </div>
         
         <div className="space-y-1.5 sm:space-y-2">
           <label htmlFor="description" className="block text-xs sm:text-sm font-medium text-gray-700 flex items-center">

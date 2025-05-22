@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 
 const MembersList = () => {
@@ -421,7 +421,7 @@ const MembersList = () => {
                       <td className="px-6 py-4 flex space-x-2">
                         <button
                           onClick={() => handleEdit(member.id)}
-                          className="px-4 py-2 bg-rose-600 text-white rounded-lg inline-flex items-center hover:bg-rose-700 transition-colors shadow-sm hover:shadow transform hover:scale-105"
+                          className="px-3 py-1.5 bg-rose-600 text-white rounded-lg inline-flex items-center hover:bg-rose-700 transition-colors shadow-sm hover:shadow transform hover:scale-105"
                         >
                           <svg
                             className="w-4 h-4 mr-1"
@@ -439,9 +439,43 @@ const MembersList = () => {
                           </svg>
                           Edit
                         </button>
+                        <Link to={`/staff/member/create-routine/${member.id}`} className="px-3 py-1.5 bg-blue-600 text-white rounded-lg inline-flex items-center hover:bg-blue-700 transition-colors shadow-sm hover:shadow transform hover:scale-105">
+                          <svg
+                            className="w-4 h-4 mr-1"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                            ></path>
+                          </svg>
+                          Routine
+                        </Link>
+                        <Link to={`/staff/member/view-routine/${member.id}`} className="px-3 py-1.5 bg-green-600 text-white rounded-lg inline-flex items-center hover:bg-green-700 transition-colors shadow-sm hover:shadow transform hover:scale-105">
+                          <svg
+                            className="w-4 h-4 mr-1"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M15 17h5l-1.405-1.405M19 13V7a2 2 0 00-2-2h-4a2 2 0 00-2 2v6m6 4v2a2 2 0 01-2 2H7a2 2 0 01-2-2v-2m10 0H5"
+                            ></path>
+                          </svg>
+                          View Routines
+                        </Link>
                         <button
                           onClick={() => confirmDelete(member)}
-                          className="px-4 py-2 bg-red-600 text-white rounded-lg inline-flex items-center hover:bg-red-700 transition-colors shadow-sm hover:shadow transform hover:scale-105"
+                          className="px-3 py-1.5 bg-red-600 text-white rounded-lg inline-flex items-center hover:bg-red-700 transition-colors shadow-sm hover:shadow transform hover:scale-105"
                         >
                           <svg
                             className="w-4 h-4 mr-1"

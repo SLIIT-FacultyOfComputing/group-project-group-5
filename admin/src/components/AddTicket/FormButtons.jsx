@@ -5,7 +5,7 @@ const FormButtons = ({ isSubmitting }) => {
   return (
     <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3 pt-4 border-t border-gray-200">
       <Link 
-        to="/tickets" 
+        to="/staff/tickets" 
         className="px-4 py-2 sm:px-5 sm:py-3 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500 transition-colors duration-200 flex items-center justify-center"
       >
         Cancel

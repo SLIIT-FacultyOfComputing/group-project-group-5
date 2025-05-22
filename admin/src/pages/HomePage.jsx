@@ -80,6 +80,12 @@ const HomePage = () => {
               >
                 My Profile
               </Link>
+              <Link
+                to="/members/raise-ticket"
+                className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white text-lg font-semibold rounded-lg border border-white/20 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105 active:scale-95"
+              >
+                Raise Ticket
+              </Link>
             </div>
           </div>
         );

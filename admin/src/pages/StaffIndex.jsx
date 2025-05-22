@@ -14,6 +14,9 @@ import EquipmentList from "./Equipment/Staff_EquipmentList.jsx"
 import EditMember from "./Members/EditMember.jsx"
 import RegisterMember from "./Members/RegisterPage.jsx"
 import Dashboard from "./Dashboard/StaffDashboard.jsx"
+import SCreateRoutine from "./Routine/SCreateRoutine.jsx"
+import ViewRouting  from "./Routine/SViewRoutine.jsx"
+
 
 const StaffPage = () => {
   const location = useLocation()
@@ -213,37 +216,23 @@ const StaffPage = () => {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="equipment-list" element={<EquipmentList />} />
             
-            {/* Protected routes - only for MANAGER and RECEPTIONIST */}
-            <Route path="members" element={
-              (userRole === 'MANAGER' || userRole === 'RECEPTIONIST') && userRole !== 'TRAINER' 
-                ? <MemberList /> 
-                : <Navigate to="/staff/dashboard" replace />
-            } />
+            {/* Member routes - now accessible to all staff */}
+            <Route path="members" element={<MemberList />} />
+            <Route path="member/register-member" element={<RegisterMember />} />
+            <Route path="member/edit-member/:id" element={<EditMember />} />
             
-            <Route path="member/register-member" element={
-              (userRole === 'MANAGER' || userRole === 'RECEPTIONIST') && userRole !== 'TRAINER'
-                ? <RegisterMember />
-                : <Navigate to="/staff/dashboard" replace />
-            } />
-            
-            <Route path="member/edit-member/:id" element={
-              (userRole === 'MANAGER' || userRole === 'RECEPTIONIST') && userRole !== 'TRAINER'
-                ? <EditMember />
-                : <Navigate to="/staff/dashboard" replace />
-            } />
-            
-            <Route path="book-appointment" element={
-              (userRole === 'MANAGER' || userRole === 'RECEPTIONIST') && userRole !== 'TRAINER'
-                ? <BookAppointment />
-                : <Navigate to="/staff/dashboard" replace />
-            } />
+            <Route path="book-appointment" element={<BookAppointment />} />
             
             
             <Route path="appointments" element={<AppointmentList />} />
             <Route path="tickets" element={<TicketsViewerPage />} />
-            <Route path="profile" element={<ProfilePage />} />
-            <Route path="member/edit-member/:id" element={<EditMember />} />
+            <Route path="profile" element={<ProfilePage />} />            <Route path="member/edit-member/:id" element={<EditMember />} />
             <Route path="member/register-member" element={<RegisterMember />} />
+            <Route path="member/create-routine/:id" element={<SCreateRoutine />} />
+            <Route path="member/view-routine/:id" element={<ViewRouting />} />
+
+
+            {/* Redirect to dashboard if no specific route is matched */}
             <Route
               path="*"
               element={

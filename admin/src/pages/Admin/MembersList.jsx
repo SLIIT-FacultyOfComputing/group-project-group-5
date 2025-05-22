@@ -29,8 +29,7 @@ const MembersList = () => {
     fetchMembers();
   }, [navigate]);
 
-  const handleEdit = (memberId) => {
-    navigate(`/admin/dashboard/members/edit/${memberId}`);
+  const handleEdit = (memberId) => {   navigate(`/admin/members/edit/${memberId}`);
   };
 
   const handleDelete = async (memberId) => {
@@ -155,7 +154,7 @@ const MembersList = () => {
                     </button>
                     <button
                       className="text-blue-600 hover:text-blue-700 transition-colors"
-                      onClick={() => navigate(`/admin/dashboard/create-routine/${member.id}`)}
+                      onClick={() => navigate(`/admin/create-routine/${member.id}`)}
                       title="Create Routine"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -164,7 +163,7 @@ const MembersList = () => {
                     </button>
                     <button
                       className="text-green-600 hover:text-green-700 transition-colors"
-                      onClick={() => navigate(`/admin/dashboard/view-routine/${member.id}`)}
+                      onClick={() => navigate(`/admin/view-routine/${member.id}`)}
                       title="View Routine"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

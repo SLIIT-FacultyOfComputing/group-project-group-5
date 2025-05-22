@@ -4,6 +4,8 @@ import Header from "../../components/header";
 import Footer from "../../components/Footer";
 import MemberDashboard from '../../components/MemberDashboard';
 import MemberRoutines from '../../components/MemberRoutines';
+import SessionLog from '../../components/SessionLog';
+import ViewRoutine from '../../components/ViewRoutine';
 import QRCodePage from './QRCode';
 import QRScanner from './QRScanner';
 import axios from 'axios';
@@ -132,6 +134,8 @@ const MemberPage = () => {
             <Routes>
               <Route path="/dashboard/:id" element={<MemberDashboard />} />
               <Route path="/workouts/:id" element={<MemberRoutines />} />
+              <Route path="/session/:routineId" element={<SessionLog />} />
+              <Route path="/view-routine/:routineId" element={<ViewRoutine />} />
               <Route path="/qrcode/:id" element={<QRCodePage />} />
               <Route path="/scanner" element={<QRScanner />} />
               <Route path="/" element={<Navigate to={`/members/dashboard/${memberId}`} replace />} />

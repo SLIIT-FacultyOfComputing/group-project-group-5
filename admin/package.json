@@ -12,6 +12,7 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.0.14",
     "axios": "^1.8.3",
+    "chart.js": "^4.4.9",
     "html2canvas": "^1.4.1",
     "html5-qrcode": "^2.3.8",
     "prop-types": "^15.8.1",

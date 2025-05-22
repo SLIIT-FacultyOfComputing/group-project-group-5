@@ -42,7 +42,7 @@ const MemberRoutines = () => {
                                 </div>
                                 <div className="flex space-x-3">
                                     <Link 
-                                        to={`/session/${routine.id}`}
+                                        to={`/members/session/${routine.id}`}
                                         state={{ memberId: id }}
                                     >
                                         <button className="px-4 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700 transition-colors duration-200">
@@ -50,7 +50,7 @@ const MemberRoutines = () => {
                                         </button>
                                     </Link>
                                     <Link 
-                                        to={`/view-routine/${routine.id}`}
+                                        to={`/members/view-routine/${routine.id}`}
                                         state={{ memberId: id }}
                                     >
                                         <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200">

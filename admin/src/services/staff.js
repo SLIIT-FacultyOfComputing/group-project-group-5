@@ -4,15 +4,15 @@ const BASE_URL = "http://localhost:8090"
 
 // Staff APIs
 export const addStaff = async (staff) => {
-  return api.post('/api/staff', staff);
+  return api.post('/staff', staff);
 };
 
 export const getStaff = async () => {
-  return api.get('/api/staff');
+  return api.get('/staff');
 };
 
 export const getStaffById = async (nic) => {
-  return api.get(`/api/staff/${nic}`);
+  return api.get(`/staff/${nic}`);
 };
 
 export const updateStaff = async (nic, staff) => {
@@ -35,13 +35,13 @@ export const updateStaff = async (nic, staff) => {
     }
   }
 
-  return api.put(`/api/staff/${nic}`, staffData);
+  return api.put(`/staff/${nic}`, staffData);
 };
 
 export const deleteStaff = async (nic) => {
-  return api.delete(`/api/staff/${nic}`);
+  return api.delete(`/staff/${nic}`);
 };
 
 export const searchStaffByName = async (name) => {
-  return api.get(`/api/staff/search?name=${name}`);
+  return api.get(`/staff/search?name=${name}`);
 };

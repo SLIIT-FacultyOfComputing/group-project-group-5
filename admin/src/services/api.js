@@ -28,3 +28,4 @@ export * from './ticketApi';
 export * from './memberService';
 export * from './staff';
 export * from './Appointment';
+export * from './exerciseApi';

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { fetchRoutineDetails } from '../services/api';
+import { fetchRoutineDetails, fetchExerciseStats } from '../services/api';
 import Chart from 'chart.js/auto';
 
 const ViewRoutine = () => {
@@ -31,13 +31,16 @@ const ViewRoutine = () => {
 
     const fetchStats = async (exerciseId) => {
         try {
-            const response = await fetch(`/api/exercise-stats/${exerciseId}/${memberId}`);
-            if (!response.ok) throw new Error('Failed to fetch stats');
-            const data = await response.json();
+            const data = await fetchExerciseStats(exerciseId, memberId);
+            if (!data || data.length === 0) {
+                setError('No statistics available for this exercise.');
+                return;
+            }
             setStats(prev => ({ ...prev, [exerciseId]: data }));
             renderChart(exerciseId, data);
         } catch (err) {
-            setError('Failed to load statistics.');
+            console.error('Error fetching stats:', err);
+            setError('Failed to load statistics. Please try again later.');
         }
     };
 

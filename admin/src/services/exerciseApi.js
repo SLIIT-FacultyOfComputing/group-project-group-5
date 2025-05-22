@@ -132,3 +132,13 @@ export const logSession = async (sessionData) => {
         throw error;
     }
 };
+
+export const fetchExerciseStats = async (exerciseId, memberId) => {
+    try {
+        const response = await api.get(`/sessions/stats/${exerciseId}/${memberId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching exercise stats:', error);
+        throw error;
+    }
+};

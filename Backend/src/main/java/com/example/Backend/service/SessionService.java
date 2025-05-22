@@ -11,11 +11,15 @@ import com.example.Backend.repository.MemberRepository;
 import com.example.Backend.repository.RoutineRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class SessionService {
+    private static final Logger logger = LoggerFactory.getLogger(SessionService.class);
 
     private final ExerciseLogRepository exerciseLogRepository;
     private final MemberRepository memberRepository;
@@ -23,7 +27,7 @@ public class SessionService {
     private final ExerciseRepository exerciseRepository;
 
     public SessionService(ExerciseLogRepository exerciseLogRepository, MemberRepository memberRepository,
-                          RoutineRepository routineRepository, ExerciseRepository exerciseRepository) {
+            RoutineRepository routineRepository, ExerciseRepository exerciseRepository) {
         this.exerciseLogRepository = exerciseLogRepository;
         this.memberRepository = memberRepository;
         this.routineRepository = routineRepository;
@@ -63,5 +67,33 @@ public class SessionService {
             exerciseLogRepository.save(log);
         }
         return true;
+    }
+
+    public List<Map<String, Object>> getExerciseStats(Long exerciseId, Long memberId) {
+        logger.info("Fetching exercise stats for exerciseId: {} and memberId: {}", exerciseId, memberId);
+
+        // Verify that the exercise and member exist
+        if (!exerciseRepository.existsById(exerciseId)) {
+            logger.error("Exercise with id {} not found", exerciseId);
+            throw new RuntimeException("Exercise not found");
+        }
+        if (!memberRepository.existsById(memberId)) {
+            logger.error("Member with id {} not found", memberId);
+            throw new RuntimeException("Member not found");
+        }
+
+        List<ExerciseLog> logs = exerciseLogRepository.findByExerciseIdAndMemberIdOrderBySessionCounterAsc(exerciseId,
+                memberId);
+        logger.info("Found {} exercise logs", logs.size());
+
+        return logs.stream()
+                .map(log -> {
+                    Map<String, Object> stat = new HashMap<>();
+                    stat.put("sessionCounter", log.getSessionCounter());
+                    stat.put("weight", log.getWeight());
+                    stat.put("completed", log.isCompleted());
+                    return stat;
+                })
+                .collect(Collectors.toList());
     }
 }

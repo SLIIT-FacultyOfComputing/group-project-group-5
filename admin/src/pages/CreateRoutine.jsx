@@ -52,7 +52,7 @@ const CreateRoutine = () => {
                     <div className="flex justify-between items-center mb-6">
                         <button 
                             className="text-gray-600 hover:text-gray-900 p-2 rounded-full hover:bg-gray-100"
-                            onClick={() => navigate(`/view-routine/${memberId}`)}
+                            onClick={() => navigate(`/admin/dashboard/members`)}
                         >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />

@@ -211,7 +211,7 @@ const ViewRoutine = () => {
                             </button>
                             <button
                                 className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200"
-                                onClick={() => navigate('/')}
+                                onClick={() => navigate('/admin/dashboard/members')}
                             >
                                 Back to Members
                             </button>

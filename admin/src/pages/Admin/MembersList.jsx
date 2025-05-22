@@ -164,7 +164,7 @@ const MembersList = () => {
                     </button>
                     <button
                       className="text-green-600 hover:text-green-700 transition-colors"
-                      onClick={() => navigate(`/admin/dashboard/members/${member.id}/view-routine`)}
+                      onClick={() => navigate(`/admin/dashboard/view-routine/${member.id}`)}
                       title="View Routine"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

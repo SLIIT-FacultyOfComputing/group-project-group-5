@@ -20,6 +20,7 @@ import StaffLogin from "./pages/Auth/StaffLogin.jsx";
 import StaffPage from "./pages/StaffIndex.jsx";
 import Staff_StaffList from './pages/Staff/Staff_StaffList';
 import CreateRoutine from './pages/CreateRoutine';
+import ViewRoutine from './pages/ViewRoutine';
 
 
 function App() {
@@ -78,6 +79,7 @@ function App() {
           <Route path="tickets" element={<TicketList />} />
           <Route path="staff" element={<Staff_StaffList />} />
           <Route path="create-routine/:id" element={<CreateRoutine />} />
+          <Route path="view-routine/:id" element={<ViewRoutine />} />
           <Route path="reports" element={<div>Reports</div>} />
           <Route index element={<Navigate to="members" replace />} />
         </Route>

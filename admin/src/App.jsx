@@ -26,6 +26,7 @@ import ViewRoutine from './pages/Routine/ViewRoutine.jsx';
 import MemberProfile from "./pages/Profile/MemberProfile.jsx";
 import SViewRoutine from './pages/Routine/SViewRoutine.jsx';
 import SCreateRoutine from './pages/Routine/SCreateRoutine';
+import Exercises from './pages/Exercises.jsx';
 import authService from './services/authService';
 
 
@@ -106,7 +107,7 @@ function App() {  // Add authentication checks
           <Route path="create-routine/:id" element={<CreateRoutine />} />
           <Route path="view-routine/:id" element={<ViewRoutine />} />          <Route path="member-profile" element={<MemberProfile />} />
           <Route path="staff/member/view-routine/:id" element={<ViewRoutine />} />
-          <Route path="exercises" element={<ExercisesList />} />
+          <Route path="exercises" element={<Exercises />} />
           <Route path="reports" element={<div>Reports</div>} />
           <Route path="dashboard" element={<DashboardHome />} />
           <Route index element={<DashboardHome />} />

@@ -121,7 +121,7 @@ const AdminDashboard = () => {
                 </svg>
             ),
             items: [
-                { id: 'manage-exercises', label: 'Manage Exercises', path: '/admin/dashboard/exercises' }
+                { id: 'manage-exercises', label: 'Manage Exercises', path: '/admin/exercises' }
             ]
         },
         {

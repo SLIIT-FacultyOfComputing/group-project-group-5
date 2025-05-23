@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import { QRCodeSVG } from 'qrcode.react';
+import html2canvas from 'html2canvas';
 
 const MemberDashboard = () => {
   const { id } = useParams();
   const [member, setMember] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const qrCodeRef = useRef(null);
 
   useEffect(() => {
     const fetchMemberData = async () => {
@@ -29,115 +32,148 @@ const MemberDashboard = () => {
     fetchMemberData();
   }, [id]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-rose-600"></div>
-      </div>
-    );
-  }
+  const handleDownloadQR = async () => {
+    if (!qrCodeRef.current) return;
 
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="bg-red-50 border border-red-200 text-red-600 px-6 py-4 rounded-lg">
-          {error}
-        </div>
-      </div>
-    );
-  }
+    try {
+      const canvas = await html2canvas(qrCodeRef.current, {
+        backgroundColor: '#ffffff',
+        scale: 2 // Higher scale for better quality
+      });
+      
+      const link = document.createElement('a');
+      link.download = `gym-membership-qr-${id}.jpg`;
+      link.href = canvas.toDataURL('image/jpeg', 1.0);
+      link.click();
+    } catch (err) {
+      console.error('Error generating QR code image:', err);
+      setError('Failed to generate QR code image');
+    }
+  };
 
-  if (!member) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="bg-yellow-50 border border-yellow-200 text-yellow-600 px-6 py-4 rounded-lg">
-          Member not found
-        </div>
-      </div>
-    );
-  }
+  if (loading) return (
+    <div className="flex justify-center items-center h-screen">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      <span className="ml-2 text-gray-600">Loading member data...</span>
+    </div>
+  );
+  
+  if (error) return <div className="p-4 bg-red-100 text-red-700 rounded-md m-4">{error}</div>;
+  if (!member) return <div className="p-4 bg-yellow-100 text-yellow-700 rounded-md m-4">Member not found</div>;
+
+  // Function to determine status badge color
+  const getStatusBadgeColor = (status) => {
+    switch(status.toLowerCase()) {
+      case 'active': return 'bg-green-100 text-green-800';
+      case 'inactive': return 'bg-red-100 text-red-800';
+      case 'pending': return 'bg-yellow-100 text-yellow-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const qrValue = `http://localhost:8090/api/members/verify/${id}`;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header Section */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-          <div className="flex items-center space-x-4">
-            <div className="bg-rose-100 p-4 rounded-full">
-              <svg className="w-12 h-12 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
+    <div className="p-6 max-w-6xl mx-auto">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold text-gray-800">Member Dashboard</h1>
+        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusBadgeColor(member.status)}`}>
+          {member.status}
+        </span>
+      </div>
+      
+      <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-100">
+        <div className="bg-gradient-to-r from-rose-500 to-rose-600 px-6 py-4">
+          <h2 className="text-2xl font-bold text-white">
+            {member.firstName} {member.lastName}
+          </h2>
+          <p className="text-rose-100">Member ID: {id}</p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Personal Information</h2>
+            <div className="space-y-2">
+              <p className="flex items-center">
+                <span className="font-medium w-24 text-gray-600">Name:</span> 
+                <span className="text-gray-800">{member.firstName} {member.lastName}</span>
+              </p>
+              <p className="flex items-center">
+                <span className="font-medium w-24 text-gray-600">Email:</span> 
+                <span className="text-gray-800">{member.email}</span>
+              </p>
+              <p className="flex items-center">
+                <span className="font-medium w-24 text-gray-600">Phone:</span> 
+                <span className="text-gray-800">{member.phoneNumber}</span>
+              </p>
+              <p className="flex items-center">
+                <span className="font-medium w-24 text-gray-600">Address:</span> 
+                <span className="text-gray-800">{member.address}</span>
+              </p>
             </div>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">{member.firstName} {member.lastName}</h1>
-              <p className="text-gray-600">{member.email}</p>
+          </div>
+          
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Membership Details</h2>
+            <div className="space-y-2">
+              <p className="flex items-center">
+                <span className="font-medium w-32 text-gray-600">Type:</span> 
+                <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-md text-sm">{member.membershipType}</span>
+              </p>
+              <p className="flex items-center">
+                <span className="font-medium w-32 text-gray-600">Join Date:</span> 
+                <span className="text-gray-800">{new Date(member.joinDate).toLocaleDateString()}</span>
+              </p>
+              <p className="flex items-center">
+                <span className="font-medium w-32 text-gray-600">Last Visit:</span> 
+                <span className="text-gray-800">{member.lastVisit ? new Date(member.lastVisit).toLocaleDateString() : 'Never'}</span>
+              </p>
+            </div>
+            
+            <div className="mt-6 pt-4 border-t">
+              <h3 className="text-md font-medium text-gray-700 mb-2">Membership Timeline</h3>
+              <div className="bg-gray-100 h-2 rounded-full overflow-hidden">
+                <div 
+                  className="bg-blue-500 h-2 rounded-full" 
+                  style={{width: `${Math.min(100, Math.random() * 100)}%`}}
+                />
+              </div>
+              <div className="flex justify-between text-xs text-gray-500 mt-1">
+                <span>Start</span>
+                <span>Now</span>
+                <span>Renewal</span>
+              </div>
             </div>
           </div>
         </div>
-
-        {/* Main Content */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Personal Information Card */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex items-center space-x-3 mb-6">
-              <svg className="w-6 h-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-              <h2 className="text-xl font-semibold text-gray-900">Personal Information</h2>
-            </div>
-            <div className="space-y-4">
-              <div className="flex items-center space-x-3">
-                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                </svg>
-                <span className="text-gray-600">{member.phoneNumber}</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                <span className="text-gray-600">{member.address}</span>
-              </div>
-            </div>
+        
+        {/* QR Code Section */}
+        <div className="border-t border-gray-100 bg-gray-50 p-6">
+          <div className="text-center mb-4">
+            <h3 className="text-xl font-semibold text-gray-800">Membership QR Code</h3>
+            <p className="text-gray-600 text-sm mt-1">Show this QR code at the gym entrance for quick verification</p>
           </div>
-
-          {/* Membership Details Card */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex items-center space-x-3 mb-6">
-              <svg className="w-6 h-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+          
+          <div className="flex flex-col items-center">
+            <div ref={qrCodeRef} className="bg-white p-4 rounded-lg shadow-md mb-4">
+              <QRCodeSVG
+                value={qrValue}
+                size={180}
+                level="H"
+                includeMargin={true}
+                className="mx-auto"
+              />
+            </div>
+            
+            <button
+              onClick={handleDownloadQR}
+              className="px-4 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700 transition-colors duration-200 flex items-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
               </svg>
-              <h2 className="text-xl font-semibold text-gray-900">Membership Details</h2>
-            </div>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-gray-600">Membership Type</span>
-                <span className="px-3 py-1 bg-rose-100 text-rose-700 rounded-full text-sm font-medium">
-                  {member.membershipType}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-gray-600">Status</span>
-                <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                  member.status === 'ACTIVE' 
-                    ? 'bg-green-100 text-green-700'
-                    : 'bg-red-100 text-red-700'
-                }`}>
-                  {member.status}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-gray-600">Join Date</span>
-                <span className="text-gray-900">{new Date(member.joinDate).toLocaleDateString()}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-gray-600">Last Visit</span>
-                <span className="text-gray-900">
-                  {member.lastVisit ? new Date(member.lastVisit).toLocaleDateString() : 'Never'}
-                </span>
-              </div>
-            </div>
+              Download QR Code
+            </button>
           </div>
         </div>
       </div>
@@ -145,4 +181,4 @@ const MemberDashboard = () => {
   );
 };
 
-export default MemberDashboard; 
+export default MemberDashboard;

@@ -19,6 +19,11 @@ export const getTicketsRaisedByStaff = async (staffId) => {
   return api.get(`/tickets/raised-by/staff/${staffId}`);
 };
 
+export const getTicketsRaisedByMember = async (memberId) => {
+  // This will use the same endpoint but will be interpreted differently on the backend
+  return api.get(`/tickets/raised-by/member/${memberId}`);
+};
+
 export const getTicketsAssignedToStaff = async (staffId) => {
   return api.get(`/tickets/assigned-to/staff/${staffId}`);
 };
@@ -37,6 +42,10 @@ export const filterTicketsByPriority = async (priority) => {
 
 export const getTicketCountBystaffId = async (staffId) => {
   return api.get(`/tickets/count-by-status-staff?status=IN_PROGRESS&staffId=${staffId}`);
+};
+
+export const getTicketCountByStatus = async (status) => {
+  return api.get(`/tickets/count-by-status?status=${status}`);
 };
 
 export const assignTicket = async (ticketId, staffId) => {

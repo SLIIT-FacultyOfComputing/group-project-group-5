@@ -1,8 +1,10 @@
-import api from './api';
+import axios from 'axios';
+
+const API_URL = 'http://localhost:8090/api';
 
 export const fetchMembers = async () => {
     try {
-        const response = await api.get('/members');
+        const response = await axios.get(`${API_URL}/members`);
         return response.data;
     } catch (error) {
         console.error('Error fetching members:', error);
@@ -10,14 +12,14 @@ export const fetchMembers = async () => {
     }
 };
 
-export const fetchExercises = async (name, primaryMuscleGroup, equipment) => {
+export const fetchExercises = async (name, primaryMuscleGroup, equipment ) => {
     try {
         const params = {};
         if (name) params.name = name;
         if (primaryMuscleGroup) params.primaryMuscleGroup = primaryMuscleGroup;
         if (equipment) params.equipment = equipment;
 
-        const response = await api.get('/exercises', { params });
+        const response = await axios.get(`${API_URL}/exercises`, { params });
         return response.data;
     } catch (error) {
         console.error('Error fetching exercises:', error);
@@ -27,7 +29,7 @@ export const fetchExercises = async (name, primaryMuscleGroup, equipment) => {
 
 export const createExercise = async (exercise) => {
     try {
-        const response = await api.post('/exercises', exercise);
+        const response = await axios.post(`${API_URL}/exercises`, exercise);
         return response.data;
     } catch (error) {
         console.error('Error creating exercise:', error);
@@ -37,7 +39,7 @@ export const createExercise = async (exercise) => {
 
 export const updateExercise = async (id, exercise) => {
     try {
-        const response = await api.put(`/exercises/${id}`, exercise);
+        const response = await axios.put(`${API_URL}/exercises/${id}`, exercise);
         return response.data;
     } catch (error) {
         console.error('Error updating exercise:', error);
@@ -47,7 +49,7 @@ export const updateExercise = async (id, exercise) => {
 
 export const deleteExercise = async (id) => {
     try {
-        await api.delete(`/exercises/${id}`);
+        await axios.delete(`${API_URL}/exercises/${id}`);
     } catch (error) {
         console.error('Error deleting exercise:', error);
         throw error;
@@ -56,7 +58,7 @@ export const deleteExercise = async (id) => {
 
 export const createRoutine = async (routine) => {
     try {
-        const response = await api.post('/routines', routine);
+        const response = await axios.post(`${API_URL}/routines`, routine);
         return response.data;
     } catch (error) {
         console.error('Error creating routine:', error);
@@ -66,11 +68,7 @@ export const createRoutine = async (routine) => {
 
 export const fetchRoutines = async (memberId) => {
     try {
-        // Check if memberId is undefined or null and handle appropriately
-        if (!memberId) {
-            throw new Error('Member ID is required to fetch routines');
-        }
-        const response = await api.get(`/routines/${memberId}`);
+        const response = await axios.get(`${API_URL}/routines/${memberId}`);
         return response.data;
     } catch (error) {
         console.error('Error fetching routines:', error);
@@ -80,7 +78,7 @@ export const fetchRoutines = async (memberId) => {
 
 export const fetchRoutineDetails = async (routineId) => {
     try {
-        const response = await api.get(`/routines/details/${routineId}`);
+        const response = await axios.get(`${API_URL}/routines/details/${routineId}`);
         return response.data;
     } catch (error) {
         console.error('Error fetching routine details:', error);
@@ -90,7 +88,7 @@ export const fetchRoutineDetails = async (routineId) => {
 
 export const renameRoutine = async (routineId, name) => {
     try {
-        const response = await api.put(`/routines/${routineId}/name`, { name });
+        const response = await axios.put(`${API_URL}/routines/${routineId}/name`, { name });
         return response.data;
     } catch (error) {
         console.error('Error renaming routine:', error);
@@ -100,7 +98,7 @@ export const renameRoutine = async (routineId, name) => {
 
 export const deleteRoutine = async (routineId) => {
     try {
-        await api.delete(`/routines/${routineId}`);
+        await axios.delete(`${API_URL}/routines/${routineId}`);
     } catch (error) {
         console.error('Error deleting routine:', error);
         throw error;
@@ -109,7 +107,7 @@ export const deleteRoutine = async (routineId) => {
 
 export const addExerciseToRoutine = async (routineId, assignment) => {
     try {
-        const response = await api.post(`/routines/${routineId}/exercises`, assignment);
+        const response = await axios.post(`${API_URL}/routines/${routineId}/exercises`, assignment);
         return response.data;
     } catch (error) {
         console.error('Error adding exercise to routine:', error);
@@ -119,30 +117,9 @@ export const addExerciseToRoutine = async (routineId, assignment) => {
 
 export const removeExerciseFromRoutine = async (routineId, exerciseId) => {
     try {
-        await api.delete(`/routines/${routineId}/exercises/${exerciseId}`);
+        await axios.delete(`${API_URL}/routines/${routineId}/exercises/${exerciseId}`);
     } catch (error) {
         console.error('Error removing exercise from routine:', error);
-        throw error;
-    }
-};
-
-export const logSession = async (sessionData) => {
-    try {
-        console.log('Logging session:', sessionData);
-        const response = await api.post('/sessions', sessionData);
-        return response.data;
-    } catch (error) {
-        console.error('Error logging session:', error.response || error.message);
-        throw error;
-    }
-};
-
-export const fetchExerciseStats = async (exerciseId, memberId) => {
-    try {
-        const response = await api.get(`/sessions/stats/${exerciseId}/${memberId}`);
-        return response.data;
-    } catch (error) {
-        console.error('Error fetching exercise stats:', error);
         throw error;
     }
 };

@@ -3,36 +3,36 @@ import api from './api';
 const BASE_URL = "http://localhost:8090";
 
 export const bookAppointment = async (appointmentData) => {
-  return api.post('/api/appointments', appointmentData)
+  return api.post('/appointments', appointmentData)
 }
 
 export const getAllAppointments = async () => {
-  return api.get('/api/appointments');
+  return api.get('/appointments');
 }
 
 export const getAvailableSlots = async () => {
-  return api.get('/api/appointments/slots')
+  return api.get('/appointments/slots')
 }
 
 export const getAppointmentsByTrainer = async (trainerId) => {
-  return api.get(`/api/appointments/trainer/${trainerId}`)
+  return api.get(`/appointments/trainer/${trainerId}`)
 }
 
 export const getAppointmentsByTrainee = async (traineeId) => {
-  return api.get(`/api/appointments/trainee/${traineeId}`)
+  return api.get(`/appointments/trainee/${traineeId}`)
 }
 
 export const updateAppointmentStatus = async (id, status) => {
-  return api.put(`/api/appointments/${id}/status?status=${status}`)
+  return api.put(`/appointments/${id}/status?status=${status}`)
 }
 
 export const getTrainersByRole = async () => {
-  return api.get('/api/staff?role=TRAINER')
+  return api.get('/staff?role=TRAINER')
 }
 
 export const getAllMembers = async () => {
   try {
-    const response = await api.get('/api/members');
+    const response = await api.get('/members');
     console.log("Members API response:", response);
     return response.data;
   } catch (error) {
@@ -42,25 +42,25 @@ export const getAllMembers = async () => {
 };
 
 export const getAppointmentById = async (id) => {
-  return api.get(`/api/appointments/${id}`);
+  return api.get(`/appointments/${id}`);
 };
 
 export const createAppointment = async (appointmentData) => {
-  return api.post('/api/appointments', appointmentData);
+  return api.post('/appointments', appointmentData);
 };
 
 export const updateAppointment = async (id, appointmentData) => {
-  return api.put(`/api/appointments/${id}`, appointmentData);
+  return api.put(`/appointments/${id}`, appointmentData);
 };
 
 export const deleteAppointment = async (id) => {
-  return api.delete(`/api/appointments/${id}`);
+  return api.delete(`/appointments/${id}`);
 };
 
 export const getAppointmentsByMember = async (memberId) => {
-  return api.get(`/api/appointments/member/${memberId}`);
+  return api.get(`/appointments/member/${memberId}`);
 };
 
 export const getAppointmentsByStaff = async (staffId) => {
-  return api.get(`/api/appointments/staff/${staffId}`);
+  return api.get(`/appointments/staff/${staffId}`);
 };

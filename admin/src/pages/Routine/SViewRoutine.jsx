@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { fetchRoutines, fetchRoutineDetails, renameRoutine, deleteRoutine, addExerciseToRoutine, removeExerciseFromRoutine } from '../services/api';
-import ExerciseSelector from '../components/ExerciseSelector';
+import { fetchRoutines, fetchRoutineDetails, renameRoutine, deleteRoutine, addExerciseToRoutine, removeExerciseFromRoutine } from '../../services/api';
+import ExerciseSelector from '../../components/ExerciseSelector';
 
 const ViewRoutine = () => {
-    const { id } = useParams();
+    const { id: memberId } = useParams();
     const navigate = useNavigate();
     const [routines, setRoutines] = useState([]);
     const [selectedRoutine, setSelectedRoutine] = useState(null);
@@ -20,17 +20,24 @@ const ViewRoutine = () => {
         const loadRoutines = async () => {
             setLoading(true);
             try {
-                const data = await fetchRoutines(id);
+                // Validate memberId before making the API call
+                if (!memberId) {
+                    setError('Member ID is missing. Please select a valid member.');
+                    setLoading(false);
+                    return;
+                }
+                
+                const data = await fetchRoutines(memberId);
                 setRoutines(data || []);
             } catch (err) {
-                console.error('Error fetching routines:', err);
-                setError('Failed to load routines.');
+                console.error('Error loading routines:', err);
+                setError('Failed to load routines. ' + (err.message || ''));
             } finally {
                 setLoading(false);
             }
         };
         loadRoutines();
-    }, [id]);
+    }, [memberId]);
 
     const handleRoutineClick = async (routineId) => {
         setLoading(true);
@@ -39,7 +46,8 @@ const ViewRoutine = () => {
             setSelectedRoutine(data);
             setMenuOpenRoutine(null);
         } catch (err) {
-            setError('Failed to load routine details.');
+            console.error('Error loading routine details:', err);
+            setError('Failed to load routine details. ' + (err.message || ''));
         } finally {
             setLoading(false);
         }
@@ -70,7 +78,7 @@ const ViewRoutine = () => {
         setLoading(true);
         try {
             await renameRoutine(renameModal, newName);
-            const data = await fetchRoutines(id);
+            const data = await fetchRoutines(memberId);
             setRoutines(data || []);
             setRenameModal(null);
             setNewName('');
@@ -87,7 +95,7 @@ const ViewRoutine = () => {
         setLoading(true);
         try {
             await deleteRoutine(routineId);
-            const data = await fetchRoutines(id);
+            const data = await fetchRoutines(memberId);
             setRoutines(data || []);
             setMenuOpenRoutine(null);
             setError(null);
@@ -152,7 +160,7 @@ const ViewRoutine = () => {
     return (
         <div className="min-h-screen bg-gray-50 p-6">
             <div className="max-w-7xl mx-auto">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Routines for Member ID: {id}</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Routines for Member ID: {memberId}</h2>
                 {loading && (
                     <div className="flex justify-center items-center h-64">
                         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-rose-600"></div>
@@ -206,13 +214,13 @@ const ViewRoutine = () => {
                         <div className="mt-6 flex space-x-4">
                             <button
                                 className="px-4 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700 transition-colors duration-200"
-                                onClick={() => navigate(`/create-routine/${id}`)}
+                                onClick={() => navigate(`/staff/member/edit-member/${memberId}`)}
                             >
                                 Add Routine
                             </button>
                             <button
                                 className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200"
-                                onClick={() => navigate('/admin/dashboard/members')}
+                                onClick={() => navigate('/staff/members')}
                             >
                                 Back to Members
                             </button>

@@ -45,6 +45,26 @@ const Header = ({ scrolled }) => {
     window.location.href = '/staff/login';
   };
 
+  const handleScanQR = () => {
+    // Launch camera for QR scanning
+    if ('mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices) {
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+        .then(function(stream) {
+          // You can implement QR code scanning logic here
+          // For now, just show a demo alert
+          alert('QR Scanner activated! This is a demo alert.');
+          // Don't forget to stop the stream when done
+          stream.getTracks().forEach(track => track.stop());
+        })
+        .catch(function(error) {
+          console.error('Error accessing camera:', error);
+          alert('Could not access camera. Please check permissions.');
+        });
+    } else {
+      alert('Sorry, your device does not support camera access');
+    }
+  };
+
   return (
     <header
       className={`bg-gradient-to-r from-rose-800 to-rose-600 shadow-xl sticky top-0 z-50 transition-all duration-300 ${
@@ -87,6 +107,16 @@ const Header = ({ scrolled }) => {
                 <span className={`ml-2 text-xs px-2 py-0.5 rounded-full ${getRoleBadgeClass(userRole)}`}>{userRole}</span>
               </div>
             )}
+
+            <button
+              onClick={handleScanQR}
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-rose-600 hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500 transition-all duration-200"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v-4m6 0h-2m-6 0H4m12 6h-2m-6 0H4m12 6h-2m-6 0H4m6-6h2M4 12h2m14 0h2M4 18h2m14-6h2M4 6h2m14 0h2"></path>
+              </svg>
+              Scan QR
+            </button>
             
             <div className="relative">
               <button 
@@ -147,7 +177,15 @@ const Header = ({ scrolled }) => {
                 <span className={`mt-1 text-xs inline-block w-fit px-2 py-0.5 rounded-full ${getRoleBadgeClass(userRole)}`}>{userRole}</span>
               </div>
             )}
-            <div className="py-2">
+            <div className="py-2">              <button
+                onClick={handleScanQR}
+                className="flex w-full items-center py-2 bg-white text-white hover:bg-white rounded"
+              >
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v-4m6 0h-2m-6 0H4m12 6h-2m-6 0H4m12 6h-2m-6 0H4m6-6h2M4 12h2m14 0h2M4 18h2m14-6h2M4 6h2m14 0h2"></path>
+                </svg>
+                Scan QR
+              </button>
               <Link
                 to="/staff/profile"
                 className="flex w-full items-center py-2 text-rose-100 hover:text-white"

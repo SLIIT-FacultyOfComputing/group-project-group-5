@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { createRoutine } from '../services/exerciseApi';
-import ExerciseSelector from '../components/ExerciseSelector';
+import { createRoutine } from '../../services/api';
+import ExerciseSelector from '../../components/ExerciseSelector';
 
 const CreateRoutine = () => {
-    const { id } = useParams();
+    // Accept both memberId and id from params for compatibility
+    const params = useParams();
+    const memberId = params.memberId || params.id;
     const navigate = useNavigate();
     const [routineName, setRoutineName] = useState('Workout Routine Title');
     const [selectedExercises, setSelectedExercises] = useState([]);
@@ -30,7 +32,7 @@ const CreateRoutine = () => {
         }
         try {
             const routineRequest = {
-                memberId: parseInt(id),
+                memberId: parseInt(memberId),
                 name: routineName,
                 exerciseAssignments: selectedExercises.map((item) => ({
                     exerciseId: item.exerciseId,
@@ -38,10 +40,8 @@ const CreateRoutine = () => {
                     reps: item.reps
                 }))
             };
-            await createRoutine(routineRequest);
-            navigate(`/admin/dashboard/view-routine/${id}`);
-        } catch (err) {
-            console.error('Error creating routine:', err);
+            await createRoutine(routineRequest);            navigate(`/admin`);
+        }catch (err) {
             setError('Failed to save routine.');
         }
     };
@@ -50,10 +50,9 @@ const CreateRoutine = () => {
         <div className="min-h-screen bg-gray-50 p-6">
             <div className="max-w-7xl mx-auto">
                 <div className="bg-white rounded-xl shadow-lg p-6">
-                    <div className="flex justify-between items-center mb-6">
-                        <button 
+                    <div className="flex justify-between items-center mb-6">                        <button 
                             className="text-gray-600 hover:text-gray-900 p-2 rounded-full hover:bg-gray-100"
-                            onClick={() => navigate(`/admin/dashboard/members`)}
+                            onClick={() => navigate(`/admin/members`)}
                         >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />

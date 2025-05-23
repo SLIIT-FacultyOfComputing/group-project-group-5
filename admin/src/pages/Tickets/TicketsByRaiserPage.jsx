@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getTicketsRaisedByStaff } from '../../services/ticketApi';
+import { getTicketsRaisedByStaff, getTicketsRaisedByMember } from '../../services/ticketApi';
 import TicketTable from '../../components/TicketList/Staff_TicketTable';
 import MobileTicketCard from '../../components/TicketList/Staff_MobileTicketCard';
 import Pagination from '../../components/Pagination';
@@ -10,7 +10,7 @@ const TicketsByRaiserPage = () => {
   const [error, setError] = useState(null);
   const [expandedTicket, setExpandedTicket] = useState(null);
   const [selectedStatuses, setSelectedStatuses] = useState({});
-  const [staffInfo, setStaffInfo] = useState({ id: '', name: '' });
+  const [userInfo, setUserInfo] = useState({ id: '', name: '', role: '' });
   
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10; 
@@ -21,18 +21,27 @@ const TicketsByRaiserPage = () => {
       setError(null);
       
       try {
-        const staffId = localStorage.getItem('userId');
-        const staffName = localStorage.getItem('userName');
+        const userId = localStorage.getItem('userId');
+        const userName = localStorage.getItem('userName');
+        const userRole = localStorage.getItem('userRole');
         
-        if (!staffId) {
+        if (!userId) {
           setError('You must be logged in to view your tickets');
           setLoading(false);
           return;
         }
         
-        setStaffInfo({ id: staffId, name: staffName || 'Staff Member' });
+        setUserInfo({ 
+          id: userId, 
+          name: userName || 'User', 
+          role: userRole || ''
+        });
         
-        const response = await getTicketsRaisedByStaff(staffId);
+        // Use the appropriate API endpoint based on user role
+        const isMember = userRole?.toLowerCase() === 'member';
+        const response = isMember 
+          ? await getTicketsRaisedByMember(userId)
+          : await getTicketsRaisedByStaff(userId);
 
         const transformedData = Array.isArray(response.data) ? 
           response.data.map(item => ({
@@ -44,9 +53,11 @@ const TicketsByRaiserPage = () => {
             priority: item.ticket.priority,
             createdAt: item.ticket.createdAt,
             updatedAt: item.ticket.updatedAt,
-            raisedByName: item.staff ? item.staff.name : staffName || 'Staff Member',
-            raisedById: staffId,
-            raisedByType: 'STAFF'
+            raisedByName: isMember 
+              ? (item.member ? `${item.member.firstName} ${item.member.lastName}` : userName || 'Member')
+              : (item.staff ? item.staff.name : userName || 'Staff Member'),
+            raisedById: userId,
+            raisedByType: isMember ? 'MEMBER' : 'STAFF'
           })) : [];
 
         setTickets(transformedData);
@@ -168,7 +179,7 @@ const TicketsByRaiserPage = () => {
                     <p className="text-sm text-rose-700">
                       Showing your tickets: 
                       <span className="font-semibold ml-1">
-                        {staffInfo.name} (ID: {staffInfo.id})
+                        {userInfo.name} (ID: {userInfo.id})
                       </span>
                     </p>
                   </div>

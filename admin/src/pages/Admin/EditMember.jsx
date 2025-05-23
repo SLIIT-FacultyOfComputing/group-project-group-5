@@ -60,10 +60,9 @@ const EditMember = () => {
             const response = await axios.put(`http://localhost:8090/api/members/${id}`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`
-                }
-            });
+                }            });
             if (response.status === 200) {
-                navigate('/admin/dashboard/members');
+                navigate('/admin/members');
             }
         } catch (err) {
             setError('Failed to update member. Please try again.');
@@ -184,10 +183,9 @@ const EditMember = () => {
                         </select>
                     </div>
                 </div>
-                <div className="flex justify-end space-x-4">
-                    <button
+                <div className="flex justify-end space-x-4">                    <button
                         type="button"
-                        onClick={() => navigate('/admin/dashboard/members')}
+                        onClick={() => navigate('/admin/members')}
                         className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
                     >
                         Cancel

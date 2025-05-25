@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { addTicket } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 
@@ -21,6 +21,31 @@ const AddTicketFormPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+
+  useEffect(() => {
+    // Get user role and ID from localStorage
+    const userRole = localStorage.getItem('userRole');
+    const userId = localStorage.getItem('userId');
+    
+    if (userRole && userId) {
+      // If logged in as member
+      if (userRole.toLowerCase() === 'member') {
+        setTicketData(prev => ({
+          ...prev,
+          assigneeType: 'MEMBER',
+          memberId: userId
+        }));
+      }
+      // If logged in as staff
+      else {
+        setTicketData(prev => ({
+          ...prev,
+          assigneeType: 'STAFF',
+          staffId: userId
+        }));
+      }
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -48,8 +73,15 @@ const AddTicketFormPage = () => {
         assigneeType: 'STAFF' 
       });
       
+      // Get user role to determine correct navigation path
+      const userRole = localStorage.getItem('userRole');
+      
       setTimeout(() => {
-        navigate('/tickets');
+        if (userRole?.toLowerCase() === 'member') {
+          navigate('/members/ticket');
+        } else {
+          navigate('/tickets');
+        }
       }, 2000);
       
     } catch (error) {

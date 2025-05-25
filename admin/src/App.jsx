@@ -28,6 +28,8 @@ import SViewRoutine from './pages/Routine/SViewRoutine.jsx';
 import SCreateRoutine from './pages/Routine/SCreateRoutine';
 import Exercises from './pages/Exercises.jsx';
 import authService from './services/authService';
+import AddStaff from './pages/Staff/AddStaff';
+import UpdateStaff from './pages/Staff/UpdateStaff';
 
 
 function App() {  // Add authentication checks
@@ -104,6 +106,8 @@ function App() {  // Add authentication checks
           <Route path="tickets" element={<TicketList />} />
           <Route path="raise-ticket" element={<RaiseTicket />} />
           <Route path="staff" element={<Staff_StaffList />} />
+          <Route path="staff/add-staff" element={<AddStaff />} />
+          <Route path="staff/edit-staff/:nic" element={<UpdateStaff />} />
           <Route path="create-routine/:id" element={<CreateRoutine />} />
           <Route path="view-routine/:id" element={<ViewRoutine />} />          <Route path="member-profile" element={<MemberProfile />} />
           <Route path="staff/member/view-routine/:id" element={<ViewRoutine />} />

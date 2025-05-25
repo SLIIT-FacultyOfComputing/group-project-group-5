@@ -2,6 +2,10 @@ package com.example.Backend.model;
 
 import jakarta.persistence.*;
 
+/**
+ * Entity class representing an exercise in the workout system.
+ * Stores information about exercise name, equipment needed, and muscle groups targeted.
+ */
 @Entity
 @Table(name = "exercise")
 public class Exercise {
@@ -26,6 +30,8 @@ public class Exercise {
 
     public Exercise() {}
 
+    //Constructor to create a new exercise with all required fields
+     
     public Exercise(String name, String equipment, String primaryMuscleGroup, String secondaryMuscleGroup, String animationUrl) {
         this.name = name;
         this.equipment = equipment;
@@ -33,6 +39,8 @@ public class Exercise {
         this.secondaryMuscleGroup = secondaryMuscleGroup;
         this.animationUrl = animationUrl;
     }
+
+    // Getters and Setters
     public Long getId() {
         return id;
     }

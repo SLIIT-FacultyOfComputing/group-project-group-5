@@ -7,6 +7,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
+// Custom exception class for error messages
+class SessionServiceException extends RuntimeException {
+    public SessionServiceException(String message) {
+        super(message);
+    }
+}
+
 @Service
 public class SessionService {
 
@@ -30,8 +37,11 @@ public class SessionService {
 
         Optional<Member> memberOpt = memberRepository.findById(memberId);
         Optional<Routine> routineOpt = routineRepository.findById(routineId);
-        if (memberOpt.isEmpty() || routineOpt.isEmpty()) {
-            return false;
+        if (memberOpt.isEmpty()) {
+            throw new SessionServiceException("Member not found");
+        }
+        if (routineOpt.isEmpty()) {
+            throw new SessionServiceException("Routine not found");
         }
 
         Long maxSessionCounter = exerciseLogRepository
@@ -42,7 +52,7 @@ public class SessionService {
         for (SessionRequestDTO.ExerciseLogDTO logDTO : request.getExerciseLogs()) {
             Optional<Exercise> exerciseOpt = exerciseRepository.findById(logDTO.getExerciseId());
             if (exerciseOpt.isEmpty()) {
-                return false;
+                throw new SessionServiceException("Exercise not found");
             }
 
             ExerciseLog log = new ExerciseLog();

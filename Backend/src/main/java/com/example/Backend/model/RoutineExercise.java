@@ -4,6 +4,10 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * Entity class representing the relationship between a routine and its exercises.
+ * Stores the number of sets and reps for each exercise in a routine.
+ */
 @Entity
 @Table(name = "routine_exercise")
 public class RoutineExercise {
@@ -29,6 +33,8 @@ public class RoutineExercise {
 
     public RoutineExercise() {}
 
+    //Constructor to create a new routine-exercise relationship
+    
     public RoutineExercise(Routine routine, Exercise exercise, int sets, int reps) {
         this.id = new RoutineExerciseId(routine.getId(), exercise.getId());
         this.routine = routine;
@@ -37,6 +43,7 @@ public class RoutineExercise {
         this.reps = reps;
     }
 
+    // Getters and Setters
     public RoutineExerciseId getId() {
         return id;
     }
@@ -77,18 +84,26 @@ public class RoutineExercise {
         this.reps = reps;
     }
 
+    /**
+     * Embedded ID class for the composite primary key of RoutineExercise
+     * Combines routineId and exerciseId to uniquely identify a routine-exercise relationship
+     */
     @Embeddable
     public static class RoutineExerciseId implements Serializable {
         private Long routineId;
         private Long exerciseId;
 
+        // Default constructor required by JPA
         public RoutineExerciseId() {}
 
+        // Constructor to create a new composite key
+         
         public RoutineExerciseId(Long routineId, Long exerciseId) {
             this.routineId = routineId;
             this.exerciseId = exerciseId;
         }
 
+        // Getters and Setters
         public Long getRoutineId() {
             return routineId;
         }

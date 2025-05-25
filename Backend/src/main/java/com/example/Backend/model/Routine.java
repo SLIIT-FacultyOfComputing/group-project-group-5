@@ -3,6 +3,10 @@ package com.example.Backend.model;
 import jakarta.persistence.*;
 import java.util.List;
 
+/**
+ * Entity class representing a workout routine.
+ * Contains a collection of exercises with their respective sets and reps.
+ */
 @Entity
 @Table(name = "routines")
 public class Routine {
@@ -21,12 +25,16 @@ public class Routine {
     private List<RoutineExercise> routineExercises;
 
     public Routine() {}
+
+    //Constructor to create a new workout routine
+     
     public Routine(String name, Member member, List<RoutineExercise> routineExercises) {
         this.name = name;
         this.member = member;
         this.routineExercises = routineExercises;
     }
 
+    // Getters and Setters
     public Long getId() {
         return id;
     }

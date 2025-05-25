@@ -2,6 +2,10 @@ package com.example.Backend.model;
 
 import jakarta.persistence.*;
 
+/**
+ * Entity class representing a logged exercise session.
+ * Tracks the performance of a specific exercise within a workout routine.
+ */
 @Entity
 @Table(name = "exercise_logs")
 public class ExerciseLog {
@@ -34,6 +38,8 @@ public class ExerciseLog {
 
     public ExerciseLog() {}
 
+    //Constructor to create a new exercise log entry
+     
     public ExerciseLog(Member member, Routine routine, Exercise exercise, Double weight, boolean completed, Long sessionCounter) {
         this.member = member;
         this.routine = routine;

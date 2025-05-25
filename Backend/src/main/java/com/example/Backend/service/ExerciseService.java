@@ -12,6 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+// Custom exception class for error messages
+class ExerciseServiceException extends RuntimeException {
+    public ExerciseServiceException(String message) {
+        super(message);
+    }
+}
+
 @Service
 public class ExerciseService {
 
@@ -22,15 +29,18 @@ public class ExerciseService {
     @Autowired
     private RoutineExerciseRepository routineExerciseRepository;
 
+    // Constructor to inject repositories
     public ExerciseService(ExerciseRepository exerciseRepository, RoutineRepository routineRepository) {
         this.exerciseRepository = exerciseRepository;
         this.routineRepository = routineRepository;
     }
 
+    // Create a new exercise
     public Exercise createExercise(Exercise exercise) {
         return exerciseRepository.save(exercise);
     }
 
+    // Get exercises with optional filters for name, muscle group, and equipment
     public List<Exercise> getAllExercises(String name, String primaryMuscleGroup, String equipment) {
         if (name != null && primaryMuscleGroup != null && equipment != null) {
             return exerciseRepository.findByNameContainingIgnoreCaseAndPrimaryMuscleGroupIgnoreCaseAndEquipmentIgnoreCase(
@@ -52,10 +62,11 @@ public class ExerciseService {
         }
     }
 
+    // Update an existing exercise
     public Exercise updateExercise(Long exerciseId, Exercise updatedExercise) {
         Optional<Exercise> exerciseOpt = exerciseRepository.findById(exerciseId);
         if (exerciseOpt.isEmpty()) {
-            return null;
+            throw new ExerciseServiceException("Exercise not found");
         }
         Exercise exercise = exerciseOpt.get();
         exercise.setName(updatedExercise.getName());
@@ -66,22 +77,21 @@ public class ExerciseService {
         return exerciseRepository.save(exercise);
     }
 
-   @Transactional
-   public boolean deleteExercise(Long exerciseId) {
-       // Check if exercise exists
-       if (!exerciseRepository.existsById(exerciseId)) {
-           return false;
-       }
+    // Delete an exercise if it's not used in any routines
+    @Transactional
+    public boolean deleteExercise(Long exerciseId) {
+        // Check if exercise exists
+        if (!exerciseRepository.existsById(exerciseId)) {
+            throw new ExerciseServiceException("Exercise not found");
+        }
 
-       // Check if exercise is used in any routines
-       if (routineExerciseRepository.existsByExerciseId(exerciseId)) {
-           throw new IllegalStateException("Exercise is used in routines");
-       }
+        // Check if exercise is used in any routines
+        if (routineExerciseRepository.existsByExerciseId(exerciseId)) {
+            throw new ExerciseServiceException("Cannot delete exercise: it is used in one or more routines");
+        }
 
-       // Delete the exercise (will cascade to routine_exercise due to ON DELETE CASCADE)
-       exerciseRepository.deleteById(exerciseId);
-       return true;
-   }
-
-
+        // Delete the exercise
+        exerciseRepository.deleteById(exerciseId);
+        return true;
+    }
 }

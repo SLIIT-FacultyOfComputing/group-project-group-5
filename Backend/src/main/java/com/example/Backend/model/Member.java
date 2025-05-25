@@ -3,6 +3,10 @@ package com.example.Backend.model;
 import jakarta.persistence.*;
 import java.util.List;
 
+/**
+ * Entity class representing a gym member.
+ * Stores member information and their associated workout routines.
+ */
 @Entity
 @Table(name = "members")
 public class Member {
@@ -15,13 +19,20 @@ public class Member {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Routine> routines;
 
+    // Default constructor required by JPA
     public Member() {}
 
+    /**
+     * Constructor to create a new member
+     * @param id Unique identifier for the member
+     * @param name Member's name
+     */
     public Member(Long id, String name) {
         this.id = id;
         this.name = name;
     }
 
+    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -37,7 +48,6 @@ public class Member {
     public List<Routine> getRoutines() {
         return routines;
     }
-
     public void setRoutines(List<Routine> routines) {
         this.routines = routines;
     }

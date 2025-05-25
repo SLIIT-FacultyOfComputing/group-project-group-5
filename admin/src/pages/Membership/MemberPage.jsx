@@ -10,6 +10,8 @@ import QRCodePage from './QRCode';
 import QRScanner from './QRScanner';
 import TicketsViewerPage from '../Tickets/TicketsViewerPage';
 import MemberProfile from '../Profile/MemberProfile';
+import BookAppointment from '../Appointments/MBookAppointment';
+import MyAppointmentsView from '../Appointments/MyAppointmentsView';
 import axios from 'axios';
 
 const MemberPage = () => {
@@ -131,6 +133,20 @@ const MemberPage = () => {
               <span className="whitespace-nowrap">QR Code</span>
             </Link>
             <Link 
+              to={`/members/my-appointments`} 
+              className={`px-4 sm:px-5 md:px-7 py-3 md:py-4 text-sm font-medium flex items-center transition-all duration-300 group ${
+                currentPath.startsWith('/members/my-appointments') 
+                  ? 'bg-gradient-to-r from-rose-700 to-rose-500 text-white shadow-md'
+                  : 'text-gray-700 hover:bg-rose-50 hover:text-rose-700'
+              }`}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <svg className="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+              </svg>
+              <span className="whitespace-nowrap">My Appointments</span>
+            </Link>
+            <Link 
               to={`/members/ticket`} 
               className={`px-4 sm:px-5 md:px-7 py-3 md:py-4 text-sm font-medium flex items-center transition-all duration-300 group ${
                 currentPath.startsWith('/members/ticket') 
@@ -151,9 +167,10 @@ const MemberPage = () => {
               <Route path="/session/:routineId" element={<SessionLog />} />
               <Route path="/view-routine/:routineId" element={<ViewRoutine />} />
               <Route path="/qrcode/:id" element={<QRCodePage />} />
-              <Route path="/scanner" element={<QRScanner />} />
-              <Route path="/ticket" element={<TicketsViewerPage />} />
+              <Route path="/scanner" element={<QRScanner />} />              <Route path="/ticket" element={<TicketsViewerPage />} />
               <Route path="/profile" element={<MemberProfile />} />
+              <Route path="/my-appointments/book-appointment" element={<BookAppointment />} />
+              <Route path="/my-appointments" element={<MyAppointmentsView />} />
               <Route path="/" element={<Navigate to={`/members/dashboard/${memberId}`} replace />} />
               <Route
                 path="*"

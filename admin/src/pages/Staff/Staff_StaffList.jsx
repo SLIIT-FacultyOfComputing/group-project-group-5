@@ -323,7 +323,7 @@ const StaffList = () => {
                 staff member.
               </p>
               <Link
-                to="/staff/add-staff"
+                to="/admin/staff/add-staff"
                 className="px-6 py-3 bg-gradient-to-r from-rose-600 to-rose-500 text-white rounded-lg hover:from-rose-700 hover:to-rose-600 transition-all duration-300 flex items-center shadow-md"
               >
                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

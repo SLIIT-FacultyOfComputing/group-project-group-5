@@ -156,7 +156,7 @@ const RegisterPage = () => {
       window.scrollTo({ top: 0, behavior: "smooth" });
       
       setTimeout(() => {
-        navigate('/staff/members');
+        navigate('/admin/members');
       }, 2000);
     } catch (err) {
       setError(err.message || 'Registration failed. Please try again.');

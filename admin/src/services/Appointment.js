@@ -19,7 +19,14 @@ export const getAppointmentsByTrainer = async (trainerId) => {
 }
 
 export const getAppointmentsByTrainee = async (traineeId) => {
-  return api.get(`/appointments/trainee/${traineeId}`)
+  try {
+    const response = await api.get(`/appointments/trainee/${traineeId}`);
+    console.log('API response from getAppointmentsByTrainee:', response);
+    return response;
+  } catch (error) {
+    console.error('Error in getAppointmentsByTrainee:', error);
+    throw error;
+  }
 }
 
 export const updateAppointmentStatus = async (id, status) => {

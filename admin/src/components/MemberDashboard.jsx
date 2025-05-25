@@ -10,7 +10,6 @@ const MemberDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const qrCodeRef = useRef(null);
-
   useEffect(() => {
     const fetchMemberData = async () => {
       try {
@@ -20,7 +19,35 @@ const MemberDashboard = () => {
             Authorization: `Bearer ${token}`
           }
         });
-        setMember(response.data);
+        
+        // Calculate membership duration and progress
+        const memberData = response.data;
+        
+        // If we have join date and membership duration data, calculate timeline percentage
+        if (memberData.joinDate) {
+          const joinDate = new Date(memberData.joinDate);
+          
+          // Default membership duration (in months) based on membership type if not provided by API
+          const durationMonths = memberData.membershipDuration || 
+            (memberData.membershipType === 'PREMIUM' ? 12 : 3);
+          
+          // Calculate expected end date
+          const endDate = new Date(joinDate);
+          endDate.setMonth(endDate.getMonth() + durationMonths);
+          
+          // Calculate current progress percentage
+          const now = new Date();
+          const totalDuration = endDate - joinDate;
+          const elapsed = now - joinDate;
+          const progressPercentage = Math.min(100, Math.max(0, (elapsed / totalDuration) * 100));
+          
+          // Add calculated data to member object
+          memberData.membershipEndDate = endDate;
+          memberData.membershipProgress = progressPercentage;
+          memberData.membershipDuration = durationMonths;
+        }
+        
+        setMember(memberData);
       } catch (err) {
         setError('Failed to fetch member data');
         console.error('Error:', err);
@@ -60,10 +87,12 @@ const MemberDashboard = () => {
   
   if (error) return <div className="p-4 bg-red-100 text-red-700 rounded-md m-4">{error}</div>;
   if (!member) return <div className="p-4 bg-yellow-100 text-yellow-700 rounded-md m-4">Member not found</div>;
-
   // Function to determine status badge color
   const getStatusBadgeColor = (status) => {
-    switch(status.toLowerCase()) {
+    if (!status) return 'bg-gray-100 text-gray-800';
+    
+    const statusLower = status.toLowerCase();
+    switch(statusLower) {
       case 'active': return 'bg-green-100 text-green-800';
       case 'inactive': return 'bg-red-100 text-red-800';
       case 'pending': return 'bg-yellow-100 text-yellow-800';
@@ -90,59 +119,134 @@ const MemberDashboard = () => {
           <p className="text-rose-100">Member ID: {id}</p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
-          <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">          <div className="space-y-4">
             <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Personal Information</h2>
-            <div className="space-y-2">
-              <p className="flex items-center">
-                <span className="font-medium w-24 text-gray-600">Name:</span> 
-                <span className="text-gray-800">{member.firstName} {member.lastName}</span>
-              </p>
-              <p className="flex items-center">
-                <span className="font-medium w-24 text-gray-600">Email:</span> 
-                <span className="text-gray-800">{member.email}</span>
-              </p>
-              <p className="flex items-center">
-                <span className="font-medium w-24 text-gray-600">Phone:</span> 
-                <span className="text-gray-800">{member.phoneNumber}</span>
-              </p>
-              <p className="flex items-center">
-                <span className="font-medium w-24 text-gray-600">Address:</span> 
-                <span className="text-gray-800">{member.address}</span>
-              </p>
+            <div className="grid grid-cols-1 gap-3">
+              <div className="bg-gray-50 p-3 rounded-lg border border-gray-100 hover:shadow-sm transition-shadow">
+                <div className="flex items-center">
+                  <div className="bg-rose-100 p-2 rounded-md mr-3">
+                    <svg className="w-5 h-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <span className="text-xs text-gray-500">Full Name</span>
+                    <p className="font-medium text-gray-800">{member.firstName} {member.lastName}</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-gray-50 p-3 rounded-lg border border-gray-100 hover:shadow-sm transition-shadow">
+                <div className="flex items-center">
+                  <div className="bg-blue-100 p-2 rounded-md mr-3">
+                    <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <span className="text-xs text-gray-500">Email Address</span>
+                    <p className="font-medium text-gray-800">{member.email || 'N/A'}</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-gray-50 p-3 rounded-lg border border-gray-100 hover:shadow-sm transition-shadow">
+                <div className="flex items-center">
+                  <div className="bg-green-100 p-2 rounded-md mr-3">
+                    <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <span className="text-xs text-gray-500">Phone Number</span>
+                    <p className="font-medium text-gray-800">{member.phoneNumber || 'N/A'}</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-gray-50 p-3 rounded-lg border border-gray-100 hover:shadow-sm transition-shadow">
+                <div className="flex items-center">
+                  <div className="bg-purple-100 p-2 rounded-md mr-3">
+                    <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <span className="text-xs text-gray-500">Address</span>
+                    <p className="font-medium text-gray-800">{member.address || 'N/A'}</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          
-          <div className="space-y-4">
+            <div className="space-y-4">
             <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Membership Details</h2>
-            <div className="space-y-2">
-              <p className="flex items-center">
-                <span className="font-medium w-32 text-gray-600">Type:</span> 
-                <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-md text-sm">{member.membershipType}</span>
-              </p>
-              <p className="flex items-center">
-                <span className="font-medium w-32 text-gray-600">Join Date:</span> 
-                <span className="text-gray-800">{new Date(member.joinDate).toLocaleDateString()}</span>
-              </p>
-              <p className="flex items-center">
-                <span className="font-medium w-32 text-gray-600">Last Visit:</span> 
-                <span className="text-gray-800">{member.lastVisit ? new Date(member.lastVisit).toLocaleDateString() : 'Never'}</span>
-              </p>
+            <div className="grid grid-cols-1 gap-3">
+              <div className="bg-gray-50 p-3 rounded-lg border border-gray-100 hover:shadow-sm transition-shadow">
+                <div className="flex items-center">
+                  <div className="bg-blue-100 p-2 rounded-md mr-3">
+                    <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <span className="text-xs text-gray-500">Membership Type</span>
+                    <p className="mt-1">
+                      <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-md text-sm font-medium">
+                        {member.membershipType || 'N/A'}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-gray-50 p-3 rounded-lg border border-gray-100 hover:shadow-sm transition-shadow">
+                <div className="flex items-center">
+                  <div className="bg-amber-100 p-2 rounded-md mr-3">
+                    <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <span className="text-xs text-gray-500">Join Date</span>
+                    <p className="font-medium text-gray-800">{member.joinDate ? new Date(member.joinDate).toLocaleDateString() : 'N/A'}</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-gray-50 p-3 rounded-lg border border-gray-100 hover:shadow-sm transition-shadow">
+                <div className="flex items-center">
+                  <div className="bg-teal-100 p-2 rounded-md mr-3">
+                    <svg className="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <span className="text-xs text-gray-500">Last Visit</span>
+                    <p className="font-medium text-gray-800">{member.lastVisit ? new Date(member.lastVisit).toLocaleDateString() : 'Never'}</p>
+                  </div>
+                </div>
+              </div>
             </div>
-            
-            <div className="mt-6 pt-4 border-t">
+              <div className="mt-6 pt-4 border-t">
               <h3 className="text-md font-medium text-gray-700 mb-2">Membership Timeline</h3>
               <div className="bg-gray-100 h-2 rounded-full overflow-hidden">
                 <div 
                   className="bg-blue-500 h-2 rounded-full" 
-                  style={{width: `${Math.min(100, Math.random() * 100)}%`}}
+                  style={{width: `${member.membershipProgress || 0}%`}}
                 />
               </div>
               <div className="flex justify-between text-xs text-gray-500 mt-1">
-                <span>Start</span>
+                <span>{member.joinDate ? new Date(member.joinDate).toLocaleDateString() : 'Start'}</span>
                 <span>Now</span>
-                <span>Renewal</span>
+                <span>{member.membershipEndDate ? new Date(member.membershipEndDate).toLocaleDateString() : 'Renewal'}</span>
               </div>
+              {member.membershipDuration && (
+                <p className="text-xs text-gray-500 mt-1 text-center">
+                  {member.membershipDuration} month{member.membershipDuration !== 1 ? 's' : ''} membership
+                </p>
+              )}
             </div>
           </div>
         </div>

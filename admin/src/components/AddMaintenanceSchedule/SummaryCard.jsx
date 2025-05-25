@@ -44,7 +44,7 @@ const SummaryCard = ({ formData, equipments }) => {
         {formData.maintenanceCost && (
           <div className="flex justify-between">
             <span className="text-gray-500">Estimated Cost:</span>
-            <span className="font-medium">${parseFloat(formData.maintenanceCost).toFixed(2)}</span>
+            <span className="font-medium">Rs:{parseFloat(formData.maintenanceCost).toFixed(2)}</span>
           </div>
         )}
       </div>

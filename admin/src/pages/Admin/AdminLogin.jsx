@@ -12,7 +12,7 @@ const AdminLogin = () => {
     const navigate = useNavigate();    useEffect(() => {
         // Check if admin is already logged in
         if (authService.isAdminAuthenticated()) {
-            window.location.href = '/admin';
+            window.location.href = '/admin/dashboard';
         }
     }, []);const handleSubmit = async (e) => {
         e.preventDefault();
@@ -28,7 +28,7 @@ const AdminLogin = () => {
                 // Store token and admin data using authService
                 authService.loginAdmin(response.data.admin, response.data.token);
                   // Force a page reload by using window.location
-                window.location.href = '/admin';
+                window.location.href = '/admin/dashboard';
             } else {
                 setError('Invalid response from server');
             }
@@ -81,7 +81,7 @@ const AdminLogin = () => {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent"
-                            placeholder="••••••••"
+                            placeholder="password"
                             required
                         />
                     </div>

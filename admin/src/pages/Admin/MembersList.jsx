@@ -83,7 +83,10 @@ const MembersList = () => {
         <h2 className="text-2xl font-bold text-gray-900">Members</h2>
         <button
           className="px-4 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700 transition-colors"
-          onClick={() => {/* Add new member functionality */}}
+          onClick={() => {
+            console.log("Navigating to add member page");
+            navigate('/admin/member/register-member');
+          }}
         >
           Add New Member
         </button>

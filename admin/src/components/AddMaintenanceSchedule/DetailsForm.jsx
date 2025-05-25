@@ -63,10 +63,10 @@ const DetailsForm = ({
 
         {/* Cost */}
         <div className="col-span-1">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Estimated Cost ($)</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Estimated Cost (Rs)</label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <span className="text-gray-500">$</span>
+              <span className="text-gray-500">Rs</span>
             </div>
             <input
               type="number"

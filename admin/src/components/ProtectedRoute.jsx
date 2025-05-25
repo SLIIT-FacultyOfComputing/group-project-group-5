@@ -22,8 +22,11 @@ export const AdminProtectedRoute = ({ children }) => {
 
 // Component for protected staff routes
 export const StaffProtectedRoute = ({ children }) => {
-  // Check if staff is authenticated (using simple token check for now)
-  const isAuthenticated = localStorage.getItem('token') !== null;
+  const token = localStorage.getItem('token');
+  const userRole = localStorage.getItem('userRole');
+  
+  // Check if staff is authenticated (token exists and user role is staff, not member)
+  const isAuthenticated = token !== null && userRole !== null && userRole !== 'member';
   
   if (!isAuthenticated) {
     // Redirect to staff login if not authenticated
@@ -35,8 +38,11 @@ export const StaffProtectedRoute = ({ children }) => {
 
 // Component for protected member routes
 export const MemberProtectedRoute = ({ children }) => {
-  // Check if member is authenticated (using simple token check for now)
-  const isAuthenticated = localStorage.getItem('token') !== null;
+  const token = localStorage.getItem('token');
+  const userRole = localStorage.getItem('userRole');
+  
+  // Check if member is authenticated (token exists and user role is specifically 'member')
+  const isAuthenticated = token !== null && userRole === 'member';
   
   if (!isAuthenticated) {
     // Redirect to member login if not authenticated

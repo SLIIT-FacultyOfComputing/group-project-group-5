@@ -218,18 +218,14 @@ const MembersList = () => {
                   <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                 </svg>
                 <span className="text-red font-medium">Total: {stats.total} members</span>
-              </div>
-              <button
-                onClick={() => navigate('/staff/member/register-member')}
-                className="flex items-center bg-white text-rose-600 px-4 py-2 rounded-lg border border-white shadow-sm hover:bg-opacity-90 transition-all duration-200 transform hover:scale-105"
+              </div>              <button
+                onClick={() => {
+                  console.log("Navigating to add member page");
+                  navigate('/staff/member/register-member');
+                }}
+                className="px-6 py-3 bg-gradient-to-r from-rose-600 to-rose-500 text-white rounded-lg hover:from-rose-700 hover:to-rose-600 transition-all duration-300 flex items-center shadow-md"
               >
-                <svg
-                  className="w-5 h-5 mr-1"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -237,7 +233,7 @@ const MembersList = () => {
                     d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                   ></path>
                 </svg>
-                <span className="font-medium">Add Member</span>
+                <span className="font-medium">Add New Member</span>
               </button>
             </div>
           </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import Header from "../../components/member_header";
-import Footer from "../../components/Footer";
+import Footer from "../../components/Member_Footer";
 import MemberDashboard from '../../components/MemberDashboard';
 import MemberRoutines from '../../components/MemberRoutines';
 import SessionLog from '../../components/SessionLog';
@@ -10,7 +10,6 @@ import QRCodePage from './QRCode';
 import QRScanner from './QRScanner';
 import TicketsViewerPage from '../Tickets/TicketsViewerPage';
 import MemberProfile from '../Profile/MemberProfile';
-import CreateRoutine from '../Routine/CreateRoutine';
 import axios from 'axios';
 
 const MemberPage = () => {
@@ -145,9 +144,7 @@ const MemberPage = () => {
               </svg>
               <span className="whitespace-nowrap">Ticket</span>
             </Link>
-          </nav>
-
-          <div className="p-4 sm:p-6">
+          </nav>          <div className="p-4 sm:p-6">
             <Routes>
               <Route path="/dashboard/:id" element={<MemberDashboard />} />
               <Route path="/workouts/:id" element={<MemberRoutines />} />
@@ -158,12 +155,29 @@ const MemberPage = () => {
               <Route path="/ticket" element={<TicketsViewerPage />} />
               <Route path="/profile" element={<MemberProfile />} />
               <Route path="/" element={<Navigate to={`/members/dashboard/${memberId}`} replace />} />
+              <Route
+                path="*"
+                element={
+                  <div className="bg-white rounded-xl shadow-lg p-6 md:p-12 mt-4 md:mt-6 text-center relative backdrop-blur-sm">
+                    <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-2 md:mb-3">Page Not Found</h2>
+                    <p className="text-gray-600 mb-6 md:mb-8 max-w-md mx-auto text-sm md:text-base">
+                      The page you are looking for doesn't exist or has been moved.
+                    </p>
+                    <Link
+                      to={`/members/dashboard/${memberId}`}
+                      className="inline-flex items-center px-5 md:px-7 py-2.5 md:py-3.5 bg-gradient-to-r from-rose-600 to-rose-500 text-white rounded-lg font-medium hover:from-rose-700 hover:to-rose-600 transition-all duration-300 shadow-lg transform hover:-translate-y-1 text-sm md:text-base"
+                    >
+                      Return to Dashboard
+                    </Link>
+                  </div>
+                }
+              />
             </Routes>
           </div>
         </div>
       </div>
 
-      <Footer />
+      <Footer memberId={memberId} />
     </div>
   );
 };

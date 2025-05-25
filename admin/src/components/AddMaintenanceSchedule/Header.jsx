@@ -10,7 +10,7 @@ const Header = () => {
           <h2 className="text-2xl font-bold text-gray-800 mb-1">Add Maintenance Schedule</h2>
           <p className="text-gray-600">Create a new maintenance schedule for your equipment</p>
         </div>
-        <Link to="/admin/dashboard/maintenance-list">
+        <Link to="/admin/maintenance-list">
           <ActionButton
             onClick={() => {}}
             icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">

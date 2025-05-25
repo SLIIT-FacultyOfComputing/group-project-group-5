@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-const Footer = () => {
+const Footer = ({ memberId }) => {
   return (
     <footer className="bg-gradient-to-r from-rose-900 to-rose-800 py-8 sm:py-10 md:py-12 text-center text-sm text-rose-100 relative mt-8 sm:mt-10 md:mt-12">
       <div className="absolute inset-0 opacity-10">
@@ -54,10 +54,8 @@ const Footer = () => {
                 </svg>
               </div>
               <h3 className="text-white font-semibold text-sm sm:text-base">Quick Links</h3>
-            </div>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-              <Link 
-                to="/" 
+            </div>            <div className="grid grid-cols-2 gap-x-4 gap-y-2">              <Link 
+                to={memberId ? `/members/workouts/${memberId}` : "/"} 
                 className="text-rose-200 hover:text-white transition-colors duration-200 text-xs flex items-center touch-target"
               >
                 <svg className="w-3 h-3 mr-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -67,11 +65,10 @@ const Footer = () => {
                     clipRule="evenodd"
                   ></path>
                 </svg>
-                <span>Home</span>
+                <span>Dashboard</span>
               </Link>
-              <br />
               <Link 
-                to="/login" 
+                to={memberId ? `/members/workouts/${memberId}` : "/workout"} 
                 className="text-rose-200 hover:text-white transition-colors duration-200 text-xs flex items-center touch-target"
               >
                 <svg className="w-3 h-3 mr-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -81,7 +78,33 @@ const Footer = () => {
                     clipRule="evenodd"
                   ></path>
                 </svg>
-                <span>Login</span>
+                <span>Workout Plans</span>
+              </Link>
+              <Link 
+                to={memberId ? `/members/qrcode/${memberId}` : "/qr-code"} 
+                className="text-rose-200 hover:text-white transition-colors duration-200 text-xs flex items-center touch-target"
+              >
+                <svg className="w-3 h-3 mr-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    fillRule="evenodd"
+                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                    clipRule="evenodd"
+                  ></path>
+                </svg>
+                <span>QR Code</span>
+              </Link>
+              <Link 
+                to="/members/ticket" 
+                className="text-rose-200 hover:text-white transition-colors duration-200 text-xs flex items-center touch-target"
+              >
+                <svg className="w-3 h-3 mr-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    fillRule="evenodd"
+                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                    clipRule="evenodd"
+                  ></path>
+                </svg>
+                <span>ticket</span>
               </Link>
             </div>
           </div>

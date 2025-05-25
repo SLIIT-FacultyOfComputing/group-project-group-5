@@ -406,7 +406,7 @@ const StaffList = () => {
                       <td className="px-6 py-4">{member.startDate}</td>
                       <td className="px-6 py-4 flex space-x-2">
                         <Link
-                          to={`/staff/update-staff/${member.nic}`}
+                          to={`/admin/staff/update-staff/${member.nic}`}
                           className="px-4 py-2 bg-rose-600 text-white rounded-lg inline-flex items-center hover:bg-rose-700 transition-colors shadow-sm hover:shadow transform hover:scale-105"
                         >
                           <svg

@@ -1,5 +1,6 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, Link } from "react-router-dom";
 import RegisterPage from "./pages/Routine/RegisterPage.jsx";
+import MemberRegisterPage from "./pages/Members/RegisterPage.jsx";
 import HomePage from "./pages/HomePage";
 import MemberPage from "./pages/Membership/MemberPage";
 import LoginPage from "./pages/LoginPage";
@@ -24,8 +25,6 @@ import Staff_StaffList from './pages/Staff/Staff_StaffList';
 import CreateRoutine from './pages/Routine/CreateRoutine';
 import ViewRoutine from './pages/Routine/ViewRoutine.jsx';
 import MemberProfile from "./pages/Profile/MemberProfile.jsx";
-import SViewRoutine from './pages/Routine/SViewRoutine.jsx';
-import SCreateRoutine from './pages/Routine/SCreateRoutine';
 import Exercises from './pages/Exercises.jsx';
 import authService from './services/authService';
 import AddStaff from './pages/Staff/AddStaff';
@@ -34,7 +33,11 @@ import UpdateStaff from './pages/Staff/UpdateStaff';
 
 function App() {  // Add authentication checks
   const isStaffAuthenticated = () => {
-    return localStorage.getItem("token") !== null;
+    const token = localStorage.getItem("token");
+    const userRole = localStorage.getItem("userRole");
+    
+    // Check if token exists and user role is staff (not member)
+    return token !== null && userRole !== null && userRole !== 'member';
   };
 
   const isAdminAuthenticated = () => {
@@ -84,8 +87,7 @@ function App() {  // Add authentication checks
               <AdminLogin />
             )
           }
-        />
-        <Route
+        />        <Route
           path="/admin/*"
           element={
             isAdminAuthenticated() ? (
@@ -96,6 +98,7 @@ function App() {  // Add authentication checks
           }
         >          <Route path="members" element={<MembersList />} />
           <Route path="members/edit/:id" element={<EditMember />} />
+          <Route path="member/register-member" element={<MemberRegisterPage />} />
           <Route path="attendance" element={<AttendanceLog />} />
           <Route path="payments" element={<Payments />} />
           <Route path="equipment" element={<EquipmentList />} />
@@ -107,14 +110,30 @@ function App() {  // Add authentication checks
           <Route path="raise-ticket" element={<RaiseTicket />} />
           <Route path="staff" element={<Staff_StaffList />} />
           <Route path="staff/add-staff" element={<AddStaff />} />
-          <Route path="staff/edit-staff/:nic" element={<UpdateStaff />} />
+          <Route path="staff/update-staff/:nic" element={<UpdateStaff />} />
           <Route path="create-routine/:id" element={<CreateRoutine />} />
           <Route path="view-routine/:id" element={<ViewRoutine />} />          <Route path="member-profile" element={<MemberProfile />} />
-          <Route path="staff/member/view-routine/:id" element={<ViewRoutine />} />
-          <Route path="exercises" element={<Exercises />} />
+          <Route path="staff/member/view-routine/:id" element={<ViewRoutine />} />          <Route path="exercises" element={<Exercises />} />
           <Route path="reports" element={<div>Reports</div>} />
           <Route path="dashboard" element={<DashboardHome />} />
           <Route index element={<DashboardHome />} />
+          <Route 
+            path="*" 
+            element={
+              <div className="bg-white rounded-xl shadow-lg p-6 md:p-12 mt-4 md:mt-6 text-center relative backdrop-blur-sm">
+                <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-2 md:mb-3">Page Not Found</h2>
+                <p className="text-gray-600 mb-6 md:mb-8 max-w-md mx-auto text-sm md:text-base">
+                  The page you are looking for doesn't exist or has been moved.
+                </p>
+                <Link
+                  to="/admin/dashboard"
+                  className="inline-flex items-center px-5 md:px-7 py-2.5 md:py-3.5 bg-gradient-to-r from-rose-600 to-rose-500 text-white rounded-lg font-medium hover:from-rose-700 hover:to-rose-600 transition-all duration-300 shadow-lg transform hover:-translate-y-1 text-sm md:text-base"
+                >
+                  Return to Dashboard
+                </Link>
+              </div>
+            } 
+          />
         </Route>
         <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
 

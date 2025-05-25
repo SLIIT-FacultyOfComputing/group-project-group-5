@@ -167,7 +167,7 @@ const MaintenanceScheduleAdd = () => {
               <div className="text-gray-600">Date:</div>
               <div className="font-medium">{new Date(formData.maintenanceDate).toLocaleDateString()}</div>
               <div className="text-gray-600">Cost:</div>
-              <div className="font-medium">${parseFloat(formData.maintenanceCost || 0).toFixed(2)}</div>
+              <div className="font-medium">Rs{parseFloat(formData.maintenanceCost || 0).toFixed(2)}</div>
             </div>
           </div>
         </div>
@@ -203,10 +203,9 @@ const MaintenanceScheduleAdd = () => {
         maintenanceCost: '',
         technician: '',
         status: 'SCHEDULED'
-      });
-      
+      });      
       setTimeout(() => {
-        navigate('/maintenance-list');
+        navigate('/admin/maintenance-list');
       }, 2000);
     } catch (error) {
       showToast('Error adding maintenance schedule', 'error');

@@ -166,12 +166,14 @@ const AdminLogin = () => {
                 </button>
               </div>
 
-              <div className="text-center text-xs sm:text-sm text-gray-600">
-                Looking for Member login?{' '}
-                <a href="http://localhost:3000/login" className="font-medium text-rose-600 hover:text-rose-500">
-                  Click here
-                </a>
-              </div>
+              <div className="mt-8 text-center">
+                    <p className="text-sm text-gray-600">
+                        Go back to{' '}
+                        <a href="/" className="font-medium text-rose-600 hover:text-rose-500">
+                            Homepage
+                        </a>
+                    </p>
+                </div>
             </form>
           </div>
         </div>
